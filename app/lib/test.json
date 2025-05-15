@@ -1,0 +1,39 @@
+{
+  "pets": [
+    {
+      "id": 1,
+      "name": "Luna",
+      "type": "Cat",
+      "breed": "Persian",
+      "age": 3
+    },
+    {
+      "id": 2, 
+      "name": "Max",
+      "type": "Dog",
+      "breed": "Golden Retriever",
+      "age": 5
+    },
+    {
+      "id": 3,
+      "name": "Charlie",
+      "type": "Dog",
+      "breed": "Poodle",
+      "age": 2
+    },
+    {
+      "id": 4,
+      "name": "Milo",
+      "type": "Cat",
+      "breed": "Siamese",
+      "age": 4
+    },
+    {
+      "id": 5,
+      "name": "Rocky",
+      "type": "Dog",
+      "breed": "German Shepherd",
+      "age": 6
+    }
+  ]
+}

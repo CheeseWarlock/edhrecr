@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import {
   DndContext,
@@ -14,7 +16,6 @@ import {
   sortableKeyboardCoordinates,
   horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { shuffle } from '@/app/utils/shuffle';
 import { SortableItem } from './SortableItem';
 import Image from 'next/image';
 
@@ -27,27 +28,9 @@ interface Card {
   edhrec_rank: number;
 }
 
-export function SortableList() {
-  const [items, setItems] = useState<Card[]>([]);
-  const [loading, setLoading] = useState(true);
+export function SortableList(options: { cards: Card[] }) {
+  const [items, setItems] = useState<Card[]>(options.cards);
   const [guessedOrders, setGuessedOrders] = useState<Card[][]>([]);
-
-  useEffect(() => {
-    async function fetchCards() {
-      try {
-        const response = await fetch('https://api.scryfall.com/cards/search?q=name%3A%2F%5E..x%24%2F+legal%3Acommander');
-        const data = await response.json();
-        console.log("loaded");
-        setItems(shuffle(data.data));
-      } catch (error) {
-        console.error('Error fetching cards:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchCards();
-  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -85,12 +68,9 @@ export function SortableList() {
     return 'too-high';
   };
 
-  if (loading) {
-    return <div className="w-full max-w-4xl mx-auto p-4 text-center">Loading cards...</div>;
-  }
-
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
+      Cards: {items.length}
       <div className="mb-4 flex items-center gap-4">
         <button
           onClick={handleLockInGuess}
