@@ -16,6 +16,7 @@ import {
 } from '@dnd-kit/sortable';
 import { shuffle } from '@/app/utils/shuffle';
 import { SortableItem } from './SortableItem';
+import Image from 'next/image';
 
 interface Card {
   id: string;
@@ -105,10 +106,12 @@ export function SortableList() {
             const feedback = getPositionFeedback(card, index);
             return (
               <div key={card.id} className="relative overflow-hidden rounded-lg flex items-center justify-center">
-                <img 
+                <Image 
                   src={card.image_uris.normal} 
                   alt={card.name}
-                  className="w-[146px] h-[204px] object-contain"
+                  width={146}
+                  height={204}
+                  className="object-contain"
                 />
                 <div className={`absolute bottom-0 p-1 text-center text-white w-[40px] h-[40px] rounded-full ${
                   feedback === 'correct' ? 'bg-green-500' :
@@ -136,10 +139,12 @@ export function SortableList() {
           <div className="flex gap-4">
             {items.map((item) => (
               <SortableItem key={item.id} id={item.id}>
-                <img 
+                <Image 
                   src={item.image_uris.normal} 
                   alt={item.name}
-                  className="w-[146px] h-[204px] object-contain"
+                  width={146}
+                  height={204}
+                  className="object-contain"
                 />
               </SortableItem>
             ))}
