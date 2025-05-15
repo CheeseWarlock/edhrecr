@@ -20,6 +20,7 @@ export function SortableItem({ id, children }: SortableItemProps) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    zIndex: isDragging ? 1000 : 0,
   };
 
   return (
@@ -28,7 +29,7 @@ export function SortableItem({ id, children }: SortableItemProps) {
       style={style}
       {...attributes}
       {...listeners}
-      className={`p-0 bg-white dark:bg-gray-800 rounded-lg shadow cursor-move overflow-hidden hover:shadow-md transition-shadow ${
+      className={`p-0 bg-white dark:bg-gray-800 rounded-lg shadow cursor-move overflow-hidden hover:shadow-md transition-scale transition-shadow ${
         isDragging ? '' : ''
       }`}
     >
