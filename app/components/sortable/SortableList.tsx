@@ -68,11 +68,6 @@ export function SortableList() {
     }
   }
 
-  const isInOrder = items.every((card, index) => {
-    if (index === 0) return true;
-    return card.edhrec_rank >= items[index - 1].edhrec_rank;
-  });
-
   const handleLockInGuess = () => {
     addGuessedOrder([...items]);
   };
