@@ -18,7 +18,8 @@ import {
 } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
 import Image from 'next/image';
-
+import { CustomListSortingStrategy } from './CustomListSortingStrategy';
+import { arrayMoveFrozen } from './arrayMoveFrozen';
 interface Card {
   id: string;
   name: string;
@@ -41,11 +42,17 @@ export function SortableList(options: { cards: Card[] }) {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
+      // const oldIndex = items.findIndex((item) => item.id === active.id);
+      //   const newIndex = items.findIndex((item) => item.id === over.id);
+
+      //   setItems(arrayMoveFrozen(items, oldIndex, newIndex, 2));
+
       setItems((items) => {
+        console.log("setting items");
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over.id);
 
-        return arrayMove(items, oldIndex, newIndex);
+        return arrayMoveFrozen(items, oldIndex, newIndex, 2);
       });
     }
   }
@@ -67,7 +74,7 @@ export function SortableList(options: { cards: Card[] }) {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4">
+    <div className="w-full mx-auto p-4">
       <div className="mb-4 flex items-center gap-4">
         <button
           onClick={handleLockInGuess}
@@ -108,23 +115,36 @@ export function SortableList(options: { cards: Card[] }) {
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
+        
       >
         <SortableContext
           items={items.map((item) => item.id)}
-          strategy={horizontalListSortingStrategy}
+          strategy={CustomListSortingStrategy}
         >
-          <div className="flex gap-4">
-            {items.map((item) => (
-              <SortableItem key={item.id} id={item.id}>
-                <Image 
-                  src={item.image_url} 
-                  alt={item.name}
-                  width={219}
-                  height={306}
-                  className="object-contain"
-                />
-              </SortableItem>
-            ))}
+          <div className="flex gap-4 w-full">
+            {items.map((item, index) => {
+              if (index == 2) {
+                return <div key={item.id}><Image 
+                src={item.image_url} 
+                alt={item.name}
+                width={256}
+                height={357}
+                className="object-contain mw-[256px] mh-[357px]"
+
+              /></div>;
+              }
+              return (
+                <SortableItem key={item.id} id={item.id}>
+                  <Image 
+                    src={item.image_url} 
+                    alt={item.name}
+                    width={256}
+                    height={357}
+                    className="object-contain mw-[256px] mh-[357px]"
+                  />
+                </SortableItem>
+              );
+            })}
           </div>
         </SortableContext>
       </DndContext>
