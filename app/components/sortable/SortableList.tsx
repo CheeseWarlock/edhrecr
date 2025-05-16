@@ -40,19 +40,27 @@ function PreviousGuess({ guess, correctOrder }: { guess: Card[], correctOrder: C
       {guess.map((card, cardIndex) => {
         const feedback = getPositionFeedback(card, cardIndex);
         return (
-          <div key={card.id} className="relative overflow-hidden rounded-xl flex items-center justify-center">
+          <div key={card.id} className="relative overflow-hidden rounded-xl flex items-start justify-center h-[100px]">
             <Image 
               src={card.image_url} 
               alt={card.name}
               width={256}
-              height={357}
+              height={200}
               className="object-contain"
+              style={{ 
+                mask: `linear-gradient(to bottom, 
+                  rgba(0,0,0, 1) 0,   
+                  rgba(0,0,0, 1) 23%, 
+                  rgba(0,0,0,0) 30%
+                ) 100% 0% / 100% 102%`,
+              }}
             />
-            <div className={`absolute bottom-0 p-1 text-center text-white w-[40px] h-[40px] rounded-full ${
+            <div style={{ background: 'linear-gradient(45deg, transparent 42%, #E05617 65%), radial-gradient(#E05617 0%, #E05617 45%, #894218 55%, #E05617 66%)' }}
+            className={`absolute bottom-0 p-1 border-2 border-black text-center text-white w-[48px] h-[48px] rounded-full flex items-center justify-center text-xl ${
               feedback === 'correct' ? 'bg-green-500' :
               'bg-red-500'
             }`}>
-              {feedback === 'correct' ? '✓' : 'x'}
+              {feedback === 'correct' ? '✓' : '✗'}
             </div>
           </div>
         );
@@ -217,15 +225,21 @@ export function SortableList(options: { cards: Card[] }) {
   const correctOrder = ([...options.cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
 
   return (
-    <div className="w-full mx-auto max-w-[1792px]">
-      {guessedOrders.map((guess, guessIdx) => 
-        <PreviousGuess guess={guess} key={guessIdx} correctOrder={correctOrder} />
-      )}
-      <CurrentGuess 
-        cards={remainingCards} 
-        correctIndices={correctIndices} 
-        onGuessSubmit={handleLockInGuess}
-      />
+    <div className="w-full h-full flex flex-col">
+      <div className="flex-1 overflow-y-auto flex flex-col justify-end">
+        <div>
+          {guessedOrders.map((guess, guessIdx) => 
+            <PreviousGuess guess={guess} key={guessIdx} correctOrder={correctOrder} />
+          )}
+        </div>
+      </div>
+      <div className="flex-shrink-0">
+        <CurrentGuess 
+          cards={remainingCards} 
+          correctIndices={correctIndices} 
+          onGuessSubmit={handleLockInGuess}
+        />
+      </div>
     </div>
   );
 } 

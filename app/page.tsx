@@ -11,9 +11,9 @@ export default async function Home() {
     edhrec_rank: card.edhrec_rank || 99999
   }));
   return (
-    <div className="grid grid-rows-[40px_1fr_40px] items-center justify-items-center min-h-screen p-8 pb-20 gap-20 sm:p-24 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[48px] row-start-2 items-center sm:items-start w-full">
-            <SortableList cards={cards} />
+    <div className="grid grid-rows-[40px_1fr] items-center justify-items-center min-h-screen p-4 sm:p-8 font-[family-name:var(--font-geist-sans)]">
+      <main className="flex flex-col w-full h-full row-start-2">
+        <SortableList cards={cards} />
       </main>
     </div>
   );
