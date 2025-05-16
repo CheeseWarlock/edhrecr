@@ -25,6 +25,19 @@ interface Card {
   edhrec_rank: number;
 }
 
+function FeedbackMark({ correct }: { correct: boolean }) {
+  const color = correct ? '#7C9B13' : '#E05617';
+  const shadowColor = correct ? '#414E00' : '#894218';
+  return (
+    <div style={{ background: `linear-gradient(45deg, transparent 42%, ${color} 65%), radial-gradient(${color} 0%, ${color} 45%, ${shadowColor} 55%, ${color} 66%)` }}
+    className={`absolute bottom-0 p-1 border-2 border-black text-center text-white w-[48px] h-[48px] rounded-full flex items-center justify-center text-xl ${
+      correct ? 'bg-green-500' : 'bg-red-500'
+    }`}>
+      {correct ? '✓' : '✗'}
+    </div>
+  );
+}
+
 /**
  * A row of cards representing a previous guess
  */
@@ -35,12 +48,12 @@ function PreviousGuess({ guess, correctOrder }: { guess: Card[], correctOrder: C
     if (index < correctIndex) return 'too-low';
     return 'too-high';
   };
-  return (<div className="p-6 max-w-[1792px] bg-[#333] mt-6 mb-6 rounded-xl">
+  return (<div className="p-6 pt-0 pb-0 max-w-[1792px] mt-6 mb-6 rounded-xl">
     <div className="flex">
       {guess.map((card, cardIndex) => {
         const feedback = getPositionFeedback(card, cardIndex);
         return (
-          <div key={card.id} className="relative overflow-hidden rounded-xl flex items-start justify-center h-[100px]">
+          <div key={card.id} className="relative overflow-hidden rounded-t-xl flex items-start justify-center h-[100px]">
             <Image 
               src={card.image_url} 
               alt={card.name}
@@ -50,18 +63,12 @@ function PreviousGuess({ guess, correctOrder }: { guess: Card[], correctOrder: C
               style={{ 
                 mask: `linear-gradient(to bottom, 
                   rgba(0,0,0, 1) 0,   
-                  rgba(0,0,0, 1) 23%, 
-                  rgba(0,0,0,0) 30%
+                  rgba(0,0,0, 1) 22%, 
+                  rgba(0,0,0,0) 28%
                 ) 100% 0% / 100% 102%`,
               }}
             />
-            <div style={{ background: 'linear-gradient(45deg, transparent 42%, #E05617 65%), radial-gradient(#E05617 0%, #E05617 45%, #894218 55%, #E05617 66%)' }}
-            className={`absolute bottom-0 p-1 border-2 border-black text-center text-white w-[48px] h-[48px] rounded-full flex items-center justify-center text-xl ${
-              feedback === 'correct' ? 'bg-green-500' :
-              'bg-red-500'
-            }`}>
-              {feedback === 'correct' ? '✓' : '✗'}
-            </div>
+            <FeedbackMark correct={feedback === 'correct'} />
           </div>
         );
       })}
@@ -134,7 +141,7 @@ function CurrentGuess({ cards, correctIndices, onGuessSubmit }: { cards: Card[],
           items={cardsInCurrentGuess.map((item) => item.id)}
           strategy={horizontalListSortingStrategy}
         >
-          <div className="flex flex-col w-full p-6 bg-[#444] mt-6 mb-6 rounded-xl" style={{ touchAction: 'none' }}>
+          <div className="flex flex-col w-full p-6 bg-[#444] max-w-[1792px] mt-0 mb-6 rounded-xl" style={{ touchAction: 'none' }}>
             <div className="flex flex-row" style={{ touchAction: 'none' }}>
             {cardsInCurrentGuess.map((item, index) => {
               return (
@@ -154,7 +161,7 @@ function CurrentGuess({ cards, correctIndices, onGuessSubmit }: { cards: Card[],
           </div>
         </SortableContext>
       </DndContext>
-      <div className="flex flex-row gap-4 justify-between">
+      <div className="flex flex-row gap-4 max-w-[1792px] justify-between">
         <span>◀ Most Popular</span>
         <button
           onClick={() => onGuessSubmit(cardsInCurrentGuess)}
