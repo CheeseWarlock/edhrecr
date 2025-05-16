@@ -25,6 +25,60 @@ interface Card {
   edhrec_rank: number;
 }
 
+/**
+ * A row of cards representing a previous guess
+ */
+function PreviousGuess({ guess, correctOrder }: { guess: Card[], correctOrder: Card[] }) {
+  const getPositionFeedback = (card: Card, index: number) => {
+    const correctIndex = correctOrder.findIndex(c => c.id === card.id);
+    if (index === correctIndex) return 'correct';
+    if (index < correctIndex) return 'too-low';
+    return 'too-high';
+  };
+  return (<div className="p-6 max-w-[1792px] bg-[#333] mt-6 mb-6 rounded-xl">
+    <div className="flex">
+      {guess.map((card, cardIndex) => {
+        const feedback = getPositionFeedback(card, cardIndex);
+        return (
+          <div key={card.id} className="relative overflow-hidden rounded-xl flex items-center justify-center">
+            <Image 
+              src={card.image_url} 
+              alt={card.name}
+              width={256}
+              height={357}
+              className="object-contain"
+            />
+            <div className={`absolute bottom-0 p-1 text-center text-white w-[40px] h-[40px] rounded-full ${
+              feedback === 'correct' ? 'bg-green-500' :
+              'bg-red-500'
+            }`}>
+              {feedback === 'correct' ? '✓' : 'x'}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>)
+}
+
+/**
+ * The bottom bar with directional indicators and a submit button
+ */
+function BottomBar({ onSubmitGuess }: { onSubmitGuess: () => void }) {
+  return (<div className="flex flex-row gap-4 justify-between">
+    <span>◀ Most Popular</span>
+    <button
+      onClick={onSubmitGuess}
+      className="px-8 py-4 bg-[#2694AF] text-white rounded-xl hover:bg-[#1e7a8f] transition-colors text-lg font-semibold"
+    >
+      Submit Guess
+    </button>
+    <span>Least Popular ▶</span>
+  </div>
+  )
+}
+
+
 export function SortableList(options: { cards: Card[] }) {
   /**
    * The items in the current guess
@@ -105,14 +159,6 @@ export function SortableList(options: { cards: Card[] }) {
     setGuessedOrders([...guessedOrders, newOrder]);
   };
 
-  const getPositionFeedback = (card: Card, index: number) => {
-    const correctOrder = ([...options.cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
-    const correctIndex = correctOrder.findIndex(c => c.id === card.id);
-    if (index === correctIndex) return 'correct';
-    if (index < correctIndex) return 'too-low';
-    return 'too-high';
-  };
-
   const rightMargins = correctIndices.map((position, index) => {
     if (position) return null;
     let marginCount = 0;
@@ -131,36 +177,13 @@ export function SortableList(options: { cards: Card[] }) {
     ticker++;
   }
 
+  const correctOrder = ([...options.cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
+
   return (
     <div className="w-full mx-auto max-w-[1792px]">
       {guessedOrders.map((guess, guessIdx) => 
-        <div className="p-6 max-w-[1792px] bg-[#333] mt-6 mb-6 rounded-xl" key={guessIdx}>
-          <div className="flex">
-            {guess.map((card, cardIndex) => {
-              const feedback = getPositionFeedback(card, cardIndex);
-              return (
-                <div key={card.id} className="relative overflow-hidden rounded-xl flex items-center justify-center">
-                  <Image 
-                    src={card.image_url} 
-                    alt={card.name}
-                    width={256}
-                    height={357}
-                    className="object-contain"
-                  />
-                  <div className={`absolute bottom-0 p-1 text-center text-white w-[40px] h-[40px] rounded-full ${
-                    feedback === 'correct' ? 'bg-green-500' :
-                    'bg-red-500'
-                  }`}>
-                    {feedback === 'correct' ? '✓' : 'x'}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <PreviousGuess guess={guess} key={guessIdx} correctOrder={correctOrder} />
       )}
-      
-
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -189,16 +212,7 @@ export function SortableList(options: { cards: Card[] }) {
           </div>
         </SortableContext>
       </DndContext>
-      <div className="flex flex-row gap-4 justify-between">
-        <span>◀ Most Popular</span>
-        <button
-          onClick={handleLockInGuess}
-          className="px-8 py-4 bg-[#2694AF] text-white rounded-xl hover:bg-[#1e7a8f] transition-colors text-lg font-semibold"
-        >
-          Submit Guess
-        </button>
-        <span>Least Popular ▶</span>
-      </div>
+      <BottomBar onSubmitGuess={handleLockInGuess} />
     </div>
   );
 } 
