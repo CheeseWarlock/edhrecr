@@ -11,7 +11,7 @@ interface SortableItemProps {
   rightSkipCount: number;
 }
 
-export function SortableItem({ id, children, disabled, index, leftSkipCount, rightSkipCount }: SortableItemProps) {
+export function SortableItem({ id, children, disabled, leftSkipCount, rightSkipCount }: SortableItemProps) {
   const {
     attributes,
     listeners,
