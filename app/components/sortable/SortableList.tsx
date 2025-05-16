@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -61,29 +61,106 @@ function PreviousGuess({ guess, correctOrder }: { guess: Card[], correctOrder: C
   </div>)
 }
 
-/**
- * The bottom bar with directional indicators and a submit button
- */
-function BottomBar({ onSubmitGuess }: { onSubmitGuess: () => void }) {
-  return (<div className="flex flex-row gap-4 justify-between">
-    <span>◀ Most Popular</span>
-    <button
-      onClick={onSubmitGuess}
-      className="px-8 py-4 bg-[#2694AF] text-white rounded-xl hover:bg-[#1e7a8f] transition-colors text-lg font-semibold"
-    >
-      Submit Guess
-    </button>
-    <span>Least Popular ▶</span>
-  </div>
+function CurrentGuess({ cards, correctIndices, onGuessSubmit }: { cards: Card[], correctIndices: boolean[], onGuessSubmit: (cards: Card[]) => void }) {
+  /**
+  * The items in the current guess
+  */
+  const [cardsInCurrentGuess, setCardsInCurrentGuess] = useState<Card[]>(cards);
+
+  // Update local state when cards prop changes
+  useEffect(() => {
+    setCardsInCurrentGuess(cards);
+  }, [cards]);
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setCardsInCurrentGuess((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  }
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 0,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const rightMargins = correctIndices.map((position, index) => {
+    if (position) return null;
+    let marginCount = 0;
+    let iindex = index + 1;
+    while (correctIndices[iindex]) {
+      marginCount++;
+      iindex++;
+    }
+    return marginCount;
+  }).filter(item => item != null);
+
+  let initialLeftMargin = 0;
+  let ticker = 0;
+  while (ticker <= correctIndices.length && correctIndices[ticker]) {
+    initialLeftMargin += 1;
+    ticker++;
+  }
+
+  return (
+    <>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+        modifiers={[]}
+        autoScroll={false}
+      >
+        <SortableContext
+          items={cardsInCurrentGuess.map((item) => item.id)}
+          strategy={horizontalListSortingStrategy}
+        >
+          <div className="flex flex-col w-full p-6 bg-[#444] mt-6 mb-6 rounded-xl" style={{ touchAction: 'none' }}>
+            <div className="flex flex-row" style={{ touchAction: 'none' }}>
+            {cardsInCurrentGuess.map((item, index) => {
+              return (
+                <SortableItem key={item.id} id={item.id} index={index} leftSkipCount={index == 0 ? initialLeftMargin : 0} rightSkipCount={rightMargins[index]}>
+                  <Image 
+                    src={item.image_url} 
+                    alt={item.name}
+                    width={256}
+                    height={357}
+                    className="object-contain mw-[256px] mh-[357px]"
+                    style={{ touchAction: 'none' }}
+                  />
+                </SortableItem>
+              );
+            })}
+            </div>
+          </div>
+        </SortableContext>
+      </DndContext>
+      <div className="flex flex-row gap-4 justify-between">
+        <span>◀ Most Popular</span>
+        <button
+          onClick={() => onGuessSubmit(cardsInCurrentGuess)}
+          className="px-8 py-4 bg-[#2694AF] text-white rounded-xl hover:bg-[#1e7a8f] transition-colors text-lg font-semibold"
+        >
+          Submit Guess
+        </button>
+        <span>Least Popular ▶</span>
+      </div>
+    </>
   )
 }
 
-
 export function SortableList(options: { cards: Card[] }) {
-  /**
-   * The items in the current guess
-   */
-  const [cardsInCurrentGuess, setCardsInCurrentGuess] = useState<Card[]>(options.cards);
   /**
    * The previously guessed orders
    */
@@ -97,27 +174,7 @@ export function SortableList(options: { cards: Card[] }) {
    */
   const [correctIndices, setCorrectIndices] = useState<boolean[]>(new Array(options.cards.length).fill(false));
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      setCardsInCurrentGuess((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
-  }
-
-  const handleLockInGuess = () => {
+  const handleLockInGuess = (cardsInCurrentGuess: Card[]) => {
     const correctOrderForRemainingCards = ([...remainingCards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
     const correctOrder = ([...options.cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
     const newCorrectIndices = [...correctIndices];
@@ -132,7 +189,6 @@ export function SortableList(options: { cards: Card[] }) {
       return correctOrderForRemainingCards.indexOf(item) != index;
     });
 
-
     correctCards.forEach(card => {
       const index = correctOrder.indexOf(card);
       newCorrectIndices[index] = true;
@@ -140,7 +196,6 @@ export function SortableList(options: { cards: Card[] }) {
 
     addGuessedOrder([...cardsInCurrentGuess]);
     setRemainingCards(wrongCards);
-    setCardsInCurrentGuess(wrongCards);
     setCorrectIndices(newCorrectIndices);
   };
 
@@ -159,24 +214,6 @@ export function SortableList(options: { cards: Card[] }) {
     setGuessedOrders([...guessedOrders, newOrder]);
   };
 
-  const rightMargins = correctIndices.map((position, index) => {
-    if (position) return null;
-    let marginCount = 0;
-    let iindex = index + 1;
-    while (correctIndices[iindex]) {
-      marginCount++;
-      iindex++;
-    }
-    return marginCount;
-  }).filter(item => item != null);
-
-  let initialLeftMargin = 0;
-  let ticker = 0;
-  while (ticker <= options.cards.length && correctIndices[ticker]) {
-    initialLeftMargin += 1;
-    ticker++;
-  }
-
   const correctOrder = ([...options.cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
 
   return (
@@ -184,35 +221,11 @@ export function SortableList(options: { cards: Card[] }) {
       {guessedOrders.map((guess, guessIdx) => 
         <PreviousGuess guess={guess} key={guessIdx} correctOrder={correctOrder} />
       )}
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext
-          items={cardsInCurrentGuess.map((item) => item.id)}
-          strategy={horizontalListSortingStrategy}
-        >
-          <div className="flex flex-col w-full p-6 bg-[#444] mt-6 mb-6 rounded-xl" style={{ touchAction: 'none' }}>
-            <div className="flex flex-row" style={{ touchAction: 'none' }}>
-            {cardsInCurrentGuess.map((item, index) => {
-              return (
-                <SortableItem key={item.id} id={item.id} index={index} leftSkipCount={index == 0 ? initialLeftMargin : 0} rightSkipCount={rightMargins[index]}>
-                  <Image 
-                    src={item.image_url} 
-                    alt={item.name}
-                    width={256}
-                    height={357}
-                    className="object-contain mw-[256px] mh-[357px]"
-                  />
-                </SortableItem>
-              );
-            })}
-            </div>
-          </div>
-        </SortableContext>
-      </DndContext>
-      <BottomBar onSubmitGuess={handleLockInGuess} />
+      <CurrentGuess 
+        cards={remainingCards} 
+        correctIndices={correctIndices} 
+        onGuessSubmit={handleLockInGuess}
+      />
     </div>
   );
 } 
