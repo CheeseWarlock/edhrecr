@@ -61,12 +61,3 @@ export async function getCards() {
   }));
   return mapped;
 }
-
-export async function GET() {
-  try {
-    const result = await getDailyCards();
-    return Response.json({ cards: result });
-  } catch (error) {
-    return Response.json({ error }, { status: 500 });
-  }
-}
