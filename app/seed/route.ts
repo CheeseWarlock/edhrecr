@@ -150,6 +150,17 @@ async function populateFromBulkData(cards: ScryfallCard[], count: number, offset
   return await sql`INSERT INTO cards ${sql(cardBlock, 'name', 'image_url', 'edhrec_rank')}`;
 }
 
+export async function getCards() {
+  const result = await getDailyCards();
+  const mapped = result.map((card) => ({
+    id: card.id,
+    name: card.name,
+    image_url: card.image_url,
+    edhrec_rank: card.edhrec_rank
+  }));
+  return mapped;
+}
+
 export async function GET() {
   try {
     const result = await getDailyCards();

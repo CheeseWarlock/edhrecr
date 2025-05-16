@@ -22,9 +22,7 @@ import Image from 'next/image';
 interface Card {
   id: string;
   name: string;
-  image_uris: {
-    normal: string;
-  };
+  image_url: string;
   edhrec_rank: number;
 }
 
@@ -70,7 +68,6 @@ export function SortableList(options: { cards: Card[] }) {
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
-      Cards: {items.length}
       <div className="mb-4 flex items-center gap-4">
         <button
           onClick={handleLockInGuess}
@@ -87,10 +84,10 @@ export function SortableList(options: { cards: Card[] }) {
             return (
               <div key={card.id} className="relative overflow-hidden rounded-lg flex items-center justify-center">
                 <Image 
-                  src={card.image_uris.normal} 
+                  src={card.image_url} 
                   alt={card.name}
-                  width={146}
-                  height={204}
+                  width={219}
+                  height={306}
                   className="object-contain"
                 />
                 <div className={`absolute bottom-0 p-1 text-center text-white w-[40px] h-[40px] rounded-full ${
@@ -120,10 +117,10 @@ export function SortableList(options: { cards: Card[] }) {
             {items.map((item) => (
               <SortableItem key={item.id} id={item.id}>
                 <Image 
-                  src={item.image_uris.normal} 
+                  src={item.image_url} 
                   alt={item.name}
-                  width={146}
-                  height={204}
+                  width={219}
+                  height={306}
                   className="object-contain"
                 />
               </SortableItem>

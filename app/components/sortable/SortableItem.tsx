@@ -29,7 +29,7 @@ export function SortableItem({ id, children }: SortableItemProps) {
       style={style}
       {...attributes}
       {...listeners}
-      className={`p-0 bg-white dark:bg-gray-800 rounded-lg shadow cursor-move overflow-hidden hover:shadow-md transition-scale transition-shadow ${
+      className={`p-0 bg-white dark:bg-gray-800 rounded-lg shadow cursor-move overflow-hidden hover:shadow-md transition-scale transition-shadow w-[384px] ${
         isDragging ? '' : ''
       }`}
     >
