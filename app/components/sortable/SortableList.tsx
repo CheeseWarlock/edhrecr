@@ -170,8 +170,8 @@ export function SortableList(options: { cards: Card[] }) {
           items={cardsInCurrentGuess.map((item) => item.id)}
           strategy={horizontalListSortingStrategy}
         >
-          <div className="flex flex-col w-full p-6 bg-[#444] mt-6 mb-6 rounded-xl">
-            <div className="flex flex-row">
+          <div className="flex flex-col w-full p-6 bg-[#444] mt-6 mb-6 rounded-xl" style={{ touchAction: 'none' }}>
+            <div className="flex flex-row" style={{ touchAction: 'none' }}>
             {cardsInCurrentGuess.map((item, index) => {
               return (
                 <SortableItem key={item.id} id={item.id} index={index} leftSkipCount={index == 0 ? initialLeftMargin : 0} rightSkipCount={rightMargins[index]}>
