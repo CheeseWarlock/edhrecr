@@ -120,7 +120,7 @@ export async function clearCardTables() {
   return result;
 }
 
-export async function populateSomeRealCards(count: number, offset: number) {
+export async function populateSomeRealCards() {
   return await sql`INSERT INTO cards ${sql(MINI_BULK_DATA, 'name', 'image_url', 'edhrec_rank')}`;
 }
 
