@@ -270,12 +270,20 @@ export function SortableList(options: { cards: Card[] }) {
         </div>
       </div>
       <div className="flex-shrink-0">
-        <CurrentGuess 
-          remainingCards={remainingCards} 
-          correctIndices={correctIndices} 
-          onGuessSubmit={handleLockInGuess}
-          correctCards={correctCards}
-        />
+        {remainingCards.length == 0 ? (
+          <div className="flex flex-col w-full p-6 bg-[#444] max-w-[1792px] mt-0 mb-6 rounded-xl justify-center items-center">
+            <span className="text-white text-2xl font-bold">You won in {guessedOrders.length} guesses!</span>
+            <span className="text-white text-lg">Come back tomorrow for another challenge.</span>
+
+          </div>
+        ) : (
+          <CurrentGuess 
+            remainingCards={remainingCards} 
+            correctIndices={correctIndices} 
+            onGuessSubmit={handleLockInGuess}
+            correctCards={correctCards}
+          />
+        )}
       </div>
     </div>
   );
