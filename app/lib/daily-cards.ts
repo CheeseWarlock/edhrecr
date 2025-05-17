@@ -1,7 +1,8 @@
 import postgres from 'postgres';
-import TEST_DATA from '../lib/test.json';
-import BULK_DATA from '../lib/oracle-cards-20250514210930.json';
-import MINI_BULK_DATA from '../lib/a-few-cards.json';
+import MINI_BULK_DATA from './dummy-data.json';
+
+// Could also load the entire set of bulk data- currently not in repo
+// import BULK_DATA from '../lib/oracle-cards-20250514210930.json';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -13,7 +14,7 @@ interface ScryfallCard {
   edhrec_rank?: number;
 }
 
-async function createCardsTable() {
+export async function createCardsTable() {
   await sql`
     CREATE TABLE IF NOT EXISTS cards (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -24,7 +25,7 @@ async function createCardsTable() {
     `;
 }
 
-async function createCollectionTable() {
+export async function createCollectionTable() {
   await sql`
     CREATE TABLE IF NOT EXISTS dailycollections (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -34,7 +35,7 @@ async function createCollectionTable() {
   `;
 }
 
-async function createCollectionCardTable() {
+export async function createCollectionCardTable() {
   await sql`
     CREATE TABLE IF NOT EXISTS collectioncards (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -46,7 +47,7 @@ async function createCollectionCardTable() {
   `;
 }
 
-async function getCardsForDate(date: string) {
+export async function getCardsForDate(date: string) {
   return await sql`
     SELECT c.*
     FROM cards c
@@ -92,7 +93,7 @@ async function getDailyCards() {
   return randomCards;
 }
 
-async function populateDummyCollection() {
+export async function populateDummyCollection() {
   const today = (new Date()).toISOString().slice(0, 10);
   return await sql`
     INSERT INTO dailycollections (date, description)
@@ -100,7 +101,7 @@ async function populateDummyCollection() {
   `;
 }
 
-async function populateDummyCollectionCards() {
+export async function populateDummyCollectionCards() {
   const cards = await sql`SELECT c.id FROM cards c LIMIT 5`;
   const collection = await sql`SELECT d.id FROM dailycollections d LIMIT 1`;
 
@@ -117,7 +118,7 @@ async function populateDummyCollectionCards() {
   return insertedCollectionCards;
 }
 
-async function clearCardTables() {
+export async function clearCardTables() {
   const result = await sql.begin((sql) => [
     sql`TRUNCATE TABLE cards CASCADE`,
     sql`TRUNCATE TABLE collectioncards CASCADE`,
@@ -126,7 +127,7 @@ async function clearCardTables() {
   return result;
 }
 
-async function populateSomeRealCards(count: number, offset: number) {
+export async function populateSomeRealCards(count: number, offset: number) {
   const cardBlock = MINI_BULK_DATA.slice(offset, offset + count).filter(card => card.image_uris?.normal && card.edhrec_rank).map((card) => ({
     name: card.name,
     image_url: card.image_uris.normal,
@@ -136,7 +137,7 @@ async function populateSomeRealCards(count: number, offset: number) {
   return await sql`INSERT INTO cards ${sql(cardBlock, 'name', 'image_url', 'edhrec_rank')}`;
 }
 
-async function populateFromBulkData(cards: ScryfallCard[], count: number, offset: number) {
+export async function populateFromBulkData(cards: ScryfallCard[], count: number, offset: number) {
   const cardBlock = cards.slice(offset, offset + count).map((card) => ({
     name: card.name,
     image_url: card.image_uris!.normal,
@@ -159,13 +160,4 @@ export async function getCards() {
     edhrec_rank: card.edhrec_rank
   }));
   return mapped;
-}
-
-export async function GET() {
-  try {
-    const result = await getDailyCards();
-    return Response.json({ cards: result });
-  } catch (error) {
-    return Response.json({ error }, { status: 500 });
-  }
 }
