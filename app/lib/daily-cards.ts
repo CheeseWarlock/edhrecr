@@ -1,18 +1,11 @@
 import postgres from 'postgres';
 import MINI_BULK_DATA from './dummy-data.json';
+import { ScryfallCard } from '../types';
 
 // Could also load the entire set of bulk data- currently not in repo
 // import BULK_DATA from '../lib/oracle-cards-20250514210930.json';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
-
-interface ScryfallCard {
-  name: string;
-  image_uris?: {
-    normal?: string;
-  };
-  edhrec_rank?: number;
-}
 
 export async function createCardsTable() {
   await sql`
@@ -128,13 +121,7 @@ export async function clearCardTables() {
 }
 
 export async function populateSomeRealCards(count: number, offset: number) {
-  const cardBlock = MINI_BULK_DATA.slice(offset, offset + count).filter(card => card.image_uris?.normal && card.edhrec_rank).map((card) => ({
-    name: card.name,
-    image_url: card.image_uris.normal,
-    edhrec_rank: card.edhrec_rank
-  }));
-
-  return await sql`INSERT INTO cards ${sql(cardBlock, 'name', 'image_url', 'edhrec_rank')}`;
+  return await sql`INSERT INTO cards ${sql(MINI_BULK_DATA, 'name', 'image_url', 'edhrec_rank')}`;
 }
 
 export async function populateFromBulkData(cards: ScryfallCard[], count: number, offset: number) {
