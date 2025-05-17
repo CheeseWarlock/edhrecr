@@ -154,7 +154,7 @@ function CurrentGuess({ remainingCards, correctIndices, onGuessSubmit, correctCa
             className={`absolute overflow-hidden rounded-xl`}
             style={{
               marginLeft: `calc(100% * ${data.index / correctIndices.length})`,
-              width: `calc(100% * (1 / 7))`,
+              width: `calc(100% * (1 / ${correctIndices.length}))`,
               height: 'auto',
               mask: `linear-gradient(
 rgba(0, 0, 0, 0.5) 0px, 
