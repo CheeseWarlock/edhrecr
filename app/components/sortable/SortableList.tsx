@@ -76,16 +76,16 @@ function PreviousGuess({ guess, correctOrder }: { guess: Card[], correctOrder: C
   </div>)
 }
 
-function CurrentGuess({ cards, correctIndices, onGuessSubmit }: { cards: Card[], correctIndices: boolean[], onGuessSubmit: (cards: Card[]) => void }) {
+function CurrentGuess({ remainingCards, correctIndices, onGuessSubmit, correctCards }: { remainingCards: Card[], correctIndices: boolean[], onGuessSubmit: (cards: Card[]) => void, correctCards: { card: Card, index: number }[] }) {
   /**
   * The items in the current guess
   */
-  const [cardsInCurrentGuess, setCardsInCurrentGuess] = useState<Card[]>(cards);
+  const [cardsInCurrentGuess, setCardsInCurrentGuess] = useState<Card[]>(remainingCards);
 
   // Update local state when cards prop changes
   useEffect(() => {
-    setCardsInCurrentGuess(cards);
-  }, [cards]);
+    setCardsInCurrentGuess(remainingCards);
+  }, [remainingCards]);
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -142,6 +142,30 @@ function CurrentGuess({ cards, correctIndices, onGuessSubmit }: { cards: Card[],
           strategy={horizontalListSortingStrategy}
         >
           <div className="flex flex-col w-full p-6 bg-[#444] max-w-[1792px] mt-0 mb-6 rounded-xl" style={{ touchAction: 'none' }}>
+          <div className="flex flex-row" style={{ touchAction: 'none', filter: 'grayscale(1) opacity(0.3)' }}>
+        {correctCards.map((data) => {
+          return (
+          <Image 
+            key={data.card.id}
+            src={data.card.image_url} 
+            alt={data.card.name}
+            width={256}
+            height={357}
+            className={`absolute overflow-hidden rounded-xl`}
+            style={{
+              marginLeft: `calc(100% * ${data.index / correctIndices.length})`,
+              width: `calc(100% * (1 / 7))`,
+              height: 'auto',
+              mask: `linear-gradient(
+rgba(0, 0, 0, 0.5) 0px, 
+rgb(0, 0, 0) 22%, 
+rgb(0, 0, 0) 78%, 
+rgba(0, 0, 0, 0.5) 100%) 100% 0% / 100% 102%`
+            }}
+          />
+          )
+        })}
+      </div>
             <div className="flex flex-row" style={{ touchAction: 'none' }}>
             {cardsInCurrentGuess.map((item, index) => {
               return (
@@ -231,6 +255,11 @@ export function SortableList(options: { cards: Card[] }) {
 
   const correctOrder = ([...options.cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
 
+  const correctCards = correctIndices.map((position, index) => {
+    if (!position) return null;
+    return { card: options.cards[index], index: index };
+  }).filter(item => item != null);
+
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex-1 overflow-y-auto flex flex-col justify-end">
@@ -242,9 +271,10 @@ export function SortableList(options: { cards: Card[] }) {
       </div>
       <div className="flex-shrink-0">
         <CurrentGuess 
-          cards={remainingCards} 
+          remainingCards={remainingCards} 
           correctIndices={correctIndices} 
           onGuessSubmit={handleLockInGuess}
+          correctCards={correctCards}
         />
       </div>
     </div>
