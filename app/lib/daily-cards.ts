@@ -70,7 +70,7 @@ async function getDailyCards() {
     SELECT c.*
     FROM cards c
     ORDER BY RANDOM()
-    LIMIT 8
+    LIMIT 7
   `;
 
   await sql`
