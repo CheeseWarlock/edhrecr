@@ -145,7 +145,7 @@ function CurrentGuess({ cards, correctIndices, onGuessSubmit }: { cards: Card[],
             <div className="flex flex-row" style={{ touchAction: 'none' }}>
             {cardsInCurrentGuess.map((item, index) => {
               return (
-                <SortableItem key={item.id} id={item.id} index={index} leftSkipCount={index == 0 ? initialLeftMargin : 0} rightSkipCount={rightMargins[index]}>
+                <SortableItem key={item.id} id={item.id} itemsInGroup={correctIndices.length} leftSkipCount={index == 0 ? initialLeftMargin : 0} rightSkipCount={rightMargins[index]}>
                   <Image 
                     src={item.image_url} 
                     alt={item.name}

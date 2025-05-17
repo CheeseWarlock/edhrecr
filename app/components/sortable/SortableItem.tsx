@@ -5,13 +5,12 @@ import { CSS } from '@dnd-kit/utilities';
 interface SortableItemProps {
   id: string;
   children: React.ReactNode;
-  index: number;
-  disabled?: boolean;
   leftSkipCount: number;
   rightSkipCount: number;
+  itemsInGroup: number;
 }
 
-export function SortableItem({ id, children, disabled, index, leftSkipCount, rightSkipCount }: SortableItemProps) {
+export function SortableItem({ id, children, leftSkipCount, rightSkipCount, itemsInGroup }: SortableItemProps) {
   const {
     attributes,
     listeners,
@@ -19,14 +18,14 @@ export function SortableItem({ id, children, disabled, index, leftSkipCount, rig
     transform,
     transition,
     isDragging,
-  } = useSortable({ id, disabled });
+  } = useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     zIndex: isDragging ? 1000 : 0,
-    marginRight: `calc(100% * (${rightSkipCount / 7})`,
-    marginLeft: `calc(100% * (${leftSkipCount / 7})`,
+    marginRight: `calc(100% * (${rightSkipCount / itemsInGroup})`,
+    marginLeft: `calc(100% * (${leftSkipCount / itemsInGroup})`,
     overflow: 'hidden',
     borderRadius: '16px',
     touchAction: 'none',
