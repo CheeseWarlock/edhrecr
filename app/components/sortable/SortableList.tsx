@@ -25,15 +25,15 @@ interface Card {
   edhrec_rank: number;
 }
 
-function FeedbackMark({ correct }: { correct: boolean }) {
-  const color = correct ? '#7C9B13' : '#E05617';
-  const shadowColor = correct ? '#414E00' : '#894218';
+type Feedback = 'correct' | 'off-by-one' | 'incorrect';
+
+function FeedbackMark({ feedback }: { feedback: Feedback }) {
+  const color = feedback === 'correct' ? '#7C9B13' : feedback === 'off-by-one' ? '#CEA648' : '#635634';
+  const shadowColor = feedback === 'correct' ? '#414E00' : feedback === 'off-by-one' ? '#7C6A2E' : '#453D24';
   return (
     <div style={{ background: `linear-gradient(45deg, transparent 42%, ${color} 65%), radial-gradient(${color} 0%, ${color} 45%, ${shadowColor} 55%, ${color} 66%)` }}
-    className={`absolute bottom-0 p-1 border-2 border-black text-center text-white w-[48px] h-[48px] rounded-full flex items-center justify-center text-xl ${
-      correct ? 'bg-green-500' : 'bg-red-500'
-    }`}>
-      {correct ? '✓' : '✗'}
+    className={`absolute bottom-0 p-1 border-2 border-black text-center text-white w-[48px] h-[48px] rounded-full flex items-center justify-center text-2xl`}>
+      {feedback === 'correct' ? '✓' : feedback === 'off-by-one' ? '⇔' : '✗'}
     </div>
   );
 }
@@ -42,11 +42,11 @@ function FeedbackMark({ correct }: { correct: boolean }) {
  * A row of cards representing a previous guess
  */
 function PreviousGuess({ guess, correctOrder }: { guess: Card[], correctOrder: Card[] }) {
-  const getPositionFeedback = (card: Card, index: number) => {
+  const getPositionFeedback = (card: Card, index: number): Feedback => {
     const correctIndex = correctOrder.findIndex(c => c.id === card.id);
     if (index === correctIndex) return 'correct';
-    if (index < correctIndex) return 'too-low';
-    return 'too-high';
+    if (index === correctIndex + 1 || index === correctIndex - 1) return 'off-by-one';
+    return 'incorrect';
   };
   return (<div className="p-6 pt-0 pb-0 max-w-[1792px] mt-6 mb-6 rounded-xl">
     <div className="flex">
@@ -68,7 +68,7 @@ function PreviousGuess({ guess, correctOrder }: { guess: Card[], correctOrder: C
                 ) 100% 0% / 100% 102%`,
               }}
             />
-            <FeedbackMark correct={feedback === 'correct'} />
+            <FeedbackMark feedback={feedback} />
           </div>
         );
       })}
