@@ -18,6 +18,7 @@ import {
 } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
 import Image from 'next/image';
+import { restrictToParentElement } from '@dnd-kit/modifiers';
 interface Card {
   id: string;
   name: string;
@@ -134,7 +135,7 @@ function CurrentGuess({ remainingCards, correctIndices, onGuessSubmit, correctCa
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
-        modifiers={[]}
+        modifiers={[restrictToParentElement]}
         autoScroll={false}
       >
         <SortableContext
