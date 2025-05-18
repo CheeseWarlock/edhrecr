@@ -42,7 +42,7 @@ function FeedbackMark({ feedback }: { feedback: Feedback }) {
   return (
     <>
     <div style={{ background: `linear-gradient(45deg, transparent 42%, ${color} 65%), radial-gradient(${color} 0%, ${color} 45%, ${shadowColor} 55%, ${color} 66%)` }}
-    className={`hidden md:flex absolute bottom-0 border-2 border-black text-center text-white w-[48px] h-[48px] rounded-full items-center justify-center text-2xl`}>
+    className={`flex absolute bottom-0 border-2 border-black text-center text-white md:w-[48px] md:h-[48px] w-[28px] h-[28px] rounded-full items-center justify-center md:text-2xl text-xl`}>
       {feedback === 'correct' ? '✓' : feedback === 'off-by-one' ? '⇔' : '✗'}
     </div>
     </>
@@ -56,7 +56,7 @@ function PreviousGuess({ guess, correctOrder }: { guess: Card[], correctOrder: C
   const getPositionFeedback = (card: Card, index: number): Feedback => {
     const correctIndex = correctOrder.findIndex(c => c.id === card.id);
     if (index === correctIndex) return 'correct';
-    if (index === correctIndex + 1 || index === correctIndex - 1) return 'off-by-one';
+    if ((index === correctIndex + 1 || index === correctIndex - 1) && process.env.NEXT_PUBLIC_GIVE_OFF_BY_ONE == 'true') return 'off-by-one';
     return 'incorrect';
   };
   return (<div className="md:px-6 max-w-[1792px] mt-6 mb-6 rounded-xl">
@@ -64,7 +64,7 @@ function PreviousGuess({ guess, correctOrder }: { guess: Card[], correctOrder: C
       {guess.map((card, cardIndex) => {
         const feedback = getPositionFeedback(card, cardIndex);
         return (
-          <div key={card.id} className={`relative overflow-hidden rounded-t-xl flex items-start justify-center h-[8vw] ${feedback == 'correct' ? 'bg-[#7C9B13]' : feedback == 'off-by-one' ? 'bg-[#CEA648]' : 'bg-[#635634]'} md:bg-transparent`}>
+          <div key={card.id} className={`relative overflow-hidden rounded-t-xl flex items-start justify-center h-[8vw]`}>
             <Image 
               src={card.image_url} 
               alt={card.name}
