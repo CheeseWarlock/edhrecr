@@ -28,14 +28,24 @@ interface Card {
 
 type Feedback = 'correct' | 'off-by-one' | 'incorrect';
 
+function getFeedbackColor(feedback: Feedback) {
+  return feedback === 'correct' ? '#7C9B13' : feedback === 'off-by-one' ? '#CEA648' : '#635634';
+}
+
+function getFeedbackShadowColor(feedback: Feedback) {
+  return feedback === 'correct' ? '#414E00' : feedback === 'off-by-one' ? '#7C6A2E' : '#453D24';
+}
+
 function FeedbackMark({ feedback }: { feedback: Feedback }) {
-  const color = feedback === 'correct' ? '#7C9B13' : feedback === 'off-by-one' ? '#CEA648' : '#635634';
-  const shadowColor = feedback === 'correct' ? '#414E00' : feedback === 'off-by-one' ? '#7C6A2E' : '#453D24';
+  const color = getFeedbackColor(feedback);
+  const shadowColor = getFeedbackShadowColor(feedback);
   return (
+    <>
     <div style={{ background: `linear-gradient(45deg, transparent 42%, ${color} 65%), radial-gradient(${color} 0%, ${color} 45%, ${shadowColor} 55%, ${color} 66%)` }}
-    className={`absolute bottom-0 p-1 border-2 border-black text-center text-white w-[48px] h-[48px] rounded-full flex items-center justify-center text-2xl`}>
+    className={`hidden md:flex absolute bottom-0 border-2 border-black text-center text-white w-[48px] h-[48px] rounded-full items-center justify-center text-2xl`}>
       {feedback === 'correct' ? '✓' : feedback === 'off-by-one' ? '⇔' : '✗'}
     </div>
+    </>
   );
 }
 
@@ -49,12 +59,12 @@ function PreviousGuess({ guess, correctOrder }: { guess: Card[], correctOrder: C
     if (index === correctIndex + 1 || index === correctIndex - 1) return 'off-by-one';
     return 'incorrect';
   };
-  return (<div className="p-6 pt-0 pb-0 max-w-[1792px] mt-6 mb-6 rounded-xl">
+  return (<div className="md:px-6 max-w-[1792px] mt-6 mb-6 rounded-xl">
     <div className="flex">
       {guess.map((card, cardIndex) => {
         const feedback = getPositionFeedback(card, cardIndex);
         return (
-          <div key={card.id} className="relative overflow-hidden rounded-t-xl flex items-start justify-center h-[100px]">
+          <div key={card.id} className={`relative overflow-hidden rounded-t-xl flex items-start justify-center h-[8vw] ${feedback == 'correct' ? 'bg-[#7C9B13]' : feedback == 'off-by-one' ? 'bg-[#CEA648]' : 'bg-[#635634]'} md:bg-transparent`}>
             <Image 
               src={card.image_url} 
               alt={card.name}
@@ -142,7 +152,7 @@ function CurrentGuess({ remainingCards, correctIndices, onGuessSubmit, correctCa
           items={cardsInCurrentGuess.map((item) => item.id)}
           strategy={horizontalListSortingStrategy}
         >
-          <div className="flex flex-col w-full p-6 bg-[#444] max-w-[1792px] mt-0 mb-6 rounded-xl" style={{ touchAction: 'none' }}>
+          <div className="flex flex-col w-full py-6 md:px-6 bg-[#444] max-w-[1792px] mt-0 md:rounded-xl" style={{ touchAction: 'none' }}>
           <div className="flex flex-row" style={{ touchAction: 'none', filter: 'grayscale(1) opacity(0.3)' }}>
         {correctCards.map((data) => {
           return (
@@ -186,15 +196,23 @@ rgba(0, 0, 0, 0.5) 100%) 100% 0% / 100% 102%`
           </div>
         </SortableContext>
       </DndContext>
-      <div className="flex flex-row gap-4 max-w-[1792px] justify-between">
-        <span>◀ Most Popular</span>
+      <div className="flex flex-row gap-4 max-w-[1792px] justify-between py-2 px-2 md:px-0">
+        <div>
+          <div className="flex flex-row gap-2 items-center">
+            <span>◀</span><span>Most Popular</span>
+          </div>
+        </div>
         <button
           onClick={() => onGuessSubmit(cardsInCurrentGuess)}
           className="px-8 py-4 bg-[#2694AF] text-white rounded-xl hover:bg-[#1e7a8f] transition-colors text-lg font-semibold"
         >
           Submit Guess
         </button>
-        <span>Least Popular ▶</span>
+        <div>
+          <div className="flex flex-row gap-2 items-center text-right">
+            <span>Least Popular</span><span>▶</span>
+          </div>
+        </div>
       </div>
     </>
   )
@@ -272,7 +290,7 @@ export function SortableList(options: { cards: Card[] }) {
       </div>
       <div className="flex-shrink-0">
         {remainingCards.length == 0 ? (
-          <div className="flex flex-col w-full p-6 bg-[#444] max-w-[1792px] mt-0 mb-6 rounded-xl justify-center items-center">
+          <div className="flex flex-col w-full p-6 bg-[#444] max-w-[1792px] mt-0 rounded-xl justify-center items-center">
             <span className="text-white text-2xl font-bold">You won in {guessedOrders.length} guesses!</span>
             <span className="text-white text-lg">Come back tomorrow for another challenge.</span>
 
