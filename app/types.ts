@@ -19,4 +19,9 @@ type Card = {
     edhrec_rank: number;
 }
 
-export type { ScryfallCard, Card };
+type DailyCollection = {
+  cards: Card[];
+  date: string;
+}
+
+export type { ScryfallCard, Card, DailyCollection };

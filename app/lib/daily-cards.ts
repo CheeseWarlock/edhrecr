@@ -1,6 +1,6 @@
 import postgres from 'postgres';
 import MINI_BULK_DATA from './dummy-data.json';
-import { Card, ScryfallCard } from '../types';
+import { Card, DailyCollection, ScryfallCard } from '../types';
 
 // Could also load the entire set of bulk data- currently not in repo
 // import BULK_DATA from '../lib/oracle-cards-20250514210930.json';
@@ -40,7 +40,7 @@ export async function createCollectionCardTable() {
   `;
 }
 
-export async function getCardsForDate(date: string) {
+export async function getPrecomputedCardsForDay(date: string) {
   return await sql`
     SELECT c.*
     FROM cards c
@@ -50,10 +50,8 @@ export async function getCardsForDate(date: string) {
   `;
 }
 
-async function getDailyCards() {
-  const today = (new Date()).toISOString().slice(0, 10);
-
-  const precomputed = await getCardsForDate(today);
+async function getOrGenerateCardsForDay(today: string) {
+  const precomputed = await getPrecomputedCardsForDay(today);
   if (precomputed.length > 0) {
     return precomputed;
   }
@@ -121,7 +119,7 @@ export async function clearCardTables() {
 }
 
 export async function populateSomeRealCards() {
-  return await sql`INSERT INTO cards ${sql(MINI_BULK_DATA, 'name', 'image_url', 'edhrec_rank')}`;
+  return await sql`INSERT INTO cards ${sql(MINI_BULK_DATA.cards, 'name', 'image_url', 'edhrec_rank')}`;
 }
 
 export async function populateFromBulkData(cards: ScryfallCard[], count: number, offset: number) {
@@ -138,13 +136,17 @@ export async function populateFromBulkData(cards: ScryfallCard[], count: number,
   return await sql`INSERT INTO cards ${sql(cardBlock, 'name', 'image_url', 'edhrec_rank')}`;
 }
 
-export async function getCards() {
-  const result = await getDailyCards();
+export async function getCards(): Promise<DailyCollection> {
+  const today = (new Date()).toISOString().slice(0, 10);
+  const result = await getOrGenerateCardsForDay(today);
   const mapped = result.map((card) => ({
     id: card.id,
     name: card.name,
     image_url: card.image_url,
     edhrec_rank: card.edhrec_rank
   }));
-  return mapped;
+  return {
+    cards: mapped,
+    date: today
+  };
 }

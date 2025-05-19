@@ -38,14 +38,14 @@ export function InfoOverlay({ isOpen, onClose }: InfoOverlayProps) {
             Welcome to EDHRanker! This is a daily game where you try to guess the popularity ranking of EDH (Commander) cards.
           </p>
           <p>
-            Each day, you'll be presented with a set of cards. Your goal is to arrange them in order of their popularity in EDH decks, from most popular to least popular.
+            Each day, you&#39;ll be presented with a set of cards. Your goal is to arrange them in order of their popularity in EDH decks, from most popular to least popular.
           </p>
           <p>
             To play:
           </p>
           <ol className="list-decimal list-inside space-y-2">
             <li>Drag and drop the cards to arrange them in your guessed order</li>
-            <li>Click "Submit Guess" when you're ready</li>
+            <li>Click &#34;Submit Guess&#34; when you&#39;re ready</li>
             <li>Cards you placed correctly will be locked in place</li>
             <li>Keep guessing with the remaining cards until you get them all right!</li>
           </ol>

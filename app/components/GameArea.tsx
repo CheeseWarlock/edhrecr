@@ -6,7 +6,6 @@ import { useState } from "react";
 import { Card } from "../types";
 import { GuessResult } from "./GuessResult";
 import { CurrentGuess } from "./CurrentGuess";
-import { GhostCardList } from "./GhostCardList";
 import { CardImage } from "./CardImage";
 
 /**

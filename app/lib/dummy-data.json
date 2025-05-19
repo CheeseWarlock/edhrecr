@@ -1,4 +1,4 @@
-[
+{"cards": [
     {
         "id": "card-0",
         "name": "Nissa, Worldsoul Speaker",
@@ -59,4 +59,6 @@
         "image_url": "https://cards.scryfall.io/normal/front/6/5/657b242c-46cb-44d1-86fd-fb2485144a5b.jpg?1562787344",
         "edhrec_rank": 16438
     }
-]
+],
+"date": "2025-05-19"
+}
