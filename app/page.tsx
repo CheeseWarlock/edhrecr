@@ -2,6 +2,7 @@ import { GameArea } from "./components/GameArea";
 import { getCards } from "./lib/daily-cards";
 import dummyData from "./lib/dummy-data.json"
 import { Card } from "./types";
+import { TopBar } from './components/TopBar';
 
 export default async function Home() {
   let cards: Card[];
@@ -11,10 +12,11 @@ export default async function Home() {
     cards = dummyData.slice(0, Number.parseInt(process.env.DUMMY_DATA_SIZE || "7"));
   }
   return (
-    <div className="grid grid-rows-[40px_1fr] items-center justify-items-center min-h-screen md:p-8 font-[family-name:var(--font-geist-sans)] flex justify-center">
-      <main className="flex flex-col h-full row-start-2">
+    <main className="min-h-screen bg-[#222]">
+      <TopBar />
+      <div className="pt-16 min-h-[calc(100vh-4rem)] md:p-8 flex items-center justify-center">
         <GameArea cards={cards} />
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
