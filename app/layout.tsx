@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EDHRanker",
+  title: `${process.env.NEXT_PUBLIC_TITLE} EDHRanker`,
   description: "",
 };
 

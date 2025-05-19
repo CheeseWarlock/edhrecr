@@ -29,29 +29,13 @@ interface Card {
   edhrec_rank: number;
 }
 
-function CurrentGuess({ remainingCards, correctIndices, onGuessSubmit, correctCards }: { remainingCards: Card[], correctIndices: boolean[], onGuessSubmit: (cards: Card[]) => void, correctCards: { card: Card, index: number }[] }) {
-  /**
-  * The items in the current guess
-  */
-  const [cardsInCurrentGuess, setCardsInCurrentGuess] = useState<Card[]>(remainingCards);
-
-  // Update local state when cards prop changes
-  useEffect(() => {
-    setCardsInCurrentGuess(remainingCards);
-  }, [remainingCards]);
-
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      setCardsInCurrentGuess((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
-  }
-
+function CurrentGuess({ remainingCards, correctIndices, onGuessSubmit, correctCards, onDragEnd }: { 
+  remainingCards: Card[], 
+  correctIndices: boolean[], 
+  onGuessSubmit: (cards: Card[]) => void, 
+  correctCards: { card: Card, index: number }[],
+  onDragEnd: (event: DragEndEvent) => void 
+}) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -86,12 +70,12 @@ function CurrentGuess({ remainingCards, correctIndices, onGuessSubmit, correctCa
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
+        onDragEnd={onDragEnd}
         modifiers={[restrictToParentElement]}
         autoScroll={false}
       >
         <SortableContext
-          items={cardsInCurrentGuess.map((item) => item.id)}
+          items={remainingCards.map((item) => item.id)}
           strategy={horizontalListSortingStrategy}
         >
           <div className="flex flex-col w-full py-6 md:px-6 bg-[#444] max-w-[1792px] mt-0 md:rounded-xl" style={{ touchAction: 'none' }}>
@@ -117,7 +101,7 @@ function CurrentGuess({ remainingCards, correctIndices, onGuessSubmit, correctCa
         })}
       </div>
             <div className="flex flex-row" style={{ touchAction: 'none' }}>
-            {cardsInCurrentGuess.map((item, index) => {
+            {remainingCards.map((item, index) => {
               return (
                 <SortableItem key={item.id} id={item.id} itemsInGroup={correctIndices.length} leftSkipCount={index == 0 ? initialLeftMargin : 0} rightSkipCount={rightMargins[index]}>
                   <CardImage card={item} />
@@ -135,7 +119,7 @@ function CurrentGuess({ remainingCards, correctIndices, onGuessSubmit, correctCa
           </div>
         </div>
         <button
-          onClick={() => onGuessSubmit(cardsInCurrentGuess)}
+          onClick={() => onGuessSubmit(remainingCards)}
           className="cursor-pointer px-8 py-4 bg-[#2694AF] text-white rounded-xl hover:bg-[#1e7a8f] transition-colors text-lg font-semibold"
         >
           Submit Guess
@@ -163,6 +147,10 @@ export function SortableList(options: { cards: Card[] }) {
    * The indices of the cards that have been placed correctly
    */
   const [correctIndices, setCorrectIndices] = useState<boolean[]>(new Array(options.cards.length).fill(false));
+  /**
+   * The current guess being built
+   */
+  const [currentGuess, setCurrentGuess] = useState<Card[]>(options.cards);
 
   const handleLockInGuess = (cardsInCurrentGuess: Card[]) => {
     const correctOrderForRemainingCards = ([...remainingCards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
@@ -187,6 +175,17 @@ export function SortableList(options: { cards: Card[] }) {
     addGuessedOrder([...cardsInCurrentGuess]);
     setRemainingCards(wrongCards);
     setCorrectIndices(newCorrectIndices);
+    setCurrentGuess(wrongCards);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = currentGuess.findIndex((item) => item.id === active.id);
+      const newIndex = currentGuess.findIndex((item) => item.id === over.id);
+      setCurrentGuess(arrayMove([...currentGuess], oldIndex, newIndex));
+    }
   };
 
   const addGuessedOrder = (currentGuess: Card[]) => {
@@ -225,14 +224,14 @@ export function SortableList(options: { cards: Card[] }) {
           <div className="flex flex-col w-full p-6 bg-[#444] max-w-[1792px] mt-0 rounded-xl justify-center items-center">
             <span className="text-white text-2xl font-bold">You won in {guessedOrders.length} guesses!</span>
             <span className="text-white text-lg">Come back tomorrow for another challenge.</span>
-
           </div>
         ) : (
           <CurrentGuess 
-            remainingCards={remainingCards} 
+            remainingCards={currentGuess} 
             correctIndices={correctIndices} 
             onGuessSubmit={handleLockInGuess}
             correctCards={correctCards}
+            onDragEnd={handleDragEnd}
           />
         )}
       </div>
