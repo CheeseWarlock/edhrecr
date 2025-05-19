@@ -1,6 +1,6 @@
 import postgres from 'postgres';
 import MINI_BULK_DATA from './dummy-data.json';
-import { ScryfallCard } from '../types';
+import { Card, ScryfallCard } from '../types';
 
 // Could also load the entire set of bulk data- currently not in repo
 // import BULK_DATA from '../lib/oracle-cards-20250514210930.json';
@@ -58,30 +58,30 @@ async function getDailyCards() {
     return precomputed;
   }
 
-  // If not precomputed, select some random cards
-  const randomCards = await sql`
-    SELECT c.*
-    FROM cards c
-    ORDER BY RANDOM()
-    LIMIT 7
-  `;
+  let randomCards: Card[] = [];
 
-  await sql`
-    INSERT INTO dailycollections (date, description)
-    VALUES (${today}, 'Random daily cards')
-  `;
-
-  const todaysCollection = await sql`SELECT d.id FROM dailycollections d WHERE d.date = ${today} LIMIT 1`;
-  const collectionId = todaysCollection[0].id;
-
-  const collectionCards = randomCards.map((card) => ({
-    collection_id: collectionId,
-    card_id: card.id
-  }));
-
-  await sql`
-    INSERT INTO collectioncards ${sql(collectionCards, 'collection_id', 'card_id')}
-  `;
+  await sql.begin(async sql => {
+    await sql`
+      INSERT INTO dailycollections (date, description)
+      VALUES (${today}, 'Random daily cards')
+    `;
+    randomCards = await sql`
+      SELECT c.*
+      FROM cards c
+      ORDER BY RANDOM()
+      LIMIT 7
+    `;
+    const todaysCollection = await sql`SELECT d.id FROM dailycollections d WHERE d.date = ${today} LIMIT 1`;
+    const collectionId = todaysCollection[0].id;
+    const collectionCards = randomCards.map((card) => ({
+      collection_id: collectionId,
+      card_id: card.id
+    }));
+  
+    await sql`
+      INSERT INTO collectioncards ${sql(collectionCards, 'collection_id', 'card_id')}
+    `;
+  });
 
   return randomCards;
 }
