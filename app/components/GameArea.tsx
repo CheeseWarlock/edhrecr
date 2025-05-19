@@ -80,10 +80,10 @@ export function GameArea(options: { cards: Card[] }) {
     };
   
     const correctOrder = ([...options.cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
-  
+
     const correctCards = correctIndices.map((position, index) => {
       if (!position) return null;
-      return { card: options.cards[index], index: index };
+      return { card: correctOrder[index], index: index };
     }).filter(item => item != null);
   
     return (
