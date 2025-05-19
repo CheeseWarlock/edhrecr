@@ -7,7 +7,8 @@ export function CardImage({ card }: { card: Card }) {
         alt={card.name}
         width={256}
         height={357}
-        className="object-contain mw-[256px] mh-[357px] border-[20%]"
+        draggable={false}
+        className="select-none object-contain mw-[256px] mh-[357px] rounded-[5%]"
         style={{ touchAction: 'none' }}
       />);
 }

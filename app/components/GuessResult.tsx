@@ -1,0 +1,42 @@
+import { Card } from "../types";
+import { CardImage } from "./CardImage";
+import { Feedback, FeedbackMark } from "./FeedbackMark";
+
+/**
+ * A row of cards representing a previous guess
+ */
+export function GuessResult({ guess, correctOrder }: { guess: Card[], correctOrder: Card[] }) {
+    const getPositionFeedback = (card: Card, index: number): Feedback => {
+      const correctIndex = correctOrder.findIndex(c => c.id === card.id);
+      if (index === correctIndex) return 'correct';
+      if ((index === correctIndex + 1 || index === correctIndex - 1) && process.env.NEXT_PUBLIC_GIVE_OFF_BY_ONE == 'true') return 'off-by-one';
+      return 'incorrect';
+    };
+    return (<div className="md:px-6 max-w-[1792px] mt-6 mb-6 rounded-xl">
+      <div className="flex">
+        {guess.map((card, cardIndex) => {
+          const feedback = getPositionFeedback(card, cardIndex);
+          return (
+            <div
+                key={card.id}
+                className={`relative overflow-hidden flex items-start justify-center h-[8vw] max-h-[85px]`}>
+                <div
+                className="h-full"
+                style={{ 
+                mask: `linear-gradient(to bottom, 
+                    rgba(0,0,0,1) 0,   
+                    rgba(0,0,0,1) 50%, 
+                    rgba(0,0,0,0) 95%
+                )`,
+                }}
+              >
+                <CardImage card={card} />
+                <div className="w-full h-full absolute top-0"></div>
+              </div>
+              <FeedbackMark feedback={feedback} />
+            </div>
+          );
+        })}
+      </div>
+    </div>)
+  }

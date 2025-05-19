@@ -37,8 +37,8 @@ export function SortableItem({ id, children, leftSkipCount, rightSkipCount, item
       style={style}
       {...attributes}
       {...listeners}
-      className={`overflow-hidden rounded-xl mw-[256px] mh-[357px] ${
-        isDragging ? '' : ''
+      className={`cursor-grab mw-[256px] mh-[357px] ${
+        isDragging ? 'shadow-lg' : ''
       }`}
     >
       {children}

@@ -19,72 +19,14 @@ import {
 import { SortableItem } from './SortableItem';
 import Image from 'next/image';
 import { restrictToParentElement } from '@dnd-kit/modifiers';
+import { CardImage } from '../CardImage';
+import { Feedback, FeedbackMark } from '../FeedbackMark';
+import { GuessResult } from '../GuessResult';
 interface Card {
   id: string;
   name: string;
   image_url: string;
   edhrec_rank: number;
-}
-
-type Feedback = 'correct' | 'off-by-one' | 'incorrect';
-
-function getFeedbackColor(feedback: Feedback) {
-  return feedback === 'correct' ? '#7C9B13' : feedback === 'off-by-one' ? '#CEA648' : '#635634';
-}
-
-function getFeedbackShadowColor(feedback: Feedback) {
-  return feedback === 'correct' ? '#414E00' : feedback === 'off-by-one' ? '#7C6A2E' : '#453D24';
-}
-
-function FeedbackMark({ feedback }: { feedback: Feedback }) {
-  const color = getFeedbackColor(feedback);
-  const shadowColor = getFeedbackShadowColor(feedback);
-  return (
-    <>
-    <div style={{ background: `linear-gradient(45deg, transparent 42%, ${color} 65%), radial-gradient(${color} 0%, ${color} 45%, ${shadowColor} 55%, ${color} 66%)` }}
-    className={`flex absolute bottom-0 border-2 border-black text-center text-white md:w-[48px] md:h-[48px] w-[28px] h-[28px] rounded-full items-center justify-center md:text-2xl text-xl`}>
-      {feedback === 'correct' ? '✓' : feedback === 'off-by-one' ? '⇔' : '✗'}
-    </div>
-    </>
-  );
-}
-
-/**
- * A row of cards representing a previous guess
- */
-function PreviousGuess({ guess, correctOrder }: { guess: Card[], correctOrder: Card[] }) {
-  const getPositionFeedback = (card: Card, index: number): Feedback => {
-    const correctIndex = correctOrder.findIndex(c => c.id === card.id);
-    if (index === correctIndex) return 'correct';
-    if ((index === correctIndex + 1 || index === correctIndex - 1) && process.env.NEXT_PUBLIC_GIVE_OFF_BY_ONE == 'true') return 'off-by-one';
-    return 'incorrect';
-  };
-  return (<div className="md:px-6 max-w-[1792px] mt-6 mb-6 rounded-xl">
-    <div className="flex">
-      {guess.map((card, cardIndex) => {
-        const feedback = getPositionFeedback(card, cardIndex);
-        return (
-          <div key={card.id} className={`relative overflow-hidden rounded-t-xl flex items-start justify-center h-[8vw]`}>
-            <Image 
-              src={card.image_url} 
-              alt={card.name}
-              width={256}
-              height={200}
-              className="object-contain"
-              style={{ 
-                mask: `linear-gradient(to bottom, 
-                  rgba(0,0,0, 1) 0,   
-                  rgba(0,0,0, 1) 22%, 
-                  rgba(0,0,0,0) 28%
-                ) 100% 0% / 100% 102%`,
-              }}
-            />
-            <FeedbackMark feedback={feedback} />
-          </div>
-        );
-      })}
-    </div>
-  </div>)
 }
 
 function CurrentGuess({ remainingCards, correctIndices, onGuessSubmit, correctCards }: { remainingCards: Card[], correctIndices: boolean[], onGuessSubmit: (cards: Card[]) => void, correctCards: { card: Card, index: number }[] }) {
@@ -156,24 +98,21 @@ function CurrentGuess({ remainingCards, correctIndices, onGuessSubmit, correctCa
           <div className="flex flex-row" style={{ touchAction: 'none', filter: 'grayscale(1) opacity(0.3)' }}>
         {correctCards.map((data) => {
           return (
-          <Image 
+            <div
+            className="absolute"
             key={data.card.id}
-            src={data.card.image_url} 
-            alt={data.card.name}
-            width={256}
-            height={357}
-            className={`absolute overflow-hidden rounded-xl`}
             style={{
               marginLeft: `calc(100% * ${data.index / correctIndices.length})`,
               width: `calc(100% * (1 / ${correctIndices.length}))`,
               height: 'auto',
               mask: `linear-gradient(
-rgba(0, 0, 0, 0.5) 0px, 
-rgb(0, 0, 0) 22%, 
-rgb(0, 0, 0) 78%, 
-rgba(0, 0, 0, 0.5) 100%) 100% 0% / 100% 102%`
-            }}
-          />
+              rgba(0, 0, 0, 0.5) 0px, 
+              rgb(0, 0, 0) 22%, 
+              rgb(0, 0, 0) 78%, 
+              rgba(0, 0, 0, 0.5) 100%) 100% 0% / 100% 102%`
+            }}>
+              <CardImage card={data.card} />
+            </div>
           )
         })}
       </div>
@@ -181,14 +120,7 @@ rgba(0, 0, 0, 0.5) 100%) 100% 0% / 100% 102%`
             {cardsInCurrentGuess.map((item, index) => {
               return (
                 <SortableItem key={item.id} id={item.id} itemsInGroup={correctIndices.length} leftSkipCount={index == 0 ? initialLeftMargin : 0} rightSkipCount={rightMargins[index]}>
-                  <Image 
-                    src={item.image_url} 
-                    alt={item.name}
-                    width={256}
-                    height={357}
-                    className="object-contain mw-[256px] mh-[357px]"
-                    style={{ touchAction: 'none' }}
-                  />
+                  <CardImage card={item} />
                 </SortableItem>
               );
             })}
@@ -204,7 +136,7 @@ rgba(0, 0, 0, 0.5) 100%) 100% 0% / 100% 102%`
         </div>
         <button
           onClick={() => onGuessSubmit(cardsInCurrentGuess)}
-          className="px-8 py-4 bg-[#2694AF] text-white rounded-xl hover:bg-[#1e7a8f] transition-colors text-lg font-semibold"
+          className="cursor-pointer px-8 py-4 bg-[#2694AF] text-white rounded-xl hover:bg-[#1e7a8f] transition-colors text-lg font-semibold"
         >
           Submit Guess
         </button>
@@ -284,7 +216,7 @@ export function SortableList(options: { cards: Card[] }) {
       <div className="flex-1 overflow-y-auto flex flex-col justify-end">
         <div>
           {guessedOrders.map((guess, guessIdx) => 
-            <PreviousGuess guess={guess} key={guessIdx} correctOrder={correctOrder} />
+            <GuessResult guess={guess} key={guessIdx} correctOrder={correctOrder} />
           )}
         </div>
       </div>
