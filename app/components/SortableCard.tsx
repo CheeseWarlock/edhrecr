@@ -2,7 +2,7 @@ import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-interface SortableItemProps {
+interface SortableCardProps {
   id: string;
   children: React.ReactNode;
   leftSkipCount: number;
@@ -10,7 +10,11 @@ interface SortableItemProps {
   itemsInGroup: number;
 }
 
-export function SortableItem({ id, children, leftSkipCount, rightSkipCount, itemsInGroup }: SortableItemProps) {
+/**
+ * A wrapper for a sortable card in the current guess.
+ * Handles some oddities like skipping card positions.
+ */
+export function SortableCard({ id, children, leftSkipCount, rightSkipCount, itemsInGroup }: SortableCardProps) {
   const {
     attributes,
     listeners,

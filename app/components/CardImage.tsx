@@ -1,6 +1,9 @@
 import Image from "next/image";
 import { Card } from "../types";
 
+/**
+ * A card image that scales elegantly with border radius.
+ */
 export function CardImage({ card }: { card: Card }) {
     return (<Image 
         src={card.image_url} 

@@ -9,6 +9,10 @@ function getFeedbackShadowColor(feedback: Feedback) {
   return feedback === 'correct' ? '#414E00' : feedback === 'off-by-one' ? '#7C6A2E' : '#453D24';
 }
 
+/**
+ * A small mark that shows correct, incorrect, or off-by-one.
+ * Note that off-by-one is only shown if the NEXT_PUBLIC_GIVE_OFF_BY_ONE environment variable is set to true.
+ */
 export function FeedbackMark({ feedback }: { feedback: Feedback }) {
   const color = getFeedbackColor(feedback);
   const shadowColor = getFeedbackShadowColor(feedback);
