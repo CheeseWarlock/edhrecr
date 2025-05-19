@@ -6,6 +6,8 @@ import { useState } from "react";
 import { Card } from "../types";
 import { GuessResult } from "./GuessResult";
 import { CurrentGuess } from "./CurrentGuess";
+import { GhostCardList } from "./GhostCardList";
+import { CardImage } from "./CardImage";
 
 /**
  * The main game area, containing the previous guesses and the current guess
@@ -97,9 +99,27 @@ export function GameArea(options: { cards: Card[] }) {
         </div>
         <div className="flex-shrink-0">
           {remainingCards.length == 0 ? (
-            <div className="flex flex-col w-full p-6 bg-[#444] max-w-[1792px] mt-0 rounded-xl justify-center items-center">
-              <span className="text-white text-2xl font-bold">You won in {guessedOrders.length} guesses!</span>
-              <span className="text-white text-lg">Come back tomorrow for another challenge.</span>
+            <div className="flex flex-col w-full py-6 md:px-6 bg-[#444] max-w-[1792px] mt-0 md:rounded-xl justify-center items-center relative">
+              <div className="w-full flex flex-row" style={{
+                touchAction: 'none',
+                filter: 'grayscale(1) opacity(0.3)',
+                mask: `linear-gradient(
+                  rgba(0, 0, 0, 0.5) 0px, 
+                  rgb(0, 0, 0) 22%, 
+                  rgb(0, 0, 0) 78%, 
+                  rgba(0, 0, 0, 0.5) 100%) 100% 0% / 100% 102%`}}>
+                {correctCards.map((card, idx) => {
+                  return (
+                    <div key={idx}style={{ width: `calc(100% * (1 / ${correctCards.length}))` }}>
+                      <CardImage card={card.card} />
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="flex flex-col items-center absolute bottom-0 top-0 justify-center">
+                <span className="text-white text-2xl font-bold">You won in {guessedOrders.length} guesses!</span>
+                <span className="text-white text-lg">Come back tomorrow for another challenge.</span>
+              </div>
             </div>
           ) : (
             <CurrentGuess 

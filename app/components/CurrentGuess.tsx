@@ -18,6 +18,7 @@ import {
 import { SortableCard } from './SortableCard';
 import { restrictToParentElement } from '@dnd-kit/modifiers';
 import { CardImage } from './CardImage';
+import { GhostCardList } from './GhostCardList';
 interface Card {
   id: string;
   name: string;
@@ -78,27 +79,7 @@ export function CurrentGuess({ remainingCards, correctIndices, onGuessSubmit, co
           strategy={horizontalListSortingStrategy}
         >
           <div className="flex flex-col w-full py-6 md:px-6 bg-[#444] max-w-[1792px] mt-0 md:rounded-xl" style={{ touchAction: 'none' }}>
-          <div className="flex flex-row" style={{ touchAction: 'none', filter: 'grayscale(1) opacity(0.3)' }}>
-        {correctCards.map((data) => {
-          return (
-            <div
-            className="absolute"
-            key={data.card.id}
-            style={{
-              marginLeft: `calc(100% * ${data.index / correctIndices.length})`,
-              width: `calc(100% * (1 / ${correctIndices.length}))`,
-              height: 'auto',
-              mask: `linear-gradient(
-              rgba(0, 0, 0, 0.5) 0px, 
-              rgb(0, 0, 0) 22%, 
-              rgb(0, 0, 0) 78%, 
-              rgba(0, 0, 0, 0.5) 100%) 100% 0% / 100% 102%`
-            }}>
-              <CardImage card={data.card} />
-            </div>
-          )
-        })}
-      </div>
+          <GhostCardList correctCards={correctCards} correctIndices={correctIndices} positioning="absolute" />
             <div className="flex flex-row" style={{ touchAction: 'none' }}>
             {remainingCards.map((item, index) => {
               return (
