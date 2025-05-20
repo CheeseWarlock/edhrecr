@@ -4,12 +4,15 @@ import { Card } from "./types";
 import { GameContent } from './components/GameContent';
 
 export default async function Home() {
-  let cards: Card[];
+  let dailyCardsData: { cards: Card[], date: string };
   if (process.env.USE_LIVE_DATA === "true") {
-    cards = (await getCards()).cards;
+    dailyCardsData = (await getCards());
   } else {
-    cards = dummyData.cards.slice(0, Number.parseInt(process.env.DUMMY_DATA_SIZE || "7"));
+    dailyCardsData = {
+      cards: dummyData.cards.slice(0, Number.parseInt(process.env.DUMMY_DATA_SIZE || "7")),
+      date: dummyData.date
+    }
   }
 
-  return <GameContent cards={cards} />;
+  return <GameContent cards={dailyCardsData.cards} date={dailyCardsData.date} />;
 }

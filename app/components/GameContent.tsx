@@ -9,9 +9,10 @@ import { useLocalStorage } from '../utils/useLocalStorage';
 
 interface GameContentProps {
   cards: Card[];
+  date: string;
 }
 
-export function GameContent({ cards }: GameContentProps) {
+export function GameContent({ cards, date }: GameContentProps) {
   const [hasSeenInfo, setHasSeenInfo] = useLocalStorage("hasSeenInfo", false);
   const [isInfoOpen, setIsInfoOpen] = useState(!hasSeenInfo);
   const [hasMounted, setHasMounted] = useState(false);
