@@ -6,6 +6,7 @@ import { GameArea } from './GameArea';
 import { TopBar } from './TopBar';
 import { InfoOverlay } from './InfoOverlay';
 import { useLocalStorage } from '../utils/useLocalStorage';
+import { updateStreak } from '../lib/streak';
 
 interface GameContentProps {
   cards: Card[];
@@ -23,11 +24,15 @@ export function GameContent({ cards, date }: GameContentProps) {
     return null;
   }
 
+  const handlePuzzleComplete = () => {
+    updateStreak(date);
+  };
+
   return (
     <main className="items-center justify-items-center min-h-screen md:p-8 bg-[#222] flex justify-center pt-16 md:pt-16">
       <TopBar onInfoClick={() => setIsInfoOpen(true)} />
       <div className="flex flex-col h-full row-start-2">
-        <GameArea cards={cards} />
+        <GameArea cards={cards} onPuzzleComplete={handlePuzzleComplete} />
       </div>
       <InfoOverlay isOpen={isInfoOpen} onClose={() => {
         setIsInfoOpen(false)

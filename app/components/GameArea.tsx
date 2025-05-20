@@ -2,16 +2,21 @@
 
 import { DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "../types";
 import { GuessResult } from "./GuessResult";
 import { CurrentGuess } from "./CurrentGuess";
 import { CardImage } from "./CardImage";
 
+interface GameAreaProps {
+  cards: Card[];
+  onPuzzleComplete: () => void;
+}
+
 /**
  * The main game area, containing the previous guesses and the current guess
  */
-export function GameArea(options: { cards: Card[] }) {
+export function GameArea({ cards, onPuzzleComplete }: GameAreaProps) {
     /**
      * The previously guessed orders
      */
@@ -19,19 +24,25 @@ export function GameArea(options: { cards: Card[] }) {
     /**
      * The cards not yet placed correctly
      */
-    const [remainingCards, setRemainingCards] = useState<Card[]>(options.cards);
+    const [remainingCards, setRemainingCards] = useState<Card[]>(cards);
     /**
      * The indices of the cards that have been placed correctly
      */
-    const [correctIndices, setCorrectIndices] = useState<boolean[]>(new Array(options.cards.length).fill(false));
+    const [correctIndices, setCorrectIndices] = useState<boolean[]>(new Array(cards.length).fill(false));
     /**
      * The current guess being built
      */
-    const [currentGuess, setCurrentGuess] = useState<Card[]>(options.cards);
+    const [currentGuess, setCurrentGuess] = useState<Card[]>(cards);
+  
+    useEffect(() => {
+      if (remainingCards.length === 0) {
+        onPuzzleComplete();
+      }
+    }, [remainingCards.length, onPuzzleComplete]);
   
     const handleLockInGuess = (cardsInCurrentGuess: Card[]) => {
       const correctOrderForRemainingCards = ([...remainingCards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
-      const correctOrder = ([...options.cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
+      const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
       const newCorrectIndices = [...correctIndices];
   
       // Find which ones we got right on this guess
@@ -67,10 +78,10 @@ export function GameArea(options: { cards: Card[] }) {
   
     const addGuessedOrder = (currentGuess: Card[]) => {
       const newOrder: Card[] = [];
-      const correctOrder = ([...options.cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
+      const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
   
       let currentOrderIndex = 0;
-      for (let i = 0; i < options.cards.length; i++) {
+      for (let i = 0; i < cards.length; i++) {
         if (correctIndices[i]) {
           newOrder.push(correctOrder[i]);
         } else {
@@ -80,7 +91,7 @@ export function GameArea(options: { cards: Card[] }) {
       setGuessedOrders([...guessedOrders, newOrder]);
     };
   
-    const correctOrder = ([...options.cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
+    const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
 
     const correctCards = correctIndices.map((position, index) => {
       if (!position) return null;
