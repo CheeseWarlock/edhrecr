@@ -14,9 +14,9 @@ export function GameContent({ cards }: GameContentProps) {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
 
   return (
-    <main className="min-h-screen bg-[#222]">
+    <main className="items-center justify-items-center min-h-screen md:p-8 bg-[#222] flex justify-center pt-16 md:pt-16">
       <TopBar onInfoClick={() => setIsInfoOpen(true)} />
-      <div className="pt-16 min-h-[calc(100vh-4rem)] md:p-8 flex items-center justify-center">
+      <div className="flex flex-col h-full row-start-2">
         <GameArea cards={cards} />
       </div>
       <InfoOverlay isOpen={isInfoOpen} onClose={() => setIsInfoOpen(false)} />
