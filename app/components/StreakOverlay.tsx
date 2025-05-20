@@ -1,7 +1,7 @@
 import React from 'react';
 import { Metamorphous } from "next/font/google";
 import { OverlayFrame } from './OverlayFrame';
-
+import { StreakStatus } from '../lib/streak';
 const metamorphous = Metamorphous({ 
   weight: '400',
   subsets: ["latin"],
@@ -10,7 +10,7 @@ const metamorphous = Metamorphous({
 interface StreakOverlayProps {
   isOpen: boolean;
   onClose: () => void;
-  streak: number;
+  streak: StreakStatus;
 }
 
 export function StreakOverlay({ isOpen, onClose, streak }: StreakOverlayProps) {
@@ -19,12 +19,22 @@ export function StreakOverlay({ isOpen, onClose, streak }: StreakOverlayProps) {
       <div className="text-white space-y-4">
         <h2 className={`text-2xl font-bold mb-6 ${metamorphous.className}`}>Your Streak</h2>
         <div className="text-center">
-          <p className="text-6xl font-bold text-[#2694AF]">{streak}</p>
+          <p className="text-6xl font-bold text-[#2694AF]">{streak.streakLength}</p>
           <p className="text-xl mt-2">days in a row!</p>
         </div>
-        <p className="text-center mt-8">
-          Keep coming back daily to maintain your streak!
-        </p>
+        {streak.isTodayDone ? (
+          <p className="text-center mt-8">
+            Keep coming back daily to maintain your streak!
+          </p>
+        ) : streak.isStreakActive ? (
+          <p className="text-center mt-8">
+            Finish today's challenge to keep your streak alive!
+          </p>
+        ) : (
+          <p className="text-center mt-8">
+            Finish today's challenge to start your streak!
+          </p>
+        )}
       </div>
     </OverlayFrame>
   );

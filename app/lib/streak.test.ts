@@ -1,8 +1,8 @@
-import { calculateStreak, StreakData } from './streak';
+import { getCurrentStreakStatus, getUpdatedStreakData, StreakData, StreakStatus } from './streak';
 
-describe('calculateStreak', () => {
+describe('getUpdatedStreakData', () => {
   it('should start a new streak for a first-time player', () => {
-    const result = calculateStreak(null, '2024-03-20');
+    const result = getUpdatedStreakData(null, '2024-03-20');
     expect(result).toEqual({
       streak: 1,
       lastDay: '2024-03-20'
@@ -14,7 +14,7 @@ describe('calculateStreak', () => {
       streak: 1,
       lastDay: '2024-03-19'
     };
-    const result = calculateStreak(storedData, '2024-03-20');
+    const result = getUpdatedStreakData(storedData, '2024-03-20');
     expect(result).toEqual({
       streak: 2,
       lastDay: '2024-03-20'
@@ -26,7 +26,7 @@ describe('calculateStreak', () => {
       streak: 5,
       lastDay: '2024-03-18'
     };
-    const result = calculateStreak(storedData, '2024-03-20');
+    const result = getUpdatedStreakData(storedData, '2024-03-20');
     expect(result).toEqual({
       streak: 1,
       lastDay: '2024-03-20'
@@ -38,7 +38,7 @@ describe('calculateStreak', () => {
       streak: 3,
       lastDay: '2024-03-20'
     };
-    const result = calculateStreak(storedData, '2024-03-20');
+    const result = getUpdatedStreakData(storedData, '2024-03-20');
     expect(result).toEqual({
       streak: 3,
       lastDay: '2024-03-20'

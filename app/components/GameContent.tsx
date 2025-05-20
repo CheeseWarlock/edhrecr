@@ -7,7 +7,7 @@ import { TopBar } from './TopBar';
 import { InfoOverlay } from './InfoOverlay';
 import { StreakOverlay } from './StreakOverlay';
 import { useLocalStorage } from '../utils/useLocalStorage';
-import { updateStreak } from '../lib/streak';
+import { getUserStreakStatus, updateUserStreak } from '../lib/streak';
 
 interface GameContentProps {
   cards: Card[];
@@ -15,21 +15,21 @@ interface GameContentProps {
 }
 
 export function GameContent({ cards, date }: GameContentProps) {
-  const [hasSeenInfo, setHasSeenInfo] = useLocalStorage("hasSeenInfo", false);
+  const [hasSeenInfo, setHasSeenInfo] = useLocalStorage("edhr-has-seen-intro", false);
   const [isInfoOpen, setIsInfoOpen] = useState(!hasSeenInfo);
   const [isStreakOpen, setIsStreakOpen] = useState(false);
-  const [streak, setStreak] = useState(0);
   const [hasMounted, setHasMounted] = useState(false);
+
   useEffect(() => {
     setHasMounted(true);
   }, []);
+
   if (!hasMounted) {
     return null;
   }
 
   const handlePuzzleComplete = () => {
-    const newStreak = updateStreak(date);
-    setStreak(newStreak);
+    updateUserStreak(date);
   };
 
   return (
@@ -48,7 +48,7 @@ export function GameContent({ cards, date }: GameContentProps) {
       <StreakOverlay 
         isOpen={isStreakOpen} 
         onClose={() => setIsStreakOpen(false)} 
-        streak={streak}
+        streak={getUserStreakStatus(date)}
       />
     </main>
   );
