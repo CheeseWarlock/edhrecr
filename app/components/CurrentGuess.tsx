@@ -78,7 +78,7 @@ export function CurrentGuess({ remainingCards, correctIndices, onGuessSubmit, co
           items={remainingCards.map((item) => item.id)}
           strategy={horizontalListSortingStrategy}
         >
-          <div className="flex flex-col w-full py-6 md:px-6 bg-[#444] max-w-[1792px] mt-0 md:rounded-xl" style={{ touchAction: 'none' }}>
+          <div className="flex flex-col w-full py-6 md:px-6 bg-[#444] max-w-[1792px] mt-0 md:rounded-xl relative z-10" style={{ touchAction: 'none' }}>
           <GhostCardList correctCards={correctCards} correctIndices={correctIndices} positioning="absolute" />
             <div className="flex flex-row" style={{ touchAction: 'none' }}>
             {remainingCards.map((item, index) => {

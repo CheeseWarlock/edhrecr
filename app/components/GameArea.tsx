@@ -100,7 +100,7 @@ export function GameArea({ cards, onPuzzleComplete }: GameAreaProps) {
   
     return (
       <div className="w-full h-full flex flex-col">
-        <div className="flex-1 overflow-y-auto flex flex-col justify-end">
+        <div className="max-w-[1792px] flex-1 overflow-y-visible flex flex-col justify-end">
           <div>
             {guessedOrders.map((guess, guessIdx) => 
               <GuessResult guess={guess} key={guessIdx} correctOrder={correctOrder} />
@@ -141,6 +141,25 @@ export function GameArea({ cards, onPuzzleComplete }: GameAreaProps) {
             />
           )}
         </div>
+        {remainingCards.length == 0 && (
+          <div className="flex flex-row gap-4 max-w-[1792px] justify-between py-2 px-2 md:px-0">
+            <div>
+              <div className="flex flex-row gap-2 items-center">
+              <span>◀</span><span>Most Popular</span>
+            </div>
+          </div>
+          <button
+            className="px-8 py-4 bg-[#aaaaaa] text-white rounded-xl  transition-colors text-lg font-semibold"
+          >
+            Submit Guess
+          </button>
+          <div>
+            <div className="flex flex-row gap-2 items-center text-right">
+              <span>Least Popular</span><span>▶</span>
+            </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   } 

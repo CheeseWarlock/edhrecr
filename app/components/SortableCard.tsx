@@ -31,7 +31,7 @@ export function SortableCard({ id, children, leftSkipCount, rightSkipCount, item
     marginRight: `calc(100% * (${rightSkipCount / itemsInGroup})`,
     marginLeft: `calc(100% * (${leftSkipCount / itemsInGroup})`,
     overflow: 'hidden',
-    borderRadius: '16px',
+    borderRadius: '5%',
     touchAction: 'none',
   };
 
