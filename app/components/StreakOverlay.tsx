@@ -28,11 +28,11 @@ export function StreakOverlay({ isOpen, onClose, streak }: StreakOverlayProps) {
           </p>
         ) : streak.isStreakActive ? (
           <p className="text-center mt-8">
-            Finish today's challenge to keep your streak alive!
+            Finish today&apos;s challenge to keep your streak alive!
           </p>
         ) : (
           <p className="text-center mt-8">
-            Finish today's challenge to start your streak!
+            Finish today&apos;s challenge to start your streak!
           </p>
         )}
       </div>

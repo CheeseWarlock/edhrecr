@@ -15,8 +15,8 @@ interface GameContentProps {
 }
 
 export function GameContent({ cards, date }: GameContentProps) {
-  const [hasSeenInfo, setHasSeenInfo] = useLocalStorage("edhr-has-seen-intro", false);
-  const [isInfoOpen, setIsInfoOpen] = useState(!hasSeenInfo);
+  const [hasSeenInfo, setHasSeenInfo] = useLocalStorage("edhr-has-seen-intro", "false");
+  const [isInfoOpen, setIsInfoOpen] = useState(hasSeenInfo !== "true");
   const [isStreakOpen, setIsStreakOpen] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
 
@@ -48,7 +48,7 @@ export function GameContent({ cards, date }: GameContentProps) {
       </div>
       <InfoOverlay isOpen={isInfoOpen} onClose={() => {
         setIsInfoOpen(false)
-        setHasSeenInfo(true)
+        setHasSeenInfo("true")
       }}/>
       <StreakOverlay 
         isOpen={isStreakOpen} 

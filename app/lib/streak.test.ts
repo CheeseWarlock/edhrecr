@@ -1,4 +1,4 @@
-import { getCurrentStreakStatus, getUpdatedStreakData, StreakData, StreakStatus } from './streak';
+import { getUpdatedStreakData, StreakData } from './streak';
 
 describe('getUpdatedStreakData', () => {
   it('should start a new streak for a first-time player', () => {
