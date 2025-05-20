@@ -33,7 +33,12 @@ export function GameContent({ cards, date }: GameContentProps) {
   };
 
   return (
-    <main className="items-center justify-items-center min-h-screen md:p-8 bg-[#222] flex justify-center pt-16 md:pt-16">
+    <main
+      style={{
+        backgroundImage: 'url("/texture2.png"), url("/texture1.png")',
+      }}
+      className="items-center justify-items-center min-h-screen md:p-8 bg-[#222] flex justify-center pt-16 md:pt-16"
+    >
       <TopBar 
         onInfoClick={() => setIsInfoOpen(true)} 
         onStreakClick={() => setIsStreakOpen(true)}
