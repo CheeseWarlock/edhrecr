@@ -41,6 +41,7 @@ export function GameArea({ cards, onPuzzleComplete }: GameAreaProps) {
     }, [remainingCards.length, onPuzzleComplete]);
   
     const handleLockInGuess = (cardsInCurrentGuess: Card[]) => {
+      console.log('handleLockInGuess', cardsInCurrentGuess.map(card => card.name));
       const correctOrderForRemainingCards = ([...remainingCards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
       const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
       const newCorrectIndices = [...correctIndices];
@@ -120,7 +121,11 @@ export function GameArea({ cards, onPuzzleComplete }: GameAreaProps) {
                   rgba(0, 0, 0, 0.5) 100%) 100% 0% / 100% 102%`}}>
                 {correctCards.map((card, idx) => {
                   return (
-                    <div key={idx}style={{ width: `calc(100% * (1 / ${correctCards.length}))` }}>
+                    <div key={idx} style={{
+                      width: `calc(100% * (1 / ${correctCards.length}))`,
+                      animation: `1s linear ${idx * 0.2}s spinner`,
+                      animationDelay: `${idx * 0.5}`
+                      }}>
                       <CardImage card={card.card} />
                     </div>
                   )
