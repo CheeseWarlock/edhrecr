@@ -142,10 +142,11 @@ export function GameArea({ cards, onPuzzleComplete }: GameAreaProps) {
               onGuessSubmit={handleLockInGuess}
               correctCards={correctCards}
               onDragEnd={handleDragEnd}
+              guessesMade={guessedOrders.length}
             />
           )}
         </div>
-        {remainingCards.length == 0 && (
+        {(remainingCards.length == 0) && (
           <div className="flex flex-row gap-4 max-w-[1792px] justify-between py-2 px-2 md:px-0">
             <div>
               <div className="flex flex-row gap-2 items-center">

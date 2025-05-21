@@ -34,4 +34,4 @@ export function InfoOverlay({ isOpen, onClose }: InfoOverlayProps) {
       </div>
     </OverlayFrame>
   );
-} 
+}
