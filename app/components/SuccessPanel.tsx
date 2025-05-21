@@ -8,7 +8,7 @@ export default function SuccessPanel({ correctCards, guessedOrders }: {
     }[],
     guessedOrders: Card[][]
 }) {
-    return <div className="flex flex-col w-full py-6 md:px-6 bg-[#444] max-w-[1792px] mt-0 md:rounded-xl relative z-10 justify-center">
+    return <>
               <div className="w-full flex flex-row" style={{
                 touchAction: 'none',
                 filter: 'grayscale(1) opacity(0.3)',
@@ -29,9 +29,8 @@ export default function SuccessPanel({ correctCards, guessedOrders }: {
                   )
                 })}
               </div>
-              <div className="flex flex-col items-center absolute bottom-0 top-0 justify-center w-full items-center">
+              <div className="flex flex-col items-center absolute bottom-0 top-0 justify-center w-full items-center pointer-events-none">
                 <span className="text-white text-2xl font-bold">You won in {guessedOrders.length} guess{guessedOrders.length == 1 ? "" : "es"}!</span>
                 <span className="text-white text-lg">Come back tomorrow for another challenge.</span>
-              </div>
-            </div>
+              </div></>
 }

@@ -31,12 +31,11 @@ interface Card {
 /**
  * The sortable row of cards making up the player's current guess
  */
-export function CurrentGuess({ remainingCards, correctIndices, correctCards, onDragEnd, guessesMade }: { 
+export function CurrentGuess({ remainingCards, correctIndices, correctCards, onDragEnd }: { 
   remainingCards: Card[], 
   correctIndices: boolean[], 
   correctCards: { card: Card, index: number }[],
-  onDragEnd: (event: DragEndEvent) => void,
-  guessesMade: number
+  onDragEnd: (event: DragEndEvent) => void
 }) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -68,7 +67,7 @@ export function CurrentGuess({ remainingCards, correctIndices, correctCards, onD
   }
 
   return (
-    <>
+    <div className="flex flex-col w-full bg-[#444] max-w-[1792px] mt-0 md:rounded-xl relative z-10 justify-center" style={{ touchAction: 'none' }}>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -80,8 +79,6 @@ export function CurrentGuess({ remainingCards, correctIndices, correctCards, onD
           items={remainingCards.map((item) => item.id)}
           strategy={horizontalListSortingStrategy}
         >
-          <div className="flex flex-col w-full py-6 md:px-6 bg-[#444] max-w-[1792px] mt-0 md:rounded-xl relative z-10 justify-center" style={{ touchAction: 'none' }}>
-            <div className="flex flex-row items-center justify-center mb-4"><span className="text-2xl">{`${5 - guessesMade}/5`}</span><span>&nbsp;guess{5 - guessesMade == 1 ? '' : 'es'} left</span></div>
           <GhostCardList correctCards={correctCards} correctIndices={correctIndices} positioning="absolute" />
             <div className="flex flex-row" style={{ touchAction: 'none' }}>
             {remainingCards.map((item, index) => {
@@ -92,9 +89,7 @@ export function CurrentGuess({ remainingCards, correctIndices, correctCards, onD
               );
             })}
             </div>
-          </div>
         </SortableContext>
-      </DndContext>
-    </>
+      </DndContext></div>
   )
 }

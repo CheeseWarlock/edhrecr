@@ -9,6 +9,7 @@ import { CurrentGuess } from "./CurrentGuess";
 import { CardImage } from "./CardImage";
 import BottomBar from "./BottomBar";
 import SuccessPanel from "./SuccessPanel";
+import FailurePanel from "./FailurePanel";
 
 interface GameAreaProps {
   cards: Card[];
@@ -35,6 +36,8 @@ export function GameArea({ cards, onPuzzleComplete }: GameAreaProps) {
      * The current guess being built
      */
     const [currentGuess, setCurrentGuess] = useState<Card[]>(cards);
+
+    const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
   
     useEffect(() => {
       if (remainingCards.length === 0) {
@@ -44,7 +47,6 @@ export function GameArea({ cards, onPuzzleComplete }: GameAreaProps) {
   
     const handleLockInGuess = (cardsInCurrentGuess: Card[]) => {
       const correctOrderForRemainingCards = ([...remainingCards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
-      const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
       const newCorrectIndices = [...correctIndices];
   
       // Find which ones we got right on this guess
@@ -80,7 +82,6 @@ export function GameArea({ cards, onPuzzleComplete }: GameAreaProps) {
   
     const addGuessedOrder = (currentGuess: Card[]) => {
       const newOrder: Card[] = [];
-      const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
   
       let currentOrderIndex = 0;
       for (let i = 0; i < cards.length; i++) {
@@ -92,8 +93,6 @@ export function GameArea({ cards, onPuzzleComplete }: GameAreaProps) {
       }
       setGuessedOrders([...guessedOrders, newOrder]);
     };
-  
-    const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
 
     const correctCards = correctIndices.map((position, index) => {
       if (!position) return null;
@@ -110,17 +109,21 @@ export function GameArea({ cards, onPuzzleComplete }: GameAreaProps) {
           </div>
         </div>
         <div className="flex-shrink-0">
-          {remainingCards.length == 0 ? (
+          <div className="flex flex-col w-full py-6 md:px-6 bg-[#444] max-w-[1792px] mt-0 md:rounded-xl relative z-10 justify-center" style={{ touchAction: 'none' }}>
+          <div className="flex flex-row items-center justify-center mb-4"><span className="text-2xl">{`${5 - guessedOrders.length}/5`}</span><span>&nbsp;guess{5 - guessedOrders.length == 1 ? '' : 'es'} left</span></div>
+          {(remainingCards.length == 0) ?
             <SuccessPanel correctCards={correctCards} guessedOrders={guessedOrders} />
-          ) : (
-            <CurrentGuess 
-              remainingCards={currentGuess} 
-              correctIndices={correctIndices} 
-              correctCards={correctCards}
-              onDragEnd={handleDragEnd}
-              guessesMade={guessedOrders.length}
-            />
-          )}
+          :(guessedOrders.length < 5) ?
+          <CurrentGuess 
+            remainingCards={currentGuess} 
+            correctIndices={correctIndices} 
+            correctCards={correctCards}
+            onDragEnd={handleDragEnd}
+          />
+          :
+            <FailurePanel cards={correctOrder} />
+          }
+          </div>
         </div>
       <BottomBar onSubmit={() => { if (remainingCards.length) handleLockInGuess(currentGuess)}} />
       </div>
