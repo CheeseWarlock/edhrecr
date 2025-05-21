@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaTimes } from 'react-icons/fa';
+import { motion } from 'motion/react';
 
 interface OverlayFrameProps {
   isOpen: boolean;
@@ -11,7 +12,10 @@ export function OverlayFrame({ isOpen, onClose, children }: OverlayFrameProps) {
   if (!isOpen) return null;
 
   return (
-    <div 
+    <motion.div
+      initial={ { opacity: 0 } }
+      animate={{ opacity: 1 }}
+      exit={ { opacity: 0 }}
       className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
       onClick={onClose}
     >
@@ -27,6 +31,6 @@ export function OverlayFrame({ isOpen, onClose, children }: OverlayFrameProps) {
         </button>
         {children}
       </div>
-    </div>
+    </motion.div>
   );
 } 

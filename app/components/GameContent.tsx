@@ -8,6 +8,7 @@ import { InfoOverlay } from './InfoOverlay';
 import { StreakOverlay } from './StreakOverlay';
 import { useLocalStorage } from '../utils/useLocalStorage';
 import { getUserStreakStatus, updateUserStreak } from '../lib/streak';
+import { AnimatePresence, motion } from 'motion/react';
 
 interface GameContentProps {
   cards: Card[];
@@ -46,15 +47,22 @@ export function GameContent({ cards, date }: GameContentProps) {
       <div className="flex flex-col h-full row-start-2">
         <GameArea cards={cards} onPuzzleComplete={handlePuzzleComplete} />
       </div>
-      <InfoOverlay isOpen={isInfoOpen} onClose={() => {
-        setIsInfoOpen(false)
-        setHasSeenInfo("true")
-      }}/>
-      <StreakOverlay 
-        isOpen={isStreakOpen} 
-        onClose={() => setIsStreakOpen(false)} 
-        streak={getUserStreakStatus(date)}
-      />
+      <AnimatePresence>
+        {isInfoOpen &&
+          <InfoOverlay isOpen={isInfoOpen} onClose={() => {
+            setIsInfoOpen(false)
+            setHasSeenInfo("true")
+          }}/>
+        }
+      </AnimatePresence>
+      <AnimatePresence>
+        {isStreakOpen &&
+          <StreakOverlay 
+          isOpen={isStreakOpen} 
+          onClose={() => setIsStreakOpen(false)} 
+          streak={getUserStreakStatus(date)}
+        />}
+      </AnimatePresence>
     </main>
   );
 } 
