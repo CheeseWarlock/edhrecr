@@ -48,9 +48,9 @@ export function getCurrentStreakStatus(storedData: StreakData | null, currentDat
 /**
  * Determine the new streak data for when the current date's game is finished
  */
-export function getUpdatedStreakData(storedData: StreakData | null, currentDate: string): StreakData {
+export function getUpdatedStreakData(storedData: StreakData | null, currentDate: string, success: boolean): StreakData {
   if (!storedData) {
-    return { streak: 1, lastDay: currentDate };
+    return { streak: success ? 1 : 0, lastDay: currentDate };
   }
 
   const lastDay = new Date(storedData.lastDay);
@@ -59,15 +59,20 @@ export function getUpdatedStreakData(storedData: StreakData | null, currentDate:
   const yesterday = new Date(currentDay);
   yesterday.setDate(yesterday.getDate() - 1);
 
+  const isBackInTime = +currentDay < +lastDay; 
+
   // If the last day played was yesterday, increment the streak
   if (lastDay.toDateString() === yesterday.toDateString()) {
-    return { streak: storedData.streak + 1, lastDay: currentDate };
+    return { streak: success ? (storedData.streak + 1) : 0, lastDay: currentDate };
   // If the last day played was today (replayed the same day), keep the streak
   } else if (lastDay.toDateString() === currentDay.toDateString()) {
     return storedData;
+  // Handle edge case of out-of-order plays
+  } else if (isBackInTime) {
+    return storedData;
   // If the last day played was not yesterday or today, reset the streak
   } else {
-    return { streak: 1, lastDay: currentDate };
+    return { streak: success ? 1 : 0, lastDay: currentDate };
   }
 }
 
@@ -83,10 +88,10 @@ export function getUserStreakStatus(currentDate: string): StreakStatus {
 /**
  * Update the user's streak in local storage
  */
-export function updateUserStreak(currentDate: string) {
+export function updateUserStreak(currentDate: string, success: boolean) {
   const storedStreak = localStorage.getItem('edhr-streak');
   const storedData = storedStreak ? JSON.parse(storedStreak) as StreakData : null;
-  const updatedStreakData = getUpdatedStreakData(storedData, currentDate);
+  const updatedStreakData = getUpdatedStreakData(storedData, currentDate, success);
   localStorage.setItem('edhr-streak', JSON.stringify(updatedStreakData));
 }
 

@@ -34,11 +34,11 @@ export function GameContent({ cards, date }: GameContentProps) {
   }
 
   const handlePuzzleComplete = () => {
-    updateUserStreak(date);
+    updateUserStreak(date, true);
   };
 
   const handlePuzzleFailed = () => {
-    clearUserStreak(date);
+    updateUserStreak(date, false);
   }
 
   return (

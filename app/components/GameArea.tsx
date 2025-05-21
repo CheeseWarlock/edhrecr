@@ -42,14 +42,12 @@ export function GameArea({ cards, onPuzzleComplete, onPuzzleFailed }: GameAreaPr
   
     useEffect(() => {
       if (remainingCards.length === 0) {
-        console.log("Puzzle completre")
         onPuzzleComplete();
       }
     }, [remainingCards.length, onPuzzleComplete]);
 
     useEffect(() => {
       if (guessedOrders.length === 5) {
-        console.log("Puzzle failed")
         onPuzzleFailed();
       }
     }, [guessedOrders]);
