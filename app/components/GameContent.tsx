@@ -7,7 +7,7 @@ import { TopBar } from './TopBar';
 import { InfoOverlay } from './InfoOverlay';
 import { StreakOverlay } from './StreakOverlay';
 import { useLocalStorage } from '../utils/useLocalStorage';
-import { getUserStreakStatus, updateUserStreak } from '../lib/streak';
+import { clearUserStreak, getUserStreakStatus, updateUserStreak } from '../lib/streak';
 import { AnimatePresence } from 'motion/react';
 import { CardImage } from './CardImage';
 import { CardViewerContext } from './CardViewerContext';
@@ -37,6 +37,10 @@ export function GameContent({ cards, date }: GameContentProps) {
     updateUserStreak(date);
   };
 
+  const handlePuzzleFailed = () => {
+    clearUserStreak(date);
+  }
+
   return (
     <main
       style={{
@@ -50,7 +54,11 @@ export function GameContent({ cards, date }: GameContentProps) {
         onStreakClick={() => setIsStreakOpen(true)}
       />
       <div className="flex flex-col h-full row-start-2">
-        <GameArea cards={cards} onPuzzleComplete={handlePuzzleComplete} />
+        <GameArea
+          cards={cards}
+          onPuzzleComplete={handlePuzzleComplete}
+          onPuzzleFailed={handlePuzzleFailed}
+          />
       </div>
       <AnimatePresence>
         {isInfoOpen &&

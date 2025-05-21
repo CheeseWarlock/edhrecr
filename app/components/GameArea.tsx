@@ -14,12 +14,13 @@ import FailurePanel from "./FailurePanel";
 interface GameAreaProps {
   cards: Card[];
   onPuzzleComplete: () => void;
+  onPuzzleFailed: () => void;
 }
 
 /**
  * The main game area, containing the previous guesses and the current guess
  */
-export function GameArea({ cards, onPuzzleComplete }: GameAreaProps) {
+export function GameArea({ cards, onPuzzleComplete, onPuzzleFailed }: GameAreaProps) {
     /**
      * The previously guessed orders
      */
@@ -41,9 +42,17 @@ export function GameArea({ cards, onPuzzleComplete }: GameAreaProps) {
   
     useEffect(() => {
       if (remainingCards.length === 0) {
+        console.log("Puzzle completre")
         onPuzzleComplete();
       }
     }, [remainingCards.length, onPuzzleComplete]);
+
+    useEffect(() => {
+      if (guessedOrders.length === 5) {
+        console.log("Puzzle failed")
+        onPuzzleFailed();
+      }
+    }, [guessedOrders]);
   
     const handleLockInGuess = (cardsInCurrentGuess: Card[]) => {
       const correctOrderForRemainingCards = ([...remainingCards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);

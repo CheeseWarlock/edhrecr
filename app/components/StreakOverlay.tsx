@@ -22,9 +22,13 @@ export function StreakOverlay({ isOpen, onClose, streak }: StreakOverlayProps) {
           <p className="text-6xl font-bold text-[#2694AF]">{streak.streakLength}</p>
           <p className="text-xl mt-2">day{streak.streakLength == 1 ? "" : "s"} in a row!</p>
         </div>
-        {streak.isTodayDone ? (
+        {streak.isTodayDone && streak.streakLength > 0 ? (
           <p className="text-center mt-8">
             Keep coming back daily to maintain your streak!
+          </p>
+        ) : streak.isTodayDone ? (
+          <p className="text-center mt-8">
+            Come back tomorrow to restart your streak!
           </p>
         ) : streak.isStreakActive ? (
           <p className="text-center mt-8">
