@@ -18,27 +18,18 @@ export function InfoOverlay({ isOpen, onClose }: InfoOverlayProps) {
   return (
     <OverlayFrame isOpen={isOpen} onClose={onClose}>
       <div className="text-white space-y-4">
-        <h2 className={`text-2xl font-bold mb-6 ${metamorphous.className}`}>How to Play EDHRanker</h2>
+        <h2 className={`text-2xl md:text-4xl font-bold mb-6 ${metamorphous.className}`}>How to Play EDHRanker</h2>
         <p>
-          Welcome to EDHRanker! This is a daily game where you try to guess the popularity ranking of EDH (Commander) cards.
+          EDHRanker is a daily game where you try to guess the popularity of Magic cards in EDH&#47;Commander, in as few guesses as possible.
         </p>
         <p>
-          Each day, you&#39;ll be presented with a set of cards. Your goal is to arrange them in order of their popularity in EDH decks, from most popular to least popular.
+          Each day, you&#39;ll be presented with a set of cards. Drag the cards to arrange them in order of their popularity in EDH decks, from most popular to least popular. Correctly placed cards will be locked in place.
         </p>
-        <p>
-          To play:
-        </p>
-        <ol className="list-decimal list-inside space-y-2">
-          <li>Drag and drop the cards to arrange them in your guessed order</li>
-          <li>Click &#34;Submit Guess&#34; when you&#39;re ready</li>
-          <li>Cards you placed correctly will be locked in place</li>
-          <li>Keep guessing with the remaining cards until you get them all right!</li>
-        </ol>
         <p>
           The rankings are based on EDHRec data, collected from multiple sources like Archidekt and Moxfield deck lists, and provided by the Scryfall API.
         </p>
         <p>
-          Come back each day for a new challenge!
+          Come back each day for a new challenge and keep your streak going!
         </p>
       </div>
     </OverlayFrame>
