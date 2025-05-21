@@ -132,7 +132,7 @@ export function GameArea({ cards, onPuzzleComplete }: GameAreaProps) {
                 })}
               </div>
               <div className="flex flex-col items-center absolute bottom-0 top-0 justify-center">
-                <span className="text-white text-2xl font-bold">You won in {guessedOrders.length} guesses!</span>
+                <span className="text-white text-2xl font-bold">You won in {guessedOrders.length} guess{guessedOrders.length == 1 ? "" : "es"}!</span>
                 <span className="text-white text-lg">Come back tomorrow for another challenge.</span>
               </div>
             </div>

@@ -17,10 +17,10 @@ export function StreakOverlay({ isOpen, onClose, streak }: StreakOverlayProps) {
   return (
     <OverlayFrame isOpen={isOpen} onClose={onClose}>
       <div className="text-white space-y-4">
-        <h2 className={`text-2xl font-bold mb-6 ${metamorphous.className}`}>Your Streak</h2>
+        <h2 className={`text-2xl font-bold mb-2 ${metamorphous.className}`}>Your Streak</h2>
         <div className="text-center">
           <p className="text-6xl font-bold text-[#2694AF]">{streak.streakLength}</p>
-          <p className="text-xl mt-2">days in a row!</p>
+          <p className="text-xl mt-2">day{streak.streakLength == 1 ? "" : "s"} in a row!</p>
         </div>
         {streak.isTodayDone ? (
           <p className="text-center mt-8">
