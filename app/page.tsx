@@ -16,3 +16,5 @@ export default async function Home() {
 
   return <GameContent cards={dailyCardsData.cards} date={dailyCardsData.date} />;
 }
+
+export const dynamic = 'force-dynamic';
