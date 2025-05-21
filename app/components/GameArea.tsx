@@ -8,6 +8,7 @@ import { GuessResult } from "./GuessResult";
 import { CurrentGuess } from "./CurrentGuess";
 import { CardImage } from "./CardImage";
 import BottomBar from "./BottomBar";
+import SuccessPanel from "./SuccessPanel";
 
 interface GameAreaProps {
   cards: Card[];
@@ -110,46 +111,18 @@ export function GameArea({ cards, onPuzzleComplete }: GameAreaProps) {
         </div>
         <div className="flex-shrink-0">
           {remainingCards.length == 0 ? (
-            <div className="flex flex-col w-full py-6 md:px-6 bg-[#444] max-w-[1792px] mt-0 md:rounded-xl justify-center items-center relative">
-              <div className="w-full flex flex-row" style={{
-                touchAction: 'none',
-                filter: 'grayscale(1) opacity(0.3)',
-                mask: `linear-gradient(
-                  rgba(0, 0, 0, 0.5) 0px, 
-                  rgb(0, 0, 0) 22%, 
-                  rgb(0, 0, 0) 78%, 
-                  rgba(0, 0, 0, 0.5) 100%) 100% 0% / 100% 102%`}}>
-                {correctCards.map((card, idx) => {
-                  return (
-                    <div key={idx} style={{
-                      width: `calc(100% * (1 / ${correctCards.length}))`,
-                      animation: `1s linear ${idx * 0.2}s spinner`,
-                      animationDelay: `${idx * 0.5}`
-                      }}>
-                      <CardImage card={card.card} />
-                    </div>
-                  )
-                })}
-              </div>
-              <div className="flex flex-col items-center absolute bottom-0 top-0 justify-center">
-                <span className="text-white text-2xl font-bold">You won in {guessedOrders.length} guess{guessedOrders.length == 1 ? "" : "es"}!</span>
-                <span className="text-white text-lg">Come back tomorrow for another challenge.</span>
-              </div>
-            </div>
+            <SuccessPanel correctCards={correctCards} guessedOrders={guessedOrders} />
           ) : (
             <CurrentGuess 
               remainingCards={currentGuess} 
               correctIndices={correctIndices} 
-              onGuessSubmit={handleLockInGuess}
               correctCards={correctCards}
               onDragEnd={handleDragEnd}
               guessesMade={guessedOrders.length}
             />
           )}
         </div>
-        {(remainingCards.length == 0) && (
-          <BottomBar disabled={true} />
-        )}
+      <BottomBar onSubmit={() => { if (remainingCards.length) handleLockInGuess(currentGuess)}} />
       </div>
     );
   } 

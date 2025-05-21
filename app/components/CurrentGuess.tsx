@@ -31,10 +31,9 @@ interface Card {
 /**
  * The sortable row of cards making up the player's current guess
  */
-export function CurrentGuess({ remainingCards, correctIndices, onGuessSubmit, correctCards, onDragEnd, guessesMade }: { 
+export function CurrentGuess({ remainingCards, correctIndices, correctCards, onDragEnd, guessesMade }: { 
   remainingCards: Card[], 
   correctIndices: boolean[], 
-  onGuessSubmit: (cards: Card[]) => void, 
   correctCards: { card: Card, index: number }[],
   onDragEnd: (event: DragEndEvent) => void,
   guessesMade: number
@@ -81,7 +80,7 @@ export function CurrentGuess({ remainingCards, correctIndices, onGuessSubmit, co
           items={remainingCards.map((item) => item.id)}
           strategy={horizontalListSortingStrategy}
         >
-          <div className="flex flex-col w-full py-6 md:px-6 bg-[#444] max-w-[1792px] mt-0 md:rounded-xl relative z-10" style={{ touchAction: 'none' }}>
+          <div className="flex flex-col w-full py-6 md:px-6 bg-[#444] max-w-[1792px] mt-0 md:rounded-xl relative z-10 justify-center" style={{ touchAction: 'none' }}>
             <div className="flex flex-row items-center justify-center mb-4"><span className="text-2xl">{`${5 - guessesMade}/5`}</span><span>&nbsp;guess{5 - guessesMade == 1 ? '' : 'es'} left</span></div>
           <GhostCardList correctCards={correctCards} correctIndices={correctIndices} positioning="absolute" />
             <div className="flex flex-row" style={{ touchAction: 'none' }}>
@@ -96,7 +95,6 @@ export function CurrentGuess({ remainingCards, correctIndices, onGuessSubmit, co
           </div>
         </SortableContext>
       </DndContext>
-      <BottomBar onSubmit={() => onGuessSubmit(remainingCards)} />
     </>
   )
 }
