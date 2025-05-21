@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Proza_Libre } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const prozaLibre = Proza_Libre({ weight: ["400", "600"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: `${process.env.NEXT_PUBLIC_TITLE ?? ""} EDHRanker`,
@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={prozaLibre.className}>{children}</body>
     </html>
   );
 }

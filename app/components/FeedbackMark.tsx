@@ -19,7 +19,7 @@ export function FeedbackMark({ feedback }: { feedback: Feedback }) {
   return (
     <>
     <div style={{ background: `linear-gradient(45deg, transparent 42%, ${color} 65%), radial-gradient(${color} 0%, ${color} 45%, ${shadowColor} 55%, ${color} 66%)` }}
-    className={`flex absolute bottom-0 border-2 border-black text-center text-white md:w-[48px] md:h-[48px] w-[28px] h-[28px] rounded-full items-center justify-center md:text-2xl text-xl`}>
+    className={`pointer-events-none flex absolute bottom-0 border-2 border-black text-center text-white md:w-[48px] md:h-[48px] w-[28px] h-[28px] rounded-full items-center justify-center md:text-2xl text-xl`}>
       {feedback === 'correct' ? '✓' : feedback === 'off-by-one' ? '⇔' : '✗'}
     </div>
     </>

@@ -41,7 +41,6 @@ export function GameArea({ cards, onPuzzleComplete }: GameAreaProps) {
     }, [remainingCards.length, onPuzzleComplete]);
   
     const handleLockInGuess = (cardsInCurrentGuess: Card[]) => {
-      console.log('handleLockInGuess', cardsInCurrentGuess.map(card => card.name));
       const correctOrderForRemainingCards = ([...remainingCards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
       const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
       const newCorrectIndices = [...correctIndices];

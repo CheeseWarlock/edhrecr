@@ -8,7 +8,10 @@ import { InfoOverlay } from './InfoOverlay';
 import { StreakOverlay } from './StreakOverlay';
 import { useLocalStorage } from '../utils/useLocalStorage';
 import { getUserStreakStatus, updateUserStreak } from '../lib/streak';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
+import { CardImage } from './CardImage';
+import { CardViewerContext } from './CardViewerContext';
+import { CardViewFrame } from './CardViewFrame';
 
 interface GameContentProps {
   cards: Card[];
@@ -20,6 +23,7 @@ export function GameContent({ cards, date }: GameContentProps) {
   const [isInfoOpen, setIsInfoOpen] = useState(hasSeenInfo !== "true");
   const [isStreakOpen, setIsStreakOpen] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
+  const [viewingCard, setViewingCard] = useState<Card | null>(null);
 
   useEffect(() => {
     setHasMounted(true);
@@ -40,6 +44,7 @@ export function GameContent({ cards, date }: GameContentProps) {
       }}
       className="items-center justify-items-center min-h-screen md:p-8 bg-[#222] flex justify-center pt-16 md:pt-16"
     >
+      <CardViewerContext value={ (card) => {setViewingCard(card);} }>
       <TopBar 
         onInfoClick={() => setIsInfoOpen(true)} 
         onStreakClick={() => setIsStreakOpen(true)}
@@ -63,6 +68,12 @@ export function GameContent({ cards, date }: GameContentProps) {
           streak={getUserStreakStatus(date)}
         />}
       </AnimatePresence>
+      <AnimatePresence>
+        {viewingCard &&
+          <CardViewFrame isOpen={true} onClose={() => { setViewingCard(null)} }><CardImage card={viewingCard} /></CardViewFrame>
+        }
+      </AnimatePresence>
+      </CardViewerContext>
     </main>
   );
 } 

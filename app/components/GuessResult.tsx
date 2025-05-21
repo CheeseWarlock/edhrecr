@@ -46,7 +46,6 @@ export function GuessResult({ guess, correctOrder }: { guess: Card[], correctOrd
                   }}
                 >
                   <CardImage card={card} />
-                  <div className="w-full h-full absolute top-0"></div>
                 </div>
                 <FeedbackMark feedback={feedback} />
               </div>

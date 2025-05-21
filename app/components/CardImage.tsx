@@ -1,12 +1,17 @@
 import Image from "next/image";
 import { Card } from "../types";
+import { useContext } from "react";
+import { CardViewerContext } from "./CardViewerContext";
 
 /**
  * A card image that scales elegantly with border radius.
  */
 export function CardImage({ card }: { card: Card }) {
+  const callback = useContext(CardViewerContext);
     return (<Image 
-        src={card.image_url} 
+        src={card.image_url}
+        
+        onClick={() => { callback(card) }}
         alt={card.name}
         width={256}
         height={357}
