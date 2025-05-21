@@ -19,6 +19,7 @@ import { SortableCard } from './SortableCard';
 import { restrictToParentElement } from '@dnd-kit/modifiers';
 import { CardImage } from './CardImage';
 import { GhostCardList } from './GhostCardList';
+import BottomBar from './BottomBar';
 
 interface Card {
   id: string;
@@ -95,24 +96,7 @@ export function CurrentGuess({ remainingCards, correctIndices, onGuessSubmit, co
           </div>
         </SortableContext>
       </DndContext>
-      <div className="flex flex-row gap-4 max-w-[1792px] justify-between py-2 px-2 md:px-0">
-        <div>
-          <div className="flex flex-row gap-2 items-center">
-            <span>◀</span><span>Most Popular</span>
-          </div>
-        </div>
-        <button
-          onClick={() => onGuessSubmit(remainingCards)}
-          className="cursor-pointer px-8 py-4 bg-[#2694AF] text-white rounded-xl hover:bg-[#1e7a8f] transition-colors text-lg font-semibold"
-        >
-          Submit Guess
-        </button>
-        <div>
-          <div className="flex flex-row gap-2 items-center text-right">
-            <span>Least Popular</span><span>▶</span>
-          </div>
-        </div>
-      </div>
+      <BottomBar onSubmit={() => onGuessSubmit(remainingCards)} />
     </>
   )
 }

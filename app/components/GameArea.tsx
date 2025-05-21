@@ -7,6 +7,7 @@ import { Card } from "../types";
 import { GuessResult } from "./GuessResult";
 import { CurrentGuess } from "./CurrentGuess";
 import { CardImage } from "./CardImage";
+import BottomBar from "./BottomBar";
 
 interface GameAreaProps {
   cards: Card[];
@@ -147,23 +148,7 @@ export function GameArea({ cards, onPuzzleComplete }: GameAreaProps) {
           )}
         </div>
         {(remainingCards.length == 0) && (
-          <div className="flex flex-row gap-4 max-w-[1792px] justify-between py-2 px-2 md:px-0">
-            <div>
-              <div className="flex flex-row gap-2 items-center">
-              <span>◀</span><span>Most Popular</span>
-            </div>
-          </div>
-          <button
-            className="px-8 py-4 bg-[#aaaaaa] text-white rounded-xl  transition-colors text-lg font-semibold"
-          >
-            Submit Guess
-          </button>
-          <div>
-            <div className="flex flex-row gap-2 items-center text-right">
-              <span>Least Popular</span><span>▶</span>
-            </div>
-            </div>
-          </div>
+          <BottomBar disabled={true} />
         )}
       </div>
     );
