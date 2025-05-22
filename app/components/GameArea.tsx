@@ -10,21 +10,34 @@ import { CardImage } from "./CardImage";
 import BottomBar from "./BottomBar";
 import SuccessPanel from "./SuccessPanel";
 import FailurePanel from "./FailurePanel";
+import { useLocalStorage } from "../utils/useLocalStorage";
 
 interface GameAreaProps {
   cards: Card[];
   onPuzzleComplete: () => void;
   onPuzzleFailed: () => void;
+  date: string;
 }
 
 /**
  * The main game area, containing the previous guesses and the current guess
  */
-export function GameArea({ cards, onPuzzleComplete, onPuzzleFailed }: GameAreaProps) {
+export function GameArea({ cards, date, onPuzzleComplete, onPuzzleFailed }: GameAreaProps) {
+    /**
+     * Load previously guessed orders if they're in local storage
+     */
+    let cardss = [];
+    try {
+      const previousLoad = JSON.parse(localStorage.getItem("edhr-guesses")!);
+      if (previousLoad.date == date) {
+        cardss = previousLoad.guesses.map((guess: number[]) => guess.map((cardIdx: number) => cards[cardIdx]));
+      }
+    } catch (e) {}
+    
     /**
      * The previously guessed orders
      */
-    const [guessedOrders, setGuessedOrders] = useState<Card[][]>([]);
+    const [guessedOrders, setGuessedOrders] = useState<Card[][]>(cardss);
     /**
      * The cards not yet placed correctly
      */
@@ -37,6 +50,8 @@ export function GameArea({ cards, onPuzzleComplete, onPuzzleFailed }: GameAreaPr
      * The current guess being built
      */
     const [currentGuess, setCurrentGuess] = useState<Card[]>(cards);
+
+    const [_, setStoredGuesses] = useLocalStorage("edhr-guesses", "{}");
 
     const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
   
@@ -98,6 +113,14 @@ export function GameArea({ cards, onPuzzleComplete, onPuzzleFailed }: GameAreaPr
           newOrder.push(currentGuess[currentOrderIndex++]);
         }
       }
+
+      setStoredGuesses(
+        {
+          date: date,
+          guesses: [...guessedOrders, newOrder].map(order => order.map(card => cards.indexOf(card)))
+        }
+      )
+
       setGuessedOrders([...guessedOrders, newOrder]);
     };
 

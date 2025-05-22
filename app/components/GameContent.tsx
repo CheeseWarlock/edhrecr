@@ -56,6 +56,7 @@ export function GameContent({ cards, date }: GameContentProps) {
       <div className="flex flex-col h-full row-start-2">
         <GameArea
           cards={cards}
+          date={date}
           onPuzzleComplete={handlePuzzleComplete}
           onPuzzleFailed={handlePuzzleFailed}
           />
