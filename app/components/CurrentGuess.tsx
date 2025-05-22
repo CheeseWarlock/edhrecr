@@ -19,7 +19,6 @@ import { SortableCard } from './SortableCard';
 import { restrictToParentElement } from '@dnd-kit/modifiers';
 import { CardImage } from './CardImage';
 import { GhostCardList } from './GhostCardList';
-import BottomBar from './BottomBar';
 
 interface Card {
   id: string;

@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 import { Card } from "../types";
 import { GuessResult } from "./GuessResult";
 import { CurrentGuess } from "./CurrentGuess";
-import { CardImage } from "./CardImage";
 import BottomBar from "./BottomBar";
 import SuccessPanel from "./SuccessPanel";
 import FailurePanel from "./FailurePanel";
@@ -23,37 +22,57 @@ interface GameAreaProps {
  * The main game area, containing the previous guesses and the current guess
  */
 export function GameArea({ cards, date, onPuzzleComplete, onPuzzleFailed }: GameAreaProps) {
+    const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
+
     /**
      * Load previously guessed orders if they're in local storage
      */
-    let cardss = [];
+    let guessesFromPreviousLoad: Card[][] = [];
+    let remainingCardsFromPreviousLoad = cards;
+    let correctIndicesFromPreviousLoad: boolean[] = new Array(cards.length).fill(false);
+    let currentGuessFromPreviousLoad = cards;
+
     try {
       const previousLoad = JSON.parse(localStorage.getItem("edhr-guesses")!);
       if (previousLoad.date == date) {
-        cardss = previousLoad.guesses.map((guess: number[]) => guess.map((cardIdx: number) => cards[cardIdx]));
+        guessesFromPreviousLoad = previousLoad.guesses.map((guess: number[]) => guess.map((cardIdx: number) => cards[cardIdx]));
+
+        if (guessesFromPreviousLoad.length) {
+          const lastGuess = guessesFromPreviousLoad[guessesFromPreviousLoad.length - 1];
+
+          remainingCardsFromPreviousLoad = lastGuess.filter((item, index) => {
+            return correctOrder.indexOf(item) !== index;
+          });
+
+          correctIndicesFromPreviousLoad = correctOrder.map((card, index) => {
+            return lastGuess.indexOf(card) === index;
+          });
+
+          currentGuessFromPreviousLoad = lastGuess.filter((card, index) => {
+            return !(correctIndicesFromPreviousLoad[index]);
+          });
+        }
       }
     } catch (e) {}
     
     /**
      * The previously guessed orders
      */
-    const [guessedOrders, setGuessedOrders] = useState<Card[][]>(cardss);
+    const [guessedOrders, setGuessedOrders] = useState<Card[][]>(guessesFromPreviousLoad);
     /**
      * The cards not yet placed correctly
      */
-    const [remainingCards, setRemainingCards] = useState<Card[]>(cards);
+    const [remainingCards, setRemainingCards] = useState<Card[]>(remainingCardsFromPreviousLoad);
     /**
      * The indices of the cards that have been placed correctly
      */
-    const [correctIndices, setCorrectIndices] = useState<boolean[]>(new Array(cards.length).fill(false));
+    const [correctIndices, setCorrectIndices] = useState<boolean[]>(correctIndicesFromPreviousLoad);
     /**
      * The current guess being built
      */
-    const [currentGuess, setCurrentGuess] = useState<Card[]>(cards);
+    const [currentGuess, setCurrentGuess] = useState<Card[]>(currentGuessFromPreviousLoad);
 
     const [_, setStoredGuesses] = useLocalStorage("edhr-guesses", "{}");
-
-    const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
   
     useEffect(() => {
       if (remainingCards.length === 0) {
