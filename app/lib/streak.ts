@@ -77,6 +77,17 @@ export function getUpdatedStreakData(storedData: StreakData | null, currentDate:
 }
 
 /**
+ * Update the user's guess count in local storage
+ * If the user failed, pass 0, as that's how it's stored
+ */
+export function incrementUserGuessCount(newResult: number) {
+  const storedGuessCount = localStorage.getItem('edhr-guess-count');
+  const guessCount = storedGuessCount ? JSON.parse(storedGuessCount) : [0, 0, 0, 0, 0, 0];
+  guessCount[newResult] = (guessCount[newResult] || 0) + 1;
+  localStorage.setItem('edhr-guess-count', JSON.stringify(guessCount));
+}
+
+/**
  * Get the user's streak status based on local storage
  */
 export function getUserStreakStatus(currentDate: string): StreakStatus {
@@ -88,9 +99,16 @@ export function getUserStreakStatus(currentDate: string): StreakStatus {
 /**
  * Update the user's streak in local storage
  */
-export function updateUserStreak(currentDate: string, success: boolean) {
+export function updateUserStreak(currentDate: string, success: boolean, guessesCompleted?: number) {
+  console.log('updateUserStreak', currentDate, success, guessesCompleted);
   const storedStreak = localStorage.getItem('edhr-streak');
   const storedData = storedStreak ? JSON.parse(storedStreak) as StreakData : null;
-  const updatedStreakData = getUpdatedStreakData(storedData, currentDate, success);
-  localStorage.setItem('edhr-streak', JSON.stringify(updatedStreakData));
+  const newData = getUpdatedStreakData(storedData, currentDate, success);
+  localStorage.setItem('edhr-streak', JSON.stringify(newData));
+
+  if (success && guessesCompleted !== undefined) {
+    incrementUserGuessCount(guessesCompleted);
+  } else if (!success) {
+    incrementUserGuessCount(0);
+  }
 }

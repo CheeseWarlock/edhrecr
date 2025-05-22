@@ -33,8 +33,8 @@ export function GameContent({ cards, date }: GameContentProps) {
     return null;
   }
 
-  const handlePuzzleComplete = () => {
-    updateUserStreak(date, true);
+  const handlePuzzleComplete = (guessesCompleted: number) => {
+    updateUserStreak(date, true, guessesCompleted);
   };
 
   const handlePuzzleFailed = () => {

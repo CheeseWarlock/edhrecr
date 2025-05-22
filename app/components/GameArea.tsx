@@ -13,7 +13,7 @@ import { useLocalStorage } from "../utils/useLocalStorage";
 
 interface GameAreaProps {
   cards: Card[];
-  onPuzzleComplete: () => void;
+  onPuzzleComplete: (guessesCompleted: number) => void;
   onPuzzleFailed: () => void;
   date: string;
 }
@@ -31,6 +31,7 @@ export function GameArea({ cards, date, onPuzzleComplete, onPuzzleFailed }: Game
     let remainingCardsFromPreviousLoad = cards;
     let correctIndicesFromPreviousLoad: boolean[] = new Array(cards.length).fill(false);
     let currentGuessFromPreviousLoad = cards;
+    let didLoadPreviousGuesses = false;
 
     try {
       const previousLoad = JSON.parse(localStorage.getItem("edhr-guesses")!);
@@ -51,6 +52,8 @@ export function GameArea({ cards, date, onPuzzleComplete, onPuzzleFailed }: Game
           currentGuessFromPreviousLoad = lastGuess.filter((card, index) => {
             return !(correctIndicesFromPreviousLoad[index]);
           });
+
+          didLoadPreviousGuesses = true;
         }
       }
     } catch (_) {}
@@ -72,19 +75,19 @@ export function GameArea({ cards, date, onPuzzleComplete, onPuzzleFailed }: Game
      */
     const [currentGuess, setCurrentGuess] = useState<Card[]>(currentGuessFromPreviousLoad);
 
-    const [_, setStoredGuesses] = useLocalStorage("edhr-guesses", "{}");
+    const [_storedGuesses, setStoredGuesses] = useLocalStorage<{ date: string, guesses: number[][] }>("edhr-guesses", { date: date, guesses: [] });
   
     useEffect(() => {
-      if (remainingCards.length === 0) {
-        onPuzzleComplete();
+      if (remainingCards.length === 0 && !didLoadPreviousGuesses) {
+        onPuzzleComplete(guessedOrders.length);
       }
-    }, [remainingCards.length, onPuzzleComplete]);
+    }, [remainingCards.length, onPuzzleComplete, guessedOrders.length, didLoadPreviousGuesses]);
 
     useEffect(() => {
-      if (guessedOrders.length === 5) {
+      if (guessedOrders.length === 5 && !didLoadPreviousGuesses) {
         onPuzzleFailed();
       }
-    }, [guessedOrders, onPuzzleFailed]);
+    }, [guessedOrders, onPuzzleFailed, didLoadPreviousGuesses]);
   
     const handleLockInGuess = (cardsInCurrentGuess: Card[]) => {
       const correctOrderForRemainingCards = ([...remainingCards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);

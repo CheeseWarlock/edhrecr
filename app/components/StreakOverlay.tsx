@@ -3,6 +3,7 @@ import { Metamorphous } from "next/font/google";
 import { OverlayFrame } from './OverlayFrame';
 import { StreakStatus } from '../lib/streak';
 import TinyChart from './TinyChart';
+import { useLocalStorage } from '../utils/useLocalStorage';
 const metamorphous = Metamorphous({ 
   weight: '400',
   subsets: ["latin"],
@@ -15,6 +16,16 @@ interface StreakOverlayProps {
 }
 
 export function StreakOverlay({ isOpen, onClose, streak }: StreakOverlayProps) {
+  const [guessCount] = useLocalStorage('edhr-guess-count', [0, 0, 0, 0, 0, 0]);
+
+  const guessObject = [
+    { label: '1', value: guessCount[1] },
+    { label: '2', value: guessCount[2] },
+    { label: '3', value: guessCount[3] },
+    { label: '4', value: guessCount[4] },
+    { label: '5', value: guessCount[5] },
+    { label: 'X', value: guessCount[0] },
+  ];
   return (
     <OverlayFrame isOpen={isOpen} onClose={onClose}>
       <div className="text-white space-y-4">
@@ -42,7 +53,7 @@ export function StreakOverlay({ isOpen, onClose, streak }: StreakOverlayProps) {
         )}
         <h2 className={`text-2xl md:text-4xl font-bold mb-2 ${metamorphous.className}`}>Your Stats</h2>
         <div className="md:px-6 lg:px-12">
-          <TinyChart data={[ { label: '1', value: 2 }, { label: '2', value: 4 }, { label: '3', value: 10 }, { label: '4', value: 3 }, { label: '5', value: 2 }, { label: 'X', value: 1 }]} />
+          <TinyChart data={guessObject} />
         </div>
         <div className="flex flex-row text-lg justify-around">
           <div>
