@@ -150,3 +150,5 @@ export async function getCards(): Promise<DailyCollection> {
     date: today
   };
 }
+
+export const dynamic = 'force-dynamic';
