@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Proza_Libre } from "next/font/google";
+import { Analytics } from '@vercel/analytics/next';
+
 import "./globals.css";
 
 const prozaLibre = Proza_Libre({ weight: ["400", "600"], subsets: ["latin"] });
@@ -16,7 +18,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={prozaLibre.className}>{children}</body>
+      <body className={prozaLibre.className}>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
