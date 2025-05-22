@@ -6,7 +6,7 @@ export default function BottomBar({ onSubmit, disabled } : { onSubmit?: () => vo
       </div>
     </div>
     <button
-      onClick={() => onSubmit?.()}
+      onClick={() => { if (!disabled) onSubmit?.()}}
       className={`${disabled ? 'bg-[#aaaaaa]' : 'bg-[#2694AF] cursor-pointer hover:bg-[#1e7a8f]' } px-8 py-4 text-white rounded-xl transition-colors text-lg font-semibold`}
     >
       Submit Guess

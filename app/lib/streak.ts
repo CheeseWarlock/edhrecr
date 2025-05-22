@@ -100,7 +100,6 @@ export function getUserStreakStatus(currentDate: string): StreakStatus {
  * Update the user's streak in local storage
  */
 export function updateUserStreak(currentDate: string, success: boolean, guessesCompleted?: number) {
-  console.log('updateUserStreak', currentDate, success, guessesCompleted);
   const storedStreak = localStorage.getItem('edhr-streak');
   const storedData = storedStreak ? JSON.parse(storedStreak) as StreakData : null;
   const newData = getUpdatedStreakData(storedData, currentDate, success);

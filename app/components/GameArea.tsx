@@ -2,7 +2,7 @@
 
 import { DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card } from "../types";
 import { GuessResult } from "./GuessResult";
 import { CurrentGuess } from "./CurrentGuess";
@@ -18,6 +18,8 @@ interface GameAreaProps {
   date: string;
 }
 
+let didAttemptLoad = false;
+
 /**
  * The main game area, containing the previous guesses and the current guess
  */
@@ -31,11 +33,13 @@ export function GameArea({ cards, date, onPuzzleComplete, onPuzzleFailed }: Game
     let remainingCardsFromPreviousLoad = cards;
     let correctIndicesFromPreviousLoad: boolean[] = new Array(cards.length).fill(false);
     let currentGuessFromPreviousLoad = cards;
-    let didLoadPreviousGuesses = false;
 
-    try {
-      const previousLoad = JSON.parse(localStorage.getItem("edhr-guesses")!);
-      if (previousLoad.date == date) {
+    if (!didAttemptLoad) {
+      didAttemptLoad = true;
+
+      const previousLoadString = localStorage.getItem("edhr-guesses");
+      const previousLoad = previousLoadString ? JSON.parse(previousLoadString) : null;
+      if (previousLoad && previousLoad.date == date) {
         guessesFromPreviousLoad = previousLoad.guesses.map((guess: number[]) => guess.map((cardIdx: number) => cards[cardIdx]));
 
         if (guessesFromPreviousLoad.length) {
@@ -52,11 +56,9 @@ export function GameArea({ cards, date, onPuzzleComplete, onPuzzleFailed }: Game
           currentGuessFromPreviousLoad = lastGuess.filter((card, index) => {
             return !(correctIndicesFromPreviousLoad[index]);
           });
-
-          didLoadPreviousGuesses = true;
         }
       }
-    } catch (_) {}
+    }
     
     /**
      * The previously guessed orders
@@ -76,18 +78,6 @@ export function GameArea({ cards, date, onPuzzleComplete, onPuzzleFailed }: Game
     const [currentGuess, setCurrentGuess] = useState<Card[]>(currentGuessFromPreviousLoad);
 
     const [_storedGuesses, setStoredGuesses] = useLocalStorage<{ date: string, guesses: number[][] }>("edhr-guesses", { date: date, guesses: [] });
-  
-    useEffect(() => {
-      if (remainingCards.length === 0 && !didLoadPreviousGuesses) {
-        onPuzzleComplete(guessedOrders.length);
-      }
-    }, [remainingCards.length, onPuzzleComplete, guessedOrders.length, didLoadPreviousGuesses]);
-
-    useEffect(() => {
-      if (guessedOrders.length === 5 && !didLoadPreviousGuesses) {
-        onPuzzleFailed();
-      }
-    }, [guessedOrders, onPuzzleFailed, didLoadPreviousGuesses]);
   
     const handleLockInGuess = (cardsInCurrentGuess: Card[]) => {
       const correctOrderForRemainingCards = ([...remainingCards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
@@ -112,6 +102,12 @@ export function GameArea({ cards, date, onPuzzleComplete, onPuzzleFailed }: Game
       setRemainingCards(wrongCards);
       setCorrectIndices(newCorrectIndices);
       setCurrentGuess(wrongCards);
+
+      if (wrongCards.length == 0) {
+        onPuzzleComplete(guessedOrders.length + 1);
+      } else if (guessedOrders.length == 4) {
+        onPuzzleFailed();
+      }
     };
   
     const handleDragEnd = (event: DragEndEvent) => {
@@ -177,7 +173,7 @@ export function GameArea({ cards, date, onPuzzleComplete, onPuzzleFailed }: Game
           }
           </div>
         </div>
-      <BottomBar onSubmit={() => { if (remainingCards.length) handleLockInGuess(currentGuess)}} />
+      <BottomBar disabled={remainingCards.length == 0 || guessedOrders.length == 5} onSubmit={() => { if (remainingCards.length) handleLockInGuess(currentGuess)}} />
       </div>
     );
   } 
