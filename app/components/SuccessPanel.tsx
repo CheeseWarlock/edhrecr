@@ -31,6 +31,6 @@ export default function SuccessPanel({ correctCards, guessedOrders }: {
               </div>
               <div className="flex flex-col items-center absolute bottom-0 top-0 justify-center w-full items-center pointer-events-none">
                 <span className="text-white text-2xl font-bold">You won in {guessedOrders.length} guess{guessedOrders.length == 1 ? "" : "es"}!</span>
-                <span className="text-white text-lg">Come back tomorrow for another challenge.</span>
+                <span className="text-white md:text-lg text-center">Come back tomorrow for another challenge.</span>
               </div></>
 }

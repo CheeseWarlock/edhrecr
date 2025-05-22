@@ -23,7 +23,9 @@ export function InfoOverlay({ isOpen, onClose }: InfoOverlayProps) {
           EDHRanker is a daily game where you try to guess the popularity of Magic cards in EDH&#47;Commander, in as few guesses as possible.
         </p>
         <p>
-          Each day, you&#39;ll be presented with a set of cards. Drag the cards to arrange them in order of their popularity in EDH decks, from most popular to least popular. Correctly placed cards will be locked in place.
+          Each day, you&#39;ll be presented with a set of cards.
+          Drag the cards to arrange them in order of their popularity in EDH decks, from most popular to least popular.
+          Correctly placed cards will be locked in place. Tap a card to enlarge it.
         </p>
         <p>
           The rankings are based on EDHRec data, collected from multiple sources like Archidekt and Moxfield deck lists, and provided by the Scryfall API.

@@ -22,7 +22,7 @@ export default function TinyChart({ data } : { data: { label: string, value: num
                         width: `calc(100% / ${data.length})`}}
                         className={`p-1 text-center text-black md:mx-4 rounded-md`}>
                         <span
-                            className={` ${datum.value <= (sum / 20) ? `rounded-sm p-1 relative top-[-36px]` : '' }`}
+                            className={` ${datum.value <= (sum / 20) ? `rounded-full p-1 relative top-[-36px]` : '' }`}
                             style={{ background: `${COLOR_MAP[datum.label]}` }}
                             >×{datum.value}</span>
                 </div>

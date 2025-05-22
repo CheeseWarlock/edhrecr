@@ -37,17 +37,17 @@ export function StreakOverlay({ isOpen, onClose, streak }: StreakOverlayProps) {
         <h2 className={`text-2xl md:text-4xl font-bold mb-6 ${metamorphous.className}`}>Your Stats</h2>
         
         <div className="flex flex-row justify-around mb-2">
-          <div className="flex flex-col items-center">
-            <span className="text-lg mb-2">Current Streak</span>
-            <span className="text-4xl font-bold text-[#2694AF]">{streak.streakLength}</span>
+          <div className="flex flex-col items-center text-center">
+            <span className="md:text-lg mb-2 mx-2">Current Streak</span>
+            <span className="text-2xl md:text-4xl font-bold text-[#2694AF]">{streak.streakLength}</span>
           </div>
-          <div className="flex flex-col items-center">
-            <span className="text-lg mb-2">Total Plays</span>
-            <span className="text-4xl font-bold text-[#2694AF]">{totalPlays}</span>
+          <div className="flex flex-col items-center text-center">
+            <span className="md:text-lg mb-2 mx-2">Total Plays</span>
+            <span className="text-2xl md:text-4xl font-bold text-[#2694AF]">{totalPlays}</span>
           </div>
-          <div className="flex flex-col items-center">
-            <span className="text-lg mb-2">Average Guesses</span>
-            <span className="text-4xl font-bold text-[#2694AF]">{averageGuesses}</span>
+          <div className="flex flex-col items-center text-center">
+            <span className="md:text-lg mb-2 mx-2">Average Guesses</span>
+            <span className="text-2xl md:text-4xl font-bold text-[#2694AF]">{averageGuesses}</span>
           </div>
         </div>
 
