@@ -53,7 +53,7 @@ export function GameArea({ cards, date, onPuzzleComplete, onPuzzleFailed }: Game
           });
         }
       }
-    } catch (e) {}
+    } catch (_) {}
     
     /**
      * The previously guessed orders
@@ -84,7 +84,7 @@ export function GameArea({ cards, date, onPuzzleComplete, onPuzzleFailed }: Game
       if (guessedOrders.length === 5) {
         onPuzzleFailed();
       }
-    }, [guessedOrders]);
+    }, [guessedOrders, onPuzzleFailed]);
   
     const handleLockInGuess = (cardsInCurrentGuess: Card[]) => {
       const correctOrderForRemainingCards = ([...remainingCards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);

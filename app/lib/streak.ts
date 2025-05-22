@@ -94,16 +94,3 @@ export function updateUserStreak(currentDate: string, success: boolean) {
   const updatedStreakData = getUpdatedStreakData(storedData, currentDate, success);
   localStorage.setItem('edhr-streak', JSON.stringify(updatedStreakData));
 }
-
-/**
- * Reset the user's streak in local storage to 0
- */
-export function clearUserStreak(currentDate: string) {
-  const storedStreak = localStorage.getItem('edhr-streak');
-  const storedData = storedStreak ? JSON.parse(storedStreak) as StreakData : null;
-  const updatedStreakData: StreakData = {
-    streak: 0,
-    lastDay: currentDate,
-  };
-  localStorage.setItem('edhr-streak', JSON.stringify(updatedStreakData));
-}
