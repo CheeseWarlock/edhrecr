@@ -1,3 +1,5 @@
+import { Card } from "../types";
+
 /**
  * Streak data as stored in local storage
  */
@@ -13,6 +15,13 @@ export interface StreakStatus {
   streakLength: number;
   isStreakActive: boolean;
   isTodayDone: boolean;
+}
+
+export interface GameState {
+  guesses: Card[][];
+  remainingCards: Card[];
+  correctIndices: boolean[];
+  currentGuess: Card[];
 }
 
 /**
@@ -110,4 +119,47 @@ export function updateUserStreak(currentDate: string, success: boolean, guessesC
   } else if (!success) {
     incrementUserGuessCount(0);
   }
+}
+
+/**
+ * Get the user's current game from local storage
+ * If there's a game in progress, returns the game state
+ * Otherwise, returns null
+ */
+export const getUserCurrentGame = (cards: Card[], date: string): GameState | null => {
+    let guesses: Card[][] = [];
+    let remainingCards: Card[] = cards;
+    let correctIndices: boolean[] = new Array(cards.length).fill(false);
+    let currentGuess: Card[] = cards;
+
+    const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
+
+    const previousLoadString = localStorage.getItem("edhr-guesses");
+    const previousLoad = previousLoadString ? JSON.parse(previousLoadString) : null;
+    if (previousLoad && previousLoad.date == date) {
+      guesses = previousLoad.guesses.map((guess: number[]) => guess.map((cardIdx: number) => cards[cardIdx]));
+
+      if (guesses.length) {
+        const lastGuess = guesses[guesses.length - 1];
+
+        remainingCards = lastGuess.filter((item, index) => {
+          return correctOrder.indexOf(item) !== index;
+        });
+
+        correctIndices = correctOrder.map((card, index) => {
+          return lastGuess.indexOf(card) === index;
+        });
+
+        currentGuess = lastGuess.filter((card, index) => {
+          return !(correctIndices[index]);
+        });
+      }
+    }
+
+    return {
+      guesses,
+      remainingCards,
+      correctIndices,
+      currentGuess,
+    };
 }

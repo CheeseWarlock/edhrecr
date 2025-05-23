@@ -1,7 +1,7 @@
 import React from 'react';
 import { Metamorphous } from "next/font/google";
 import { OverlayFrame } from './OverlayFrame';
-import { StreakStatus } from '../lib/streak';
+import { StreakStatus } from '../utils/localStorageUtils';
 import TinyChart from './TinyChart';
 const metamorphous = Metamorphous({ 
   weight: '400',

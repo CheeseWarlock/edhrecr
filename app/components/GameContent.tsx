@@ -7,7 +7,7 @@ import { TopBar } from './TopBar';
 import { InfoOverlay } from './InfoOverlay';
 import { StreakOverlay } from './StreakOverlay';
 import { useLocalStorage } from '../utils/useLocalStorage';
-import { getUserStreakStatus, updateUserStreak } from '../lib/streak';
+import { getUserStreakStatus, updateUserStreak } from '../utils/localStorageUtils';
 import { AnimatePresence } from 'motion/react';
 import { CardImage } from './CardImage';
 import { CardViewerContext } from './CardViewerContext';
