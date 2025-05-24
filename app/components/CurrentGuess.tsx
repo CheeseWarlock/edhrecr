@@ -68,7 +68,7 @@ export function CurrentGuess({ cards, correctIndices, onDragEnd }: {
   }
 
   return (
-    <div className="flex flex-col w-full bg-[#444] max-w-[1792px] mt-0 md:rounded-xl relative z-10 justify-center">
+    <div className="flex flex-col w-full bg-[#444] max-w-[1792px] mt-0 md:rounded-xl relative z-10 justify-center" style={{ touchAction: 'none' }}>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -81,7 +81,7 @@ export function CurrentGuess({ cards, correctIndices, onDragEnd }: {
           strategy={horizontalListSortingStrategy}
         >
           <GhostCardList correctCards={correctCards} correctIndices={correctIndices} positioning="absolute" />
-          <div className="flex flex-row">
+          <div className="flex flex-row" style={{ touchAction: 'none' }}>
           {remainingCards.map((item, index) => {
             return (
               <SortableCard key={item.id} id={item.id} itemsInGroup={correctIndices.length} leftSkipCount={index == 0 ? initialLeftMargin : 0} rightSkipCount={rightMargins[index]}>
