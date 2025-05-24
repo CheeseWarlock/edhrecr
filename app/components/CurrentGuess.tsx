@@ -85,7 +85,7 @@ export function CurrentGuess({ cards, correctIndices, onDragEnd }: {
           {remainingCards.map((item, index) => {
             return (
               <SortableCard key={item.id} id={item.id} itemsInGroup={correctIndices.length} leftSkipCount={index == 0 ? initialLeftMargin : 0} rightSkipCount={rightMargins[index]}>
-                <CardImage card={item} />
+                <CardImage card={item} isDraggable={true} />
               </SortableCard>
             );
           })}

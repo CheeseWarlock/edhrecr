@@ -25,7 +25,7 @@ export default function SuccessPanel({ cards, guessCount }: {
                   )
                 })}
               </div>
-              <div className="flex flex-col items-center absolute bottom-0 top-0 justify-center w-full items-center pointer-events-none">
+              <div className="flex flex-col items-center absolute bottom-0 top-0 justify-center w-full items-center pointer-events-none left-0">
                 <span className="text-white text-2xl font-bold">You won in {guessCount} guess{guessCount == 1 ? "" : "es"}!</span>
                 <span className="text-white md:text-lg text-center">Come back tomorrow for another challenge.</span>
               </div></>
