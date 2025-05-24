@@ -10,7 +10,7 @@ import BottomBar from "./BottomBar";
 import SuccessPanel from "./SuccessPanel";
 import FailurePanel from "./FailurePanel";
 import { useLocalStorage } from "../utils/useLocalStorage";
-import { GameState, getUserCurrentGame } from "../utils/localStorageUtils";
+import { LoadedGameState, getUserCurrentGame, hydrateGameState } from "../utils/localStorageUtils";
 
 interface GameAreaProps {
   cards: Card[];
@@ -30,7 +30,7 @@ export function GameArea({ cards, date, onPuzzleComplete, onPuzzleFailed }: Game
     /**
      * Load previously guessed orders if they're in local storage
      */
-    let gameState: GameState | null = null;
+    let gameState: LoadedGameState | undefined = undefined;
 
     if (!didAttemptLoad) {
       didAttemptLoad = true;
@@ -42,47 +42,31 @@ export function GameArea({ cards, date, onPuzzleComplete, onPuzzleFailed }: Game
      */
     const [guessedOrders, setGuessedOrders] = useState<Card[][]>(gameState?.guesses || []);
     /**
-     * The cards not yet placed correctly
+     * The current guess being built.
+     * Contains all cards, even if they've been placed correctly.
      */
-    const [remainingCards, setRemainingCards] = useState<Card[]>(gameState?.remainingCards || []);
-    /**
-     * The indices of the cards that have been placed correctly
-     */
-    const [correctIndices, setCorrectIndices] = useState<boolean[]>(gameState?.correctIndices || []);
-    /**
-     * The current guess being built
-     */
-    const [currentGuess, setCurrentGuess] = useState<Card[]>(gameState?.currentGuess || []);
+    const [currentGuess, setCurrentGuess] = useState<Card[]>(gameState?.currentGuess || cards);
 
     const [_storedGuesses, setStoredGuesses] = useLocalStorage<{ date: string, guesses: number[][] }>("edhr-guesses", { date: date, guesses: [] });
+
+    const mostRecentGuess = guessedOrders[guessedOrders.length - 1] || cards;
+    const { remainingCards, correctIndices } = hydrateGameState(cards, mostRecentGuess);
   
     const handleLockInGuess = (cardsInCurrentGuess: Card[]) => {
-      const correctOrderForRemainingCards = ([...remainingCards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
-      const newCorrectIndices = [...correctIndices];
-  
-      // Find which ones we got right on this guess
-      const correctCards = cardsInCurrentGuess.filter((item, index) => {
-        return correctOrderForRemainingCards.indexOf(item) == index;
-      });
-  
-      // Find which ones we got wrong on this guess
-      const wrongCards = cardsInCurrentGuess.filter((item, index) => {
-        return correctOrderForRemainingCards.indexOf(item) != index;
-      });
-  
-      correctCards.forEach(card => {
-        const index = correctOrder.indexOf(card);
-        newCorrectIndices[index] = true;
-      });
-  
-      addGuessedOrder([...cardsInCurrentGuess]);
-      setRemainingCards(wrongCards);
-      setCorrectIndices(newCorrectIndices);
-      setCurrentGuess(wrongCards);
+      const newGuessedOrders = [...guessedOrders, cardsInCurrentGuess];
+      const remainingCardsInCurrentGuess = hydrateGameState(cards, cardsInCurrentGuess).remainingCards;
 
-      if (wrongCards.length == 0) {
+      setStoredGuesses(
+        {
+          date: date,
+          guesses: newGuessedOrders.map(order => order.map(card => cards.indexOf(card)))
+        }
+      )
+      setGuessedOrders(newGuessedOrders);
+
+      if (remainingCardsInCurrentGuess.length == 0) {
         onPuzzleComplete(guessedOrders.length + 1);
-      } else if (guessedOrders.length == 4) {
+      } else if (newGuessedOrders.length == 5) {
         onPuzzleFailed();
       }
     };
@@ -91,40 +75,29 @@ export function GameArea({ cards, date, onPuzzleComplete, onPuzzleFailed }: Game
       const { active, over } = event;
   
       if (over && active.id !== over.id) {
-        const oldIndex = currentGuess.findIndex((item) => item.id === active.id);
-        const newIndex = currentGuess.findIndex((item) => item.id === over.id);
-        setCurrentGuess(arrayMove([...currentGuess], oldIndex, newIndex));
+        const movableCards = currentGuess.filter((card, index) => !correctIndices[index]);
+        const oldIndex = movableCards.findIndex((item) => item.id === active.id);
+        const newIndex = movableCards.findIndex((item) => item.id === over.id);
+        const newOrderForMovableCards = arrayMove([...movableCards], oldIndex, newIndex);
+
+        // Rearrange the array, leaving the correct cards in place
+        const newCurrentGuess = [];
+        for (let i = 0; i < currentGuess.length; i++) {
+          if (correctIndices[i]) {
+            newCurrentGuess.push(currentGuess[i]);
+          } else {
+            newCurrentGuess.push(newOrderForMovableCards[0]);
+            newOrderForMovableCards.shift();
+          }
+        }
+
+        setCurrentGuess(newCurrentGuess);
       }
     };
-  
-    const addGuessedOrder = (currentGuess: Card[]) => {
-      const newOrder: Card[] = [];
-  
-      let currentOrderIndex = 0;
-      for (let i = 0; i < cards.length; i++) {
-        if (correctIndices[i]) {
-          newOrder.push(correctOrder[i]);
-        } else {
-          newOrder.push(currentGuess[currentOrderIndex++]);
-        }
-      }
 
-      setStoredGuesses(
-        {
-          date: date,
-          guesses: [...guessedOrders, newOrder].map(order => order.map(card => cards.indexOf(card)))
-        }
-      )
-
-      setGuessedOrders([...guessedOrders, newOrder]);
-    };
-
-    const correctCards = correctIndices.map((position, index) => {
-      if (!position) return null;
-      return { card: correctOrder[index], index: index };
-    }).filter(item => item != null);
-
-    const gameOver = remainingCards.length == 0 || guessedOrders.length == 5;
+    const won = remainingCards.length == 0;
+    const lost = guessedOrders.length == 5;
+    const gameOver = won || lost;
   
     return (
       <div className="w-full h-full flex flex-col">
@@ -138,21 +111,20 @@ export function GameArea({ cards, date, onPuzzleComplete, onPuzzleFailed }: Game
         <div className="flex-shrink-0">
           <div className="flex flex-col w-full py-6 md:px-6 bg-[#444] max-w-[1792px] mt-0 md:rounded-xl relative z-10 justify-center" style={{ touchAction: 'none' }}>
           <div className={`flex flex-row items-center justify-center mb-4 ${gameOver ? 'text-[#999]' : ''}`}><span className="text-2xl">{`${5 - guessedOrders.length}/5`}</span><span>&nbsp;guess{5 - guessedOrders.length == 1 ? '' : 'es'} left</span></div>
-          {(remainingCards.length == 0) ?
-            <SuccessPanel correctCards={correctCards} guessedOrders={guessedOrders} />
-          :(guessedOrders.length < 5) ?
+          {won ?
+            <SuccessPanel cards={currentGuess} guessCount={guessedOrders.length} />
+          : lost ?
+          <FailurePanel cards={correctOrder} />
+          :
           <CurrentGuess 
-            remainingCards={currentGuess} 
-            correctIndices={correctIndices} 
-            correctCards={correctCards}
+            cards={currentGuess} 
+            correctIndices={correctIndices}
             onDragEnd={handleDragEnd}
           />
-          :
-            <FailurePanel cards={correctOrder} />
           }
           </div>
         </div>
-      <BottomBar disabled={remainingCards.length == 0 || guessedOrders.length == 5} onSubmit={() => { if (remainingCards.length) handleLockInGuess(currentGuess)}} />
+      <BottomBar disabled={gameOver} onSubmit={() => { if (remainingCards.length) handleLockInGuess(currentGuess)}} />
       </div>
     );
   } 

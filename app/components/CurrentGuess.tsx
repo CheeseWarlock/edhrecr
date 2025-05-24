@@ -30,10 +30,9 @@ interface Card {
 /**
  * The sortable row of cards making up the player's current guess
  */
-export function CurrentGuess({ remainingCards, correctIndices, correctCards, onDragEnd }: { 
-  remainingCards: Card[], 
-  correctIndices: boolean[], 
-  correctCards: { card: Card, index: number }[],
+export function CurrentGuess({ cards, correctIndices, onDragEnd }: { 
+  cards: Card[], 
+  correctIndices: boolean[],
   onDragEnd: (event: DragEndEvent) => void
 }) {
   const sensors = useSensors(
@@ -46,6 +45,9 @@ export function CurrentGuess({ remainingCards, correctIndices, correctCards, onD
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+
+  const remainingCards = cards.filter((_, index) => !correctIndices[index]);
+  const correctCards = cards.map((c, idx) => ({ card: c, index: idx })).filter((_, index) => correctIndices[index]);
 
   const rightMargins = correctIndices.map((position, index) => {
     if (position) return null;
@@ -79,15 +81,15 @@ export function CurrentGuess({ remainingCards, correctIndices, correctCards, onD
           strategy={horizontalListSortingStrategy}
         >
           <GhostCardList correctCards={correctCards} correctIndices={correctIndices} positioning="absolute" />
-            <div className="flex flex-row" style={{ touchAction: 'none' }}>
-            {remainingCards.map((item, index) => {
-              return (
-                <SortableCard key={item.id} id={item.id} itemsInGroup={correctIndices.length} leftSkipCount={index == 0 ? initialLeftMargin : 0} rightSkipCount={rightMargins[index]}>
-                  <CardImage card={item} />
-                </SortableCard>
-              );
-            })}
-            </div>
+          <div className="flex flex-row" style={{ touchAction: 'none' }}>
+          {remainingCards.map((item, index) => {
+            return (
+              <SortableCard key={item.id} id={item.id} itemsInGroup={correctIndices.length} leftSkipCount={index == 0 ? initialLeftMargin : 0} rightSkipCount={rightMargins[index]}>
+                <CardImage card={item} />
+              </SortableCard>
+            );
+          })}
+          </div>
         </SortableContext>
       </DndContext></div>
   )

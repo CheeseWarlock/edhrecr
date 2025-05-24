@@ -17,7 +17,7 @@ export interface StreakStatus {
   isTodayDone: boolean;
 }
 
-export interface GameState {
+export interface LoadedGameState {
   guesses: Card[][];
   remainingCards: Card[];
   correctIndices: boolean[];
@@ -121,18 +121,33 @@ export function updateUserStreak(currentDate: string, success: boolean, guessesC
   }
 }
 
+export function hydrateGameState(cards: Card[], lastGuess: Card[]) {
+  const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
+
+  let remainingCards: Card[] = cards;
+  let correctIndices: boolean[] = new Array(cards.length).fill(false);
+
+  remainingCards = lastGuess.filter((item, index) => {
+    return correctOrder.indexOf(item) !== index;
+  });
+
+  correctIndices = correctOrder.map((card, index) => {
+    return lastGuess.indexOf(card) === index;
+  });
+  
+  return {
+    remainingCards,
+    correctIndices,
+  };
+}
+
 /**
  * Get the user's current game from local storage
  * If there's a game in progress, returns the game state
- * Otherwise, returns null
+ * Otherwise, returns undefined
  */
-export const getUserCurrentGame = (cards: Card[], date: string): GameState | null => {
+export const getUserCurrentGame = (cards: Card[], date: string): LoadedGameState | undefined => {
     let guesses: Card[][] = [];
-    let remainingCards: Card[] = cards;
-    let correctIndices: boolean[] = new Array(cards.length).fill(false);
-    let currentGuess: Card[] = cards;
-
-    const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
 
     const previousLoadString = localStorage.getItem("edhr-guesses");
     const previousLoad = previousLoadString ? JSON.parse(previousLoadString) : null;
@@ -141,25 +156,13 @@ export const getUserCurrentGame = (cards: Card[], date: string): GameState | nul
 
       if (guesses.length) {
         const lastGuess = guesses[guesses.length - 1];
-
-        remainingCards = lastGuess.filter((item, index) => {
-          return correctOrder.indexOf(item) !== index;
-        });
-
-        correctIndices = correctOrder.map((card, index) => {
-          return lastGuess.indexOf(card) === index;
-        });
-
-        currentGuess = lastGuess.filter((card, index) => {
-          return !(correctIndices[index]);
-        });
+        const { remainingCards, correctIndices } = hydrateGameState(cards, lastGuess);
+        return {
+          guesses,
+          remainingCards,
+          correctIndices,
+          currentGuess: lastGuess,
+        };
       }
     }
-
-    return {
-      guesses,
-      remainingCards,
-      correctIndices,
-      currentGuess,
-    };
 }
