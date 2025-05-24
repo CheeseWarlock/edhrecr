@@ -7,7 +7,7 @@ import { TopBar } from './TopBar';
 import { InfoOverlay } from './InfoOverlay';
 import { StreakOverlay } from './StreakOverlay';
 import { useLocalStorage } from '../utils/useLocalStorage';
-import { getUserStreakStatus, updateUserStreak } from '../utils/localStorageUtils';
+import { getUserStreakStatus, updateUserStreak, hydrateGameState } from '../utils/localStorageUtils';
 import { AnimatePresence } from 'motion/react';
 import { CardImage } from './CardImage';
 import { CardViewerContext } from './CardViewerContext';
@@ -24,6 +24,8 @@ export function GameContent({ cards, date }: GameContentProps) {
   const [isStreakOpen, setIsStreakOpen] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
   const [viewingCard, setViewingCard] = useState<Card | null>(null);
+  const [guessedOrders, setGuessedOrders] = useState<Card[][]>([]);
+  const [storedGuesses, setStoredGuesses] = useLocalStorage<{ date: string, guesses: number[][] }>("edhr-guesses", { date: 'date', guesses: [] });
 
   useEffect(() => {
     setHasMounted(true);
@@ -32,6 +34,23 @@ export function GameContent({ cards, date }: GameContentProps) {
   if (!hasMounted) {
     return null;
   }
+
+  const handleLockInGuess = (cardsInCurrentGuess: Card[]) => {
+    const newGuessedOrders = [...guessedOrders, cardsInCurrentGuess];
+    const remainingCardsInCurrentGuess = hydrateGameState(cards, cardsInCurrentGuess).remainingCards;
+
+    setStoredGuesses({
+      date: date,
+      guesses: newGuessedOrders.map(order => order.map(card => cards.indexOf(card)))
+    });
+    setGuessedOrders(newGuessedOrders);
+
+    if (remainingCardsInCurrentGuess.length === 0) {
+      handlePuzzleComplete(guessedOrders.length + 1);
+    } else if (newGuessedOrders.length === 5) {
+      handlePuzzleFailed();
+    }
+  };
 
   const handlePuzzleComplete = (guessesCompleted: number) => {
     updateUserStreak(date, true, guessesCompleted);
@@ -56,10 +75,9 @@ export function GameContent({ cards, date }: GameContentProps) {
       <div className="flex flex-col h-full row-start-2">
         <GameArea
           cards={cards}
-          date={date}
-          onPuzzleComplete={handlePuzzleComplete}
-          onPuzzleFailed={handlePuzzleFailed}
-          />
+          guessedOrders={guessedOrders}
+          onLockInGuess={handleLockInGuess}
+        />
       </div>
       <AnimatePresence>
         {isInfoOpen &&

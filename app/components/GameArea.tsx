@@ -9,67 +9,28 @@ import { CurrentGuess } from "./CurrentGuess";
 import BottomBar from "./BottomBar";
 import SuccessPanel from "./SuccessPanel";
 import FailurePanel from "./FailurePanel";
-import { useLocalStorage } from "../utils/useLocalStorage";
-import { LoadedGameState, getUserCurrentGame, hydrateGameState } from "../utils/localStorageUtils";
+import { hydrateGameState } from "../utils/localStorageUtils";
 
 interface GameAreaProps {
   cards: Card[];
-  onPuzzleComplete: (guessesCompleted: number) => void;
-  onPuzzleFailed: () => void;
-  date: string;
+  guessedOrders: Card[][];
+  onLockInGuess: (cardsInCurrentGuess: Card[]) => void;
 }
-
-let didAttemptLoad = false;
 
 /**
  * The main game area, containing the previous guesses and the current guess
  */
-export function GameArea({ cards, date, onPuzzleComplete, onPuzzleFailed }: GameAreaProps) {
+export function GameArea({ cards, guessedOrders, onLockInGuess }: GameAreaProps) {
     const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
-
-    /**
-     * Load previously guessed orders if they're in local storage
-     */
-    let gameState: LoadedGameState | undefined = undefined;
-
-    if (!didAttemptLoad) {
-      didAttemptLoad = true;
-      gameState = getUserCurrentGame(cards, date);
-    }
     
-    /**
-     * The previously guessed orders
-     */
-    const [guessedOrders, setGuessedOrders] = useState<Card[][]>(gameState?.guesses || []);
     /**
      * The current guess being built.
      * Contains all cards, even if they've been placed correctly.
      */
-    const [currentGuess, setCurrentGuess] = useState<Card[]>(gameState?.currentGuess || cards);
-
-    const [_storedGuesses, setStoredGuesses] = useLocalStorage<{ date: string, guesses: number[][] }>("edhr-guesses", { date: date, guesses: [] });
+    const [currentGuess, setCurrentGuess] = useState<Card[]>(guessedOrders[guessedOrders.length - 1] || cards);
 
     const mostRecentGuess = guessedOrders[guessedOrders.length - 1] || cards;
     const { remainingCards, correctIndices } = hydrateGameState(cards, mostRecentGuess);
-  
-    const handleLockInGuess = (cardsInCurrentGuess: Card[]) => {
-      const newGuessedOrders = [...guessedOrders, cardsInCurrentGuess];
-      const remainingCardsInCurrentGuess = hydrateGameState(cards, cardsInCurrentGuess).remainingCards;
-
-      setStoredGuesses(
-        {
-          date: date,
-          guesses: newGuessedOrders.map(order => order.map(card => cards.indexOf(card)))
-        }
-      )
-      setGuessedOrders(newGuessedOrders);
-
-      if (remainingCardsInCurrentGuess.length == 0) {
-        onPuzzleComplete(guessedOrders.length + 1);
-      } else if (newGuessedOrders.length == 5) {
-        onPuzzleFailed();
-      }
-    };
   
     const handleDragEnd = (event: DragEndEvent) => {
       const { active, over } = event;
@@ -124,7 +85,7 @@ export function GameArea({ cards, date, onPuzzleComplete, onPuzzleFailed }: Game
           }
           </div>
         </div>
-      <BottomBar disabled={gameOver} onSubmit={() => { if (remainingCards.length) handleLockInGuess(currentGuess)}} />
+      <BottomBar disabled={gameOver} onSubmit={() => { if (remainingCards.length) onLockInGuess(currentGuess)}} />
       </div>
     );
   } 
