@@ -9,7 +9,6 @@ import { CurrentGuess } from "./CurrentGuess";
 import BottomBar from "./BottomBar";
 import SuccessPanel from "./SuccessPanel";
 import FailurePanel from "./FailurePanel";
-import { hydrateGameState } from "../utils/localStorageUtils";
 
 interface GameAreaProps {
   cards: Card[];
@@ -30,33 +29,36 @@ export function GameArea({ cards, guessedOrders, onLockInGuess }: GameAreaProps)
     const [currentGuess, setCurrentGuess] = useState<Card[]>(guessedOrders[guessedOrders.length - 1] || cards);
 
     const mostRecentGuess = guessedOrders[guessedOrders.length - 1] || cards;
-    const { remainingCards, correctIndices } = hydrateGameState(cards, mostRecentGuess);
+  
+    const correctIndices = correctOrder.map((card, index) => {
+      return mostRecentGuess.indexOf(card) === index;
+    });
   
     const handleDragEnd = (event: DragEndEvent) => {
       const { active, over } = event;
   
       if (over && active.id !== over.id) {
-        const movableCards = currentGuess.filter((card, index) => !correctIndices[index]);
+        const movableCards = currentGuess.filter((_, index) => !correctIndices[index]);
         const oldIndex = movableCards.findIndex((item) => item.id === active.id);
         const newIndex = movableCards.findIndex((item) => item.id === over.id);
         const newOrderForMovableCards = arrayMove([...movableCards], oldIndex, newIndex);
 
         // Rearrange the array, leaving the correct cards in place
-        const newCurrentGuess = [];
+        const nextGuess = [];
         for (let i = 0; i < currentGuess.length; i++) {
           if (correctIndices[i]) {
-            newCurrentGuess.push(currentGuess[i]);
+            nextGuess.push(currentGuess[i]);
           } else {
-            newCurrentGuess.push(newOrderForMovableCards[0]);
+            nextGuess.push(newOrderForMovableCards[0]);
             newOrderForMovableCards.shift();
           }
         }
 
-        setCurrentGuess(newCurrentGuess);
+        setCurrentGuess(nextGuess);
       }
     };
 
-    const won = remainingCards.length == 0;
+    const won = correctIndices.every((index) => index);
     const lost = guessedOrders.length == 5;
     const gameOver = won || lost;
   
@@ -85,7 +87,7 @@ export function GameArea({ cards, guessedOrders, onLockInGuess }: GameAreaProps)
           }
           </div>
         </div>
-      <BottomBar disabled={gameOver} onSubmit={() => { if (remainingCards.length) onLockInGuess(currentGuess)}} />
+      <BottomBar disabled={gameOver} onSubmit={() => { if (!gameOver) onLockInGuess(currentGuess)}} />
       </div>
     );
   } 

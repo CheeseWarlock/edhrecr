@@ -6,8 +6,8 @@ import { GameArea } from './GameArea';
 import { TopBar } from './TopBar';
 import { InfoOverlay } from './InfoOverlay';
 import { StreakOverlay } from './StreakOverlay';
-import { useLocalStorage } from '../utils/useLocalStorage';
-import { getUserStreakStatus, updateUserStreak, hydrateGameState } from '../utils/localStorageUtils';
+import { useLocalStorage, useLocalStorageWithSerializer } from '../utils/useLocalStorage';
+import { getUserStreakStatus, updateUserStreak } from '../utils/localStorageUtils';
 import { AnimatePresence } from 'motion/react';
 import { CardImage } from './CardImage';
 import { CardViewerContext } from './CardViewerContext';
@@ -24,8 +24,15 @@ export function GameContent({ cards, date }: GameContentProps) {
   const [isStreakOpen, setIsStreakOpen] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
   const [viewingCard, setViewingCard] = useState<Card | null>(null);
-  const [guessedOrders, setGuessedOrders] = useState<Card[][]>([]);
-  const [storedGuesses, setStoredGuesses] = useLocalStorage<{ date: string, guesses: number[][] }>("edhr-guesses", { date: 'date', guesses: [] });
+  const [storedGuesses, setStoredGuesses] = useLocalStorageWithSerializer<
+    Card[][],
+    { date: string, guesses: number[][] }
+  >(
+    "edhr-guesses",
+    [],
+    (cardData) => ({ guesses: cardData.map(order => order.map(card => cards.indexOf(card))), date: date }),
+    (storedData) => storedData.guesses.map(order => order.map(cardIdx => cards[cardIdx]))
+  );
 
   useEffect(() => {
     setHasMounted(true);
@@ -36,17 +43,16 @@ export function GameContent({ cards, date }: GameContentProps) {
   }
 
   const handleLockInGuess = (cardsInCurrentGuess: Card[]) => {
-    const newGuessedOrders = [...guessedOrders, cardsInCurrentGuess];
-    const remainingCardsInCurrentGuess = hydrateGameState(cards, cardsInCurrentGuess).remainingCards;
-
-    setStoredGuesses({
-      date: date,
-      guesses: newGuessedOrders.map(order => order.map(card => cards.indexOf(card)))
+    const newGuessedOrders = [...storedGuesses, cardsInCurrentGuess];
+    const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
+    const didWin = cardsInCurrentGuess.every((card, index) => {
+      return correctOrder.indexOf(card) === index;
     });
-    setGuessedOrders(newGuessedOrders);
 
-    if (remainingCardsInCurrentGuess.length === 0) {
-      handlePuzzleComplete(guessedOrders.length + 1);
+    setStoredGuesses(newGuessedOrders);
+
+    if (didWin) {
+      handlePuzzleComplete(newGuessedOrders.length);
     } else if (newGuessedOrders.length === 5) {
       handlePuzzleFailed();
     }
@@ -75,7 +81,7 @@ export function GameContent({ cards, date }: GameContentProps) {
       <div className="flex flex-col h-full row-start-2">
         <GameArea
           cards={cards}
-          guessedOrders={guessedOrders}
+          guessedOrders={storedGuesses}
           onLockInGuess={handleLockInGuess}
         />
       </div>
