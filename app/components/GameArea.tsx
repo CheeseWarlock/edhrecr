@@ -72,7 +72,7 @@ export function GameArea({ cards, guessedOrders, onLockInGuess }: GameAreaProps)
           </div>
         </div>
         <div className="flex-shrink-0">
-          <div className="flex flex-col w-full py-6 md:px-6 bg-[#444] max-w-[1792px] mt-0 md:rounded-xl relative z-10 justify-center" style={{ touchAction: 'none' }}>
+          <div className="flex flex-col w-full py-6 md:px-6 bg-[#444] max-w-[1792px] mt-0 md:rounded-xl relative z-10 justify-center">
           <div className={`flex flex-row items-center justify-center mb-4 ${gameOver ? 'text-[#999]' : ''}`}><span className="text-2xl">{`${5 - guessedOrders.length}/5`}</span><span>&nbsp;guess{5 - guessedOrders.length == 1 ? '' : 'es'} left</span></div>
           {won ?
             <SuccessPanel cards={currentGuess} guessCount={guessedOrders.length} />

@@ -17,6 +17,5 @@ export function CardImage({ card }: { card: Card }) {
         height={357}
         draggable={false}
         className="select-none object-contain mw-[256px] mh-[357px] rounded-[5%]"
-        style={{ touchAction: 'none' }}
       />);
 }

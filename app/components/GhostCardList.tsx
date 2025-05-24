@@ -3,7 +3,7 @@ import { CardImage } from "./CardImage";
 
 export function GhostCardList({ correctCards, correctIndices, positioning }: { correctCards: { card: Card, index: number }[], correctIndices: boolean[], positioning: string }) {
     return (
-    <div className="flex flex-row" style={{ touchAction: 'none', filter: 'grayscale(1) opacity(0.3)' }}>
+    <div className="flex flex-row" style={{ filter: 'grayscale(1) opacity(0.3)' }}>
         {correctCards.map((data) => {
           return (
             <div

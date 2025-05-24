@@ -20,7 +20,6 @@ export function GuessResult({ guess, correctOrder }: { guess: Card[], correctOrd
         transition={{ duration: 0.5 }}
         className="flex flex-row w-full md:px-6"
         style={{
-          touchAction: 'none',
           mask: `linear-gradient(
             rgba(0, 0, 0, 0.5) 0px, 
             rgb(0, 0, 0) 22%,

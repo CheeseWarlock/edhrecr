@@ -6,7 +6,6 @@ export default function FailurePanel({ cards }: {
 }) {
     return <>
         <div className="w-full flex flex-row" style={{
-        touchAction: 'none',
         filter: 'grayscale(1) opacity(0.3)',
         mask: `linear-gradient(
             rgba(0, 0, 0, 0.5) 0px, 
