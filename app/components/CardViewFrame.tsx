@@ -1,13 +1,17 @@
 import React from 'react';
 import { motion } from 'motion/react';
+import { FaExternalLinkAlt } from 'react-icons/fa';
+import { Card } from '../types';
+import { CardImage } from './CardImage';
 
-interface OverlayFrameProps {
+interface CardViewFrameProps {
   isOpen: boolean;
   onClose: () => void;
-  children: React.ReactNode;
+  card: Card;
+  canViewInEDHRec: boolean;
 }
 
-export function CardViewFrame({ isOpen, onClose, children }: OverlayFrameProps) {
+export function CardViewFrame({ isOpen, onClose, card, canViewInEDHRec }: CardViewFrameProps) {
   if (!isOpen) return null;
 
   return (
@@ -23,7 +27,12 @@ export function CardViewFrame({ isOpen, onClose, children }: OverlayFrameProps) 
         onClick={onClose}
         style={ { transform: "scale(1.5)"}}
       >
-        {children}
+        <CardImage card={card} />
+        {canViewInEDHRec && (
+          <a href={`https://edhrec.com/route/?cc=${encodeURIComponent(card.name)}`} target="_blank" rel="noopener noreferrer" className="mx-4 my-2 text-white text-sm flex items-baseline gap-2">
+            View in EDHRec <FaExternalLinkAlt />
+          </a>
+        )}
       </div>
     </motion.div>
   );

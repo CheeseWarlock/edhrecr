@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Card } from '../types';
 import { GameArea } from './GameArea';
 import { TopBar } from './TopBar';
@@ -9,7 +9,6 @@ import { StreakOverlay } from './StreakOverlay';
 import { useLocalStorage, useLocalStorageWithSerializer } from '../utils/useLocalStorage';
 import { getUserStreakStatus, updateUserStreak } from '../utils/localStorageUtils';
 import { AnimatePresence } from 'motion/react';
-import { CardImage } from './CardImage';
 import { CardViewerContext } from './CardViewerContext';
 import { CardViewFrame } from './CardViewFrame';
 
@@ -24,15 +23,14 @@ export function GameContent({ cards, date }: GameContentProps) {
   const [isStreakOpen, setIsStreakOpen] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
   const [viewingCard, setViewingCard] = useState<Card | null>(null);
+  
+  const serializer = useCallback((cardData: Card[][]) => ({ guesses: cardData.map(order => order.map(card => cards.indexOf(card))), date: date }), [cards, date]);
+  const deserializer = useCallback((storedData: { date: string, guesses: number[][] }) => storedData.guesses.map(order => order.map(cardIdx => cards[cardIdx])), [cards]);
+
   const [storedGuesses, setStoredGuesses] = useLocalStorageWithSerializer<
     Card[][],
     { date: string, guesses: number[][] }
-  >(
-    "edhr-guesses",
-    [],
-    (cardData) => ({ guesses: cardData.map(order => order.map(card => cards.indexOf(card))), date: date }),
-    (storedData) => storedData.guesses.map(order => order.map(cardIdx => cards[cardIdx]))
-  );
+  >("edhr-guesses", [], serializer, deserializer);
 
   useEffect(() => {
     setHasMounted(true);
@@ -65,6 +63,14 @@ export function GameContent({ cards, date }: GameContentProps) {
   const handlePuzzleFailed = () => {
     updateUserStreak(date, false);
   }
+
+  const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
+
+  const won = storedGuesses.length > 0 && storedGuesses[storedGuesses.length - 1].every((card, index) => {
+    return correctOrder.indexOf(card) === index;
+  });
+  const lost = storedGuesses.length == 5;
+  const gameOver = won || lost;
 
   return (
     <main
@@ -103,7 +109,7 @@ export function GameContent({ cards, date }: GameContentProps) {
       </AnimatePresence>
       <AnimatePresence>
         {viewingCard &&
-          <CardViewFrame isOpen={true} onClose={() => { setViewingCard(null)} }><CardImage card={viewingCard} /></CardViewFrame>
+          <CardViewFrame card={viewingCard} isOpen={true} onClose={() => { setViewingCard(null)} } canViewInEDHRec={gameOver} />
         }
       </AnimatePresence>
       </CardViewerContext>

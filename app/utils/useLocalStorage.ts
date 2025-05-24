@@ -44,7 +44,7 @@ export const useLocalStorageWithSerializer = <T, J>(key: string, initialValue: T
         if (typeof window !== 'undefined') {
             window?.localStorage?.setItem(key, JSON.stringify(serializer(value)));
         }
-    }, [value, key]);
+    }, [value, key, serializer]);
 
     return [value, setValue] as const;
 }
