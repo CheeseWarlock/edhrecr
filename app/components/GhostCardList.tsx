@@ -1,7 +1,7 @@
 import { Card } from "../types";
 import { CardImage } from "./CardImage";
 
-export function GhostCardList({ correctCards, correctIndices, positioning }: { correctCards: { card: Card, index: number }[], correctIndices: boolean[], positioning: string }) {
+export function GhostCardList({ correctCards, correctnessByIndex, positioning }: { correctCards: { card: Card, index: number }[], correctnessByIndex: boolean[], positioning: string }) {
     return (
     <div className="flex flex-row" style={{ filter: 'grayscale(1) opacity(0.3)' }}>
         {correctCards.map((data) => {
@@ -10,8 +10,8 @@ export function GhostCardList({ correctCards, correctIndices, positioning }: { c
             className={positioning}
             key={data.card.id}
             style={{
-              marginLeft: `calc(100% * ${data.index / correctIndices.length})`,
-              width: `calc(100% * (1 / ${correctIndices.length}))`,
+              marginLeft: `calc(100% * ${data.index / correctnessByIndex.length})`,
+              width: `calc(100% * (1 / ${correctnessByIndex.length}))`,
               height: 'auto',
               mask: `linear-gradient(
               rgba(0, 0, 0, 0.5) 0px, 

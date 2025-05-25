@@ -30,9 +30,9 @@ interface Card {
 /**
  * The sortable row of cards making up the player's current guess
  */
-export function CurrentGuess({ cards, correctIndices, onDragEnd }: { 
+export function CurrentGuess({ cards, correctnessByIndex, onDragEnd }: { 
   cards: Card[], 
-  correctIndices: boolean[],
+  correctnessByIndex: boolean[],
   onDragEnd: (event: DragEndEvent) => void
 }) {
   const sensors = useSensors(
@@ -46,14 +46,14 @@ export function CurrentGuess({ cards, correctIndices, onDragEnd }: {
     })
   );
 
-  const remainingCards = cards.filter((_, index) => !correctIndices[index]);
-  const correctCards = cards.map((c, idx) => ({ card: c, index: idx })).filter((_, index) => correctIndices[index]);
+  const remainingCards = cards.filter((_, index) => !correctnessByIndex[index]);
+  const correctCards = cards.map((c, idx) => ({ card: c, index: idx })).filter((_, index) => correctnessByIndex[index]);
 
-  const rightMargins = correctIndices.map((position, index) => {
+  const rightMargins = correctnessByIndex.map((position, index) => {
     if (position) return null;
     let marginCount = 0;
     let iindex = index + 1;
-    while (correctIndices[iindex]) {
+    while (correctnessByIndex[iindex]) {
       marginCount++;
       iindex++;
     }
@@ -62,7 +62,7 @@ export function CurrentGuess({ cards, correctIndices, onDragEnd }: {
 
   let initialLeftMargin = 0;
   let ticker = 0;
-  while (ticker <= correctIndices.length && correctIndices[ticker]) {
+  while (ticker <= correctnessByIndex.length && correctnessByIndex[ticker]) {
     initialLeftMargin += 1;
     ticker++;
   }
@@ -80,11 +80,11 @@ export function CurrentGuess({ cards, correctIndices, onDragEnd }: {
           items={remainingCards.map((item) => item.id)}
           strategy={horizontalListSortingStrategy}
         >
-          <GhostCardList correctCards={correctCards} correctIndices={correctIndices} positioning="absolute" />
+          <GhostCardList correctCards={correctCards} correctnessByIndex={correctnessByIndex} positioning="absolute" />
           <div className="flex flex-row" style={{ touchAction: 'none' }}>
           {remainingCards.map((item, index) => {
             return (
-              <SortableCard key={item.id} id={item.id} itemsInGroup={correctIndices.length} leftSkipCount={index == 0 ? initialLeftMargin : 0} rightSkipCount={rightMargins[index]}>
+              <SortableCard key={item.id} id={item.id} itemsInGroup={correctnessByIndex.length} leftSkipCount={index == 0 ? initialLeftMargin : 0} rightSkipCount={rightMargins[index]}>
                 <CardImage card={item} isDraggable={true} />
               </SortableCard>
             );

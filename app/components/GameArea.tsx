@@ -30,15 +30,15 @@ export function GameArea({ cards, guessedOrders, onLockInGuess }: GameAreaProps)
 
     const mostRecentGuess = guessedOrders[guessedOrders.length - 1] || cards;
   
-    const correctIndices = correctOrder.map((card, index) => {
+    const correctnessByIndex = guessedOrders.length ? correctOrder.map((card, index) => {
       return mostRecentGuess.indexOf(card) === index;
-    });
+    }) : new Array(cards.length).fill(false);
   
     const handleDragEnd = (event: DragEndEvent) => {
       const { active, over } = event;
   
       if (over && active.id !== over.id) {
-        const movableCards = currentGuess.filter((_, index) => !correctIndices[index]);
+        const movableCards = currentGuess.filter((_, index) => !correctnessByIndex[index]);
         const oldIndex = movableCards.findIndex((item) => item.id === active.id);
         const newIndex = movableCards.findIndex((item) => item.id === over.id);
         const newOrderForMovableCards = arrayMove([...movableCards], oldIndex, newIndex);
@@ -46,7 +46,7 @@ export function GameArea({ cards, guessedOrders, onLockInGuess }: GameAreaProps)
         // Rearrange the array, leaving the correct cards in place
         const nextGuess = [];
         for (let i = 0; i < currentGuess.length; i++) {
-          if (correctIndices[i]) {
+          if (correctnessByIndex[i]) {
             nextGuess.push(currentGuess[i]);
           } else {
             nextGuess.push(newOrderForMovableCards[0]);
@@ -58,7 +58,7 @@ export function GameArea({ cards, guessedOrders, onLockInGuess }: GameAreaProps)
       }
     };
 
-    const won = correctIndices.every((index) => index);
+    const won = correctnessByIndex.every((index) => index);
     const lost = guessedOrders.length == 5;
     const gameOver = won || lost;
   
@@ -77,11 +77,11 @@ export function GameArea({ cards, guessedOrders, onLockInGuess }: GameAreaProps)
           {won ?
             <SuccessPanel cards={currentGuess} guessCount={guessedOrders.length} />
           : lost ?
-          <FailurePanel cards={correctOrder} />
+            <FailurePanel cards={correctOrder} />
           :
           <CurrentGuess 
             cards={currentGuess} 
-            correctIndices={correctIndices}
+            correctnessByIndex={correctnessByIndex}
             onDragEnd={handleDragEnd}
           />
           }
