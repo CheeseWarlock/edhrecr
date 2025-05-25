@@ -24,8 +24,10 @@ export function GameContent({ cards, date }: GameContentProps) {
   const [hasMounted, setHasMounted] = useState(false);
   const [viewingCard, setViewingCard] = useState<Card | null>(null);
   
-  const serializer = useCallback((cardData: Card[][]) => ({ guesses: cardData.map(order => order.map(card => cards.indexOf(card))), date: date }), [cards, date]);
-  const deserializer = useCallback((storedData: { date: string, guesses: number[][] }) => storedData.guesses.map(order => order.map(cardIdx => cards[cardIdx])), [cards]);
+  const serializer = useCallback((cardData: Card[][]) => 
+    ({ guesses: cardData.map(order => order.map(card => cards.indexOf(card))), date: date }), [cards, date]);
+  const deserializer = useCallback((storedData: { date: string, guesses: number[][] }) =>
+    storedData.date === date ? storedData.guesses.map(order => order.map(cardIdx => cards[cardIdx])) : [], [cards, date]);
 
   const [storedGuesses, setStoredGuesses] = useLocalStorageWithSerializer<
     Card[][],

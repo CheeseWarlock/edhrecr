@@ -58,7 +58,48 @@
         "name": "Keening Apparition",
         "image_url": "https://cards.scryfall.io/normal/front/6/5/657b242c-46cb-44d1-86fd-fb2485144a5b.jpg?1562787344",
         "edhrec_rank": 16438
-    }
-],
-"date": "2025-05-21"
+    },
+        {
+            "id": "card-10",
+            "name": "Visionary Augmenter",
+            "image_url": "https://cards.scryfall.io/normal/front/9/1/918691b1-f927-4027-a444-adc418f3ab16.jpg?1576381058",
+            "edhrec_rank": 21980
+        },
+        {
+            "id": "card-11",
+            "name": "Sunken City",
+            "image_url": "https://cards.scryfall.io/normal/front/2/2/2262d907-2801-4314-813b-d9e14aba4826.jpg?1559592301",
+            "edhrec_rank": 25347
+        },
+        {
+            "id": "card-12",
+            "name": "Cornered Market",
+            "image_url": "https://cards.scryfall.io/normal/front/0/d/0d4f3c1d-d25e-4263-ab2b-19534c852678.jpg?1562378968",
+            "edhrec_rank": 24141
+        },
+        {
+            "id": "card-13",
+            "name": "Repurposing Bay",
+            "image_url": "https://cards.scryfall.io/normal/front/0/c/0cf1ace1-b7f5-4bd9-a494-ee7cb6c1f854.jpg?1738356238",
+            "edhrec_rank": 7304
+        },
+        {
+            "id": "card-14",
+            "name": "Splitting the Powerstone",
+            "image_url": "https://cards.scryfall.io/normal/front/5/6/569dab90-a0d8-4c0a-8e32-b2cb3aec39a6.jpg?1674420602",
+            "edhrec_rank": 18493
+        },
+        {
+            "id": "card-15",
+            "name": "Glaive of the Guildpact",
+            "image_url": "https://cards.scryfall.io/normal/front/e/1/e19723ad-7bd2-49ee-a57a-ece99018f4e8.jpg?1572894065",
+            "edhrec_rank": 11104
+        },
+        {
+            "id": "card-16",
+            "name": "Quartzwood Crasher",
+            "image_url": "https://cards.scryfall.io/normal/front/d/3/d39e00aa-9af9-4e53-8540-3fb56009c9b4.jpg?1698988459",
+            "edhrec_rank": 1572
+        }
+]
 }

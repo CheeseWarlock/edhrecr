@@ -8,9 +8,11 @@ export default async function Home() {
   if (process.env.USE_LIVE_DATA === "true") {
     dailyCardsData = await getCards();
   } else {
+    const offset = 0;
+    const date = "2024-01-07";
     dailyCardsData = {
-      cards: dummyData.cards.slice(0, Number.parseInt(process.env.DUMMY_DATA_SIZE || "7")),
-      date: dummyData.date
+      cards: dummyData.cards.slice(offset, offset + Number.parseInt(process.env.DUMMY_DATA_SIZE || "7")),
+      date: date
     };
   }
 
