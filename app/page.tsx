@@ -8,8 +8,8 @@ export default async function Home() {
   if (process.env.USE_LIVE_DATA === "true") {
     dailyCardsData = await getCards();
   } else {
-    const offset = 0;
-    const date = "2024-01-07";
+    const offset = 7;
+    const date = "2024-01-21";
     dailyCardsData = {
       cards: dummyData.cards.slice(offset, offset + Number.parseInt(process.env.DUMMY_DATA_SIZE || "7")),
       date: date

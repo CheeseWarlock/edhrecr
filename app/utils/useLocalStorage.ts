@@ -31,7 +31,7 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
    * @param deserializer - A function that deserializes the value from a JSON-serializable type.
    * @returns A tuple containing the value and a function to set the value.
    */
-export const useLocalStorageWithSerializer = <T, J>(key: string, initialValue: T, serializer: (value: T) => J, deserializer: (value: J) => T) => {
+export const useLocalStorageWithSerializer = <T, J>(key: string, initialValue: T, serializer: (value: T, currentValue?: J) => J, deserializer: (value: J) => T) => {
     const [value, setValue] = useState<T>(() => {
         if (typeof window !== 'undefined') {
             const item = window?.localStorage?.getItem(key);
@@ -42,9 +42,11 @@ export const useLocalStorageWithSerializer = <T, J>(key: string, initialValue: T
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            window?.localStorage?.setItem(key, JSON.stringify(serializer(value)));
+            const item = window?.localStorage?.getItem(key);
+            const parsedItem = (item ? JSON.parse(item) : undefined) as (J | undefined);
+            window?.localStorage?.setItem(key, JSON.stringify(serializer(value, parsedItem)));
         }
-    }, [value, key, serializer]);
+    });
 
     return [value, setValue] as const;
 }
