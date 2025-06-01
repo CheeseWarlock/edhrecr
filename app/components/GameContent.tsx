@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card } from '../types';
 import { GameArea } from './GameArea';
 import { TopBar } from './TopBar';
 import { InfoOverlay } from './InfoOverlay';
 import { StreakOverlay } from './StreakOverlay';
-import { useLocalStorage, useLocalStorageWithSerializer } from '../utils/useLocalStorage';
+import { useLocalStorage } from '../utils/useLocalStorage';
 import { getUserStreakStatus, updateUserStreak } from '../utils/localStorageUtils';
 import { AnimatePresence } from 'motion/react';
 import { CardViewerContext } from './CardViewerContext';
@@ -15,28 +15,16 @@ import { CardViewFrame } from './CardViewFrame';
 interface GameContentProps {
   cards: Card[];
   date: string;
+  storedGuesses: Card[][];
+  setStoredGuesses: React.Dispatch<React.SetStateAction<Card[][]>>;
 }
 
-export function GameContent({ cards, date }: GameContentProps) {
+export function GameContent({ cards, date, storedGuesses, setStoredGuesses }: GameContentProps) {
   const [hasSeenInfo, setHasSeenInfo] = useLocalStorage("edhr-has-seen-intro", "false");
   const [isInfoOpen, setIsInfoOpen] = useState(hasSeenInfo !== "true");
   const [isStreakOpen, setIsStreakOpen] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
   const [viewingCard, setViewingCard] = useState<Card | null>(null);
-  
-  const serializer = useCallback((cardData: Card[][], currentData?: { date: string, guesses: number[][] }) => {
-    console.log("Saving", { guesses: currentData?.date === date ? cardData.map(order => order.map(card => cards.indexOf(card))) : [], date: date });
-    return { guesses: currentData?.date === date ? cardData.map(order => order.map(card => cards.indexOf(card))) : [], date: date };
-  }, [cards, date]);
-  const deserializer = useCallback((storedData: { date: string, guesses: number[][] }) =>{
-    console.log("Loading", storedData.date === date ? storedData.guesses.map(order => order.map(cardIdx => cards[cardIdx])) : []);
-    return storedData.date === date ? storedData.guesses.map(order => order.map(cardIdx => cards[cardIdx])) : []
-  }, [cards, date]);
-
-  const [storedGuesses, setStoredGuesses] = useLocalStorageWithSerializer<
-    Card[][],
-    { date: string, guesses: number[][] }
-  >("edhr-guesses", [], serializer, deserializer);
 
   useEffect(() => {
     setHasMounted(true);

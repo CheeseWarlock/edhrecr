@@ -1,7 +1,7 @@
-import { getCards } from "./lib/daily-cards";
-import dummyData from "./lib/dummy-data.json"
-import { Card } from "./types";
-import { PersistentGameContent } from './components/PersistentGameContent';
+import { getCards } from "../lib/daily-cards";
+import dummyData from "../lib/dummy-data.json"
+import { Card } from "../types";
+import { NonPersistentGameContent } from '../components/NonPersistentGameContent';
 
 export default async function Home() {
   let dailyCardsData: { cards: Card[], date: string };
@@ -16,7 +16,7 @@ export default async function Home() {
     };
   }
 
-  return <PersistentGameContent cards={dailyCardsData.cards} date={dailyCardsData.date} />;
+  return <NonPersistentGameContent cards={dailyCardsData.cards} date={dailyCardsData.date} />;
 }
 
 export const dynamic = 'force-dynamic';
