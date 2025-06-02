@@ -20,15 +20,15 @@ interface TopBarProps {
 export function TopBar({ onCalendarClick, onInfoClick, onStreakClick }: TopBarProps) {
   return (
     <div 
-    className="fixed top-0 left-0 right-0 h-16 bg-[#444] grid grid-cols-3 items-center px-4 z-50 border-b-4 border-[#2694af]"
+    className="fixed top-0 left-0 right-0 h-16 bg-[#444] grid grid-cols-3 items-center md:px-4 z-50 border-b-4 border-[#2694af]"
     style={{
       background: 'linear-gradient(180deg, #484848, #404040)',
     }}
     >
-      <div className="flex justify-start">
+      <div className="hidden md:flex justify-start">
         <div className="w-8" /> {/* Empty div to balance the right side */}
       </div>
-      <div className="flex justify-center group">
+      <div className="flex justify-center group col-span-2 md:col-span-1">
         <Link href="/">
           <div className={`text-white text-2xl md:text-4xl flex items-center gap-2 font-bold ${metamorphous.className}`}>
             <TinyIcon className="group-hover:rotate-180 transition-transform duration-300" />
@@ -39,7 +39,7 @@ export function TopBar({ onCalendarClick, onInfoClick, onStreakClick }: TopBarPr
           </div>
         </Link>
       </div>
-      <div className="flex justify-end gap-4">
+      <div className="flex justify-end md:gap-4">
         <button 
           onClick={onCalendarClick}
           className="w-8 flex items-center justify-center text-white hover:text-[#2694AF] transition-colors cursor-pointer group relative"

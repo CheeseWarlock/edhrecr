@@ -89,7 +89,7 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
     >
       <svg
         className="absolute w-[120%] h-[120%] opacity-5 pointer-events-none"
-        viewBox="0 0 100 200"
+        viewBox="0 0 120 240"
         preserveAspectRatio="xMidYMid meet"
       >
         <ellipse
