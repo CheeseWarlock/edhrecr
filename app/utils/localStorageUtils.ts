@@ -120,3 +120,47 @@ export function updateUserStreak(currentDate: string, success: boolean, guessesC
     incrementUserGuessCount(0);
   }
 }
+
+/**
+ * Get the user's play history.
+ */
+export function getUserPlayHistory() {
+  const storedHistory = localStorage.getItem('edhr-plays');
+  return storedHistory ? JSON.parse(storedHistory) : [];
+}
+
+/**
+ * Update the user's play history by adding a given date to their games played.
+ */
+export function updateUserPlayHistory(date: string) {
+  const storedHistory = localStorage.getItem('edhr-plays');
+  const history = storedHistory ? JSON.parse(storedHistory) : [];
+  if (!history.includes(date)) {
+    history.push(date);
+    localStorage.setItem('edhr-plays', JSON.stringify(history));
+  }
+}
+
+/**
+ * If the user has streak data but no play history, back-populate their streak.
+ * @param today - The current date from the server in YYYY-MM-DD format.
+ */
+export function prepopulateUserPlayHistory(today: string) {
+  const storedStreak = getUserStreakStatus(today);
+  if (storedStreak && !localStorage.getItem('edhr-plays')) {
+    const dayStreak = storedStreak.streakLength;
+    const isTodayDone = storedStreak.isTodayDone;
+    const todayDate = new Date(today);
+    const results: string[] = [];
+
+    let lastDayToPrepopulate = todayDate;
+    if (isTodayDone) {
+      lastDayToPrepopulate = new Date(todayDate.setDate(todayDate.getDate() + 1));
+    }
+    for (let i = 0; i < dayStreak; i++) {
+      const dayStringToPrepopulate = new Date(lastDayToPrepopulate.setDate(lastDayToPrepopulate.getDate() - 1)).toISOString().split('T')[0];
+      results.push(dayStringToPrepopulate);
+    }
+    localStorage.setItem('edhr-plays', JSON.stringify(results));
+  }
+}

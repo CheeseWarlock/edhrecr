@@ -7,7 +7,7 @@ import { TopBar } from './TopBar';
 import { InfoOverlay } from './InfoOverlay';
 import { StreakOverlay } from './StreakOverlay';
 import { useLocalStorage } from '../utils/useLocalStorage';
-import { getUserStreakStatus, updateUserStreak } from '../utils/localStorageUtils';
+import { getUserStreakStatus, prepopulateUserPlayHistory, updateUserPlayHistory, updateUserStreak } from '../utils/localStorageUtils';
 import { AnimatePresence } from 'motion/react';
 import { CardViewerContext } from './CardViewerContext';
 import { CardViewFrame } from './CardViewFrame';
@@ -38,7 +38,8 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
 
   useEffect(() => {
     setHasMounted(true);
-  }, []);
+    prepopulateUserPlayHistory(today);
+  }, [today]);
 
   if (!hasMounted) {
     return null;
@@ -54,13 +55,14 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
     setStoredGuesses(newGuessedOrders);
 
     if (didWin) {
-      handlePuzzleComplete(newGuessedOrders.length);
+      handlePuzzleComplete(newGuessedOrders.length, date);
     } else if (newGuessedOrders.length === 5) {
       handlePuzzleFailed();
     }
   };
 
-  const handlePuzzleComplete = (guessesCompleted: number) => {
+  const handlePuzzleComplete = (guessesCompleted: number, date: string) => {
+    updateUserPlayHistory(date);
     if (shouldUpdateStreak) {
       updateUserStreak(date, true, guessesCompleted);
     }

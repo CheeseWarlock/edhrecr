@@ -31,7 +31,11 @@ body {
 }
 
 .rdp-root.rdp-root {
-  --rdp-accent-color: #2694AF; /* Change the accent color to indigo. */
+  --rdp-accent-color: #f0f0f0;
   --rdp-accent-background-color: #f0f0f0; /* Change the accent background color. */
   /* Add more CSS variables here. */
+}
+
+.rdp-root .played {
+  background-color: rgb(124, 155, 19);
 }

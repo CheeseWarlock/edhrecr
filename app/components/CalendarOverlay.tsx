@@ -5,7 +5,7 @@ import { OverlayFrame } from './OverlayFrame';
 import { useRouter } from 'next/navigation';
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
-
+import { getUserPlayHistory } from '../utils/localStorageUtils';
 interface CalendarOverlayProps {
   isOpen: boolean;
   onClose: () => void;
@@ -20,6 +20,8 @@ const metamorphous = Metamorphous({
 
 export function CalendarOverlay({ isOpen, onClose, gameDate, today }: CalendarOverlayProps) {
   const router = useRouter();
+  const daysPlayed = getUserPlayHistory();
+  console.log(daysPlayed);
   return (
     <OverlayFrame isOpen={isOpen} onClose={onClose}>
       <div className="text-white space-y-4">
@@ -33,6 +35,9 @@ export function CalendarOverlay({ isOpen, onClose, gameDate, today }: CalendarOv
           animate
           mode="single"
           selected={gameDate}
+          modifiers={{
+            played: (date) => daysPlayed.includes(date.toISOString().slice(0, 10))
+          }}
           disabled={date => date < new Date('2025-05-15') || date > today}
           onSelect={date => {
             if (date) {
@@ -42,6 +47,9 @@ export function CalendarOverlay({ isOpen, onClose, gameDate, today }: CalendarOv
                 router.push(`/replay/${date.toISOString().slice(0, 10)}`);
               }
             }
+          }}
+          modifiersClassNames={{
+            played: 'played rounded-lg'
           }}
           defaultMonth={gameDate}
           startMonth={new Date('2025-05-15')}
