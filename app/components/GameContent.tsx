@@ -127,7 +127,7 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
           <StreakOverlay 
           isOpen={isStreakOpen} 
           onClose={() => setIsStreakOpen(false)} 
-          streak={getUserStreakStatus(date)}
+          streak={getUserStreakStatus(today)}
         />}
       </AnimatePresence>
       <AnimatePresence>
