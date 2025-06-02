@@ -1,0 +1,29 @@
+{
+  "cards": [
+    {
+      "id": "sample-card-0",
+      "name": "Arcane Signet",
+      "image_url": "https://cards.scryfall.io/normal/front/a/6/a660543c-4d8d-4c4a-8135-3a3edbabcb47.jpg?1746053066",
+      "edhrec_rank": 1
+    },
+    {
+      "id": "sample-card-1",
+      "name": "Almighty Brushwagg",
+      "image_url": "https://cards.scryfall.io/normal/front/7/1/71f2b7ac-8742-468d-b6a3-87881cb522ff.jpg?1591227501",
+      "edhrec_rank": 4
+    },
+    {
+      "id": "sample-card-2",
+      "name": "Archmage Emeritus",
+      "image_url": "https://cards.scryfall.io/normal/front/6/2/62f20d75-cfe5-427b-92d3-35c7e77db0d5.jpg?1743206281",
+      "edhrec_rank": 2
+    },
+    {
+      "id": "sample-card-3",
+      "name": "Cast Down",
+      "image_url": "https://cards.scryfall.io/normal/front/a/b/aba79021-39af-4e74-beb5-f2f508c865b2.jpg?1674136020",
+      "edhrec_rank": 3
+    }
+  ],
+  "date": "2024-01-21"
+}

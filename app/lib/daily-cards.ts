@@ -151,4 +151,20 @@ export async function getCards(): Promise<DailyCollection> {
   };
 }
 
+export async function getCardsForDay(day: string): Promise<DailyCollection> {
+  const pastDay = day.slice(0, 10);
+
+  const result = await getPrecomputedCardsForDay(pastDay);
+  const mapped = result.map((card) => ({
+    id: card.id,
+    name: card.name,
+    image_url: card.image_url,
+    edhrec_rank: card.edhrec_rank
+  }));
+  return {
+    cards: mapped,
+    date: pastDay
+  };
+}
+
 export const dynamic = 'force-dynamic';

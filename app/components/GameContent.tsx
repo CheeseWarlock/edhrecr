@@ -17,9 +17,10 @@ interface GameContentProps {
   date: string;
   storedGuesses: Card[][];
   setStoredGuesses: React.Dispatch<React.SetStateAction<Card[][]>>;
+  shouldUpdateStreak?: boolean;
 }
 
-export function GameContent({ cards, date, storedGuesses, setStoredGuesses }: GameContentProps) {
+export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shouldUpdateStreak = true }: GameContentProps) {
   const [hasSeenInfo, setHasSeenInfo] = useLocalStorage("edhr-has-seen-intro", "false");
   const [isInfoOpen, setIsInfoOpen] = useState(hasSeenInfo !== "true");
   const [isStreakOpen, setIsStreakOpen] = useState(false);
@@ -51,11 +52,15 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses }: Ga
   };
 
   const handlePuzzleComplete = (guessesCompleted: number) => {
-    updateUserStreak(date, true, guessesCompleted);
+    if (shouldUpdateStreak) {
+      updateUserStreak(date, true, guessesCompleted);
+    }
   };
 
   const handlePuzzleFailed = () => {
-    updateUserStreak(date, false);
+    if (shouldUpdateStreak) {
+      updateUserStreak(date, false);
+    }
   }
 
   const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);

@@ -3,6 +3,7 @@
 import React from 'react';
 import { Metamorphous } from "next/font/google";
 import { OverlayFrame } from './OverlayFrame';
+import Link from 'next/link';
 
 const metamorphous = Metamorphous({ 
   weight: '400',
@@ -26,6 +27,7 @@ export function InfoOverlay({ isOpen, onClose }: InfoOverlayProps) {
           Each day, you&#39;ll be presented with a set of cards.
           Drag the cards to arrange them in order of their popularity in EDH decks, from most popular to least popular.
           Correctly placed cards will be locked in place. Tap a card to enlarge it.
+          You can <Link href="/sample" className="text-[#2EB5D3] hover:underline">try a sample game</Link> to see how it works.
         </p>
         <p>
           The rankings are based on EDHRec data, collected from multiple sources like Archidekt and Moxfield deck lists, and provided by the Scryfall API.

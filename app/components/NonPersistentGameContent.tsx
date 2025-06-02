@@ -18,6 +18,7 @@ export function NonPersistentGameContent({ cards, date }: NonPersistentGameConte
       date={date}
       storedGuesses={storedGuesses}
       setStoredGuesses={setStoredGuesses}
+      shouldUpdateStreak={false}
     />
   );
 } 
