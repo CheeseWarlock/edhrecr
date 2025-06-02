@@ -2,7 +2,7 @@ import { getCardsForDay } from "../../lib/daily-cards";
 import { Card } from "../../types";
 import { NonPersistentGameContent } from '../../components/NonPersistentGameContent';
 
-export default async function Page({ params }: { params: { date: string } }) {
+export default async function Page({ params }: { params: Promise<{ date: string }> }) {
   const {date} = await params;
   const response = await getCardsForDay(date);
   const dailyCardsData: { cards: Card[], date: string } = response.collection;
