@@ -87,19 +87,6 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
       }}
       className="items-center justify-items-center min-h-screen md:p-8 bg-[#222] flex justify-center pt-16 md:pt-16 relative overflow-hidden"
     >
-      <svg
-        className="absolute w-[120%] h-[120%] opacity-5 pointer-events-none"
-        viewBox="0 0 120 240"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <ellipse
-          cx="50"
-          cy="100"
-          rx="44"
-          ry="65"
-          fill="#CCC"
-        />
-      </svg>
       <CardViewerContext value={ (card) => {setViewingCard(card);} }>
       <TopBar 
         onCalendarClick={() => setIsCalendarOpen(true)}
