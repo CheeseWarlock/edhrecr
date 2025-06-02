@@ -19,33 +19,56 @@ interface TopBarProps {
 
 export function TopBar({ onCalendarClick, onInfoClick, onStreakClick }: TopBarProps) {
   return (
-    <div className="fixed top-0 left-0 right-0 h-16 bg-[#444] flex items-center justify-between px-4 z-50 border-b-4 border-[#2694af]">
-      <div className="w-8" /> {/* Spacer for balance */}
-      <Link href="/">
-      <div className={`text-white text-2xl md:text-4xl flex items-center gap-2 font-bold ${metamorphous.className}`}>
-        
-          <TinyIcon />
-          <h1>EDHRanker</h1>
-        </div>
-      </Link>
-      <div className="flex gap-4">
-      <button 
+    <div 
+    className="fixed top-0 left-0 right-0 h-16 bg-[#444] grid grid-cols-3 items-center px-4 z-50 border-b-4 border-[#2694af]"
+    style={{
+      background: 'linear-gradient(180deg, #484848, #404040)',
+    }}
+    >
+      <div className="flex justify-start">
+        <div className="w-8" /> {/* Empty div to balance the right side */}
+      </div>
+      <div className="flex justify-center group">
+        <Link href="/">
+          <div className={`text-white text-2xl md:text-4xl flex items-center gap-2 font-bold ${metamorphous.className}`}>
+            <TinyIcon className="group-hover:rotate-180 transition-transform duration-300" />
+            <h1 className="group-hover:text-[#2694AF] transition-all duration-300 group-hover:-translate-x-0.5">EDHRanker</h1>
+            <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-[#2694AF] text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            Today&apos;s Game
+          </span>
+          </div>
+        </Link>
+      </div>
+      <div className="flex justify-end gap-4">
+        <button 
           onClick={onCalendarClick}
-          className="w-8 flex items-center justify-center text-white hover:text-[#2694AF] transition-colors cursor-pointer"
+          className="w-8 flex items-center justify-center text-white hover:text-[#2694AF] transition-colors cursor-pointer group relative"
+          title="View Calendar"
         >
           <FaCalendarAlt size={24} />
+          <span className="absolute -bottom-12 left-1/2 -translate-x-1/2 bg-[#2694AF] text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            Play Previous Days
+          </span>
         </button>
         <button 
           onClick={onStreakClick}
-          className="w-8 flex items-center justify-center text-white hover:text-[#2694AF] transition-colors cursor-pointer"
+          className="w-8 flex items-center justify-center text-white hover:text-[#2694AF] transition-colors cursor-pointer group relative"
+          title="View Streak"
         >
           <FaChartBar size={24} />
+          <span className="absolute -bottom-12 left-1/2 -translate-x-1/2 bg-[#2694AF] text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            View Your Stats
+          </span>
         </button>
         <button 
           onClick={onInfoClick}
-          className="w-8 flex items-center justify-center text-white hover:text-[#2694AF] transition-colors cursor-pointer"
+          className="w-8 flex items-center justify-center text-white hover:text-[#2694AF] transition-colors cursor-pointer group relative"
+          title="How to Play"
         >
           <FaInfoCircle size={24} />
+          <span className="absolute -bottom-12 left-1/2 -translate-x-full bg-[#2694AF] text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            How to Play
+          </span>
         </button>
       </div>
     </div>
