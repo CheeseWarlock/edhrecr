@@ -8,9 +8,10 @@ import { useLocalStorageWithSerializer } from '../utils/useLocalStorage';
 interface PersistentGameContentProps {
   cards: Card[];
   date: string;
+  today: Date;
 }
 
-export function PersistentGameContent({ cards, date }: PersistentGameContentProps) {
+export function PersistentGameContent({ cards, date, today }: PersistentGameContentProps) {
   const serializer = useCallback((cardData: Card[][], currentData?: { date: string, guesses: number[][] }) => {
     return { guesses: currentData?.date === date ? cardData.map(order => order.map(card => cards.indexOf(card))) : [], date: date };
   }, [cards, date]);
@@ -30,6 +31,7 @@ export function PersistentGameContent({ cards, date }: PersistentGameContentProp
       date={date}
       storedGuesses={storedGuesses}
       setStoredGuesses={setStoredGuesses}
+      today={today}
     />
   );
 } 

@@ -7,15 +7,17 @@ import { GameContent } from './GameContent';
 interface NonPersistentGameContentProps {
   cards: Card[];
   date: string;
+  today: Date;
 }
 
-export function NonPersistentGameContent({ cards, date }: NonPersistentGameContentProps) {
+export function NonPersistentGameContent({ cards, date, today }: NonPersistentGameContentProps) {
   const [storedGuesses, setStoredGuesses] = useState<Card[][]>([]);
 
   return (
     <GameContent 
       cards={cards} 
       date={date}
+      today={today}
       storedGuesses={storedGuesses}
       setStoredGuesses={setStoredGuesses}
       shouldUpdateStreak={false}

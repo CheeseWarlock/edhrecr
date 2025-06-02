@@ -11,21 +11,30 @@ import { getUserStreakStatus, updateUserStreak } from '../utils/localStorageUtil
 import { AnimatePresence } from 'motion/react';
 import { CardViewerContext } from './CardViewerContext';
 import { CardViewFrame } from './CardViewFrame';
+import { CalendarOverlay } from './CalendarOverlay';
 
 interface GameContentProps {
   cards: Card[];
+  /**
+   * The date of the challenge.
+   */
   date: string;
+  /**
+   * The current date.
+   */
+  today: Date;
   storedGuesses: Card[][];
   setStoredGuesses: React.Dispatch<React.SetStateAction<Card[][]>>;
   shouldUpdateStreak?: boolean;
 }
 
-export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shouldUpdateStreak = true }: GameContentProps) {
+export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shouldUpdateStreak = true, today }: GameContentProps) {
   const [hasSeenInfo, setHasSeenInfo] = useLocalStorage("edhr-has-seen-intro", "false");
   const [isInfoOpen, setIsInfoOpen] = useState(hasSeenInfo !== "true");
   const [isStreakOpen, setIsStreakOpen] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
   const [viewingCard, setViewingCard] = useState<Card | null>(null);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   useEffect(() => {
     setHasMounted(true);
@@ -80,6 +89,7 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
     >
       <CardViewerContext value={ (card) => {setViewingCard(card);} }>
       <TopBar 
+        onCalendarClick={() => setIsCalendarOpen(true)}
         onInfoClick={() => setIsInfoOpen(true)} 
         onStreakClick={() => setIsStreakOpen(true)}
       />
@@ -104,6 +114,15 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
           isOpen={isStreakOpen} 
           onClose={() => setIsStreakOpen(false)} 
           streak={getUserStreakStatus(date)}
+        />}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isCalendarOpen &&
+          <CalendarOverlay 
+          isOpen={isCalendarOpen} 
+          onClose={() => setIsCalendarOpen(false)}
+          gameDate={new Date(date)}
+          today={today}
         />}
       </AnimatePresence>
       <AnimatePresence>

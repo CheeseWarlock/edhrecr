@@ -4,9 +4,10 @@ import { NonPersistentGameContent } from '../../components/NonPersistentGameCont
 
 export default async function Page({ params }: { params: { date: string } }) {
   const {date} = await params;
-  const dailyCardsData: { cards: Card[], date: string } = await getCardsForDay(date);
-
-  return <NonPersistentGameContent cards={dailyCardsData.cards} date={dailyCardsData.date} />;
+  const response = await getCardsForDay(date);
+  const dailyCardsData: { cards: Card[], date: string } = response.collection;
+  const today = response.today;
+  return <NonPersistentGameContent cards={dailyCardsData.cards} date={dailyCardsData.date} today={today} />;
 }
 
 export const dynamic = 'force-dynamic';

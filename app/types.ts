@@ -19,9 +19,20 @@ type Card = {
     edhrec_rank: number;
 }
 
+/**
+ * A collection of cards for a challenge.
+ */
 type DailyCollection = {
   cards: Card[];
   date: string;
 }
 
-export type { ScryfallCard, Card, DailyCollection };
+/**
+ * A card collection along with the server's idea of "today".
+ */
+type ServerResponse = {
+  collection: DailyCollection,
+  today: Date
+}
+
+export type { ScryfallCard, Card, DailyCollection, ServerResponse };

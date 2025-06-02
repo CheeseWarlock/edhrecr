@@ -1,6 +1,6 @@
 import postgres from 'postgres';
 import MINI_BULK_DATA from './dummy-data.json';
-import { Card, DailyCollection, ScryfallCard } from '../types';
+import { Card, ScryfallCard, ServerResponse } from '../types';
 
 // Could also load the entire set of bulk data- currently not in repo
 // import BULK_DATA from '../lib/oracle-cards-20250514210930.json';
@@ -136,7 +136,7 @@ export async function populateFromBulkData(cards: ScryfallCard[], count: number,
   return await sql`INSERT INTO cards ${sql(cardBlock, 'name', 'image_url', 'edhrec_rank')}`;
 }
 
-export async function getCards(): Promise<DailyCollection> {
+export async function getCards(): Promise<ServerResponse> {
   const today = (new Date()).toISOString().slice(0, 10);
   const result = await getOrGenerateCardsForDay(today);
   const mapped = result.map((card) => ({
@@ -146,12 +146,15 @@ export async function getCards(): Promise<DailyCollection> {
     edhrec_rank: card.edhrec_rank
   }));
   return {
-    cards: mapped,
-    date: today
+    collection: {
+      cards: mapped,
+      date: today
+    },
+    today: new Date()
   };
 }
 
-export async function getCardsForDay(day: string): Promise<DailyCollection> {
+export async function getCardsForDay(day: string): Promise<ServerResponse> {
   const pastDay = day.slice(0, 10);
 
   const result = await getPrecomputedCardsForDay(pastDay);
@@ -162,9 +165,16 @@ export async function getCardsForDay(day: string): Promise<DailyCollection> {
     edhrec_rank: card.edhrec_rank
   }));
   return {
-    cards: mapped,
-    date: pastDay
+    collection: {
+      cards: mapped,
+      date: pastDay
+    },
+    today: new Date()
   };
+}
+
+export async function getToday(): Promise<Date> {
+  return new Date();
 }
 
 export const dynamic = 'force-dynamic';

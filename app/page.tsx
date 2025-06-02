@@ -1,4 +1,4 @@
-import { getCards } from "./lib/daily-cards";
+import { getCards, getToday } from "./lib/daily-cards";
 import dummyData from "./lib/dummy-data.json"
 import { Card } from "./types";
 import { PersistentGameContent } from './components/PersistentGameContent';
@@ -6,7 +6,8 @@ import { PersistentGameContent } from './components/PersistentGameContent';
 export default async function Home() {
   let dailyCardsData: { cards: Card[], date: string };
   if (process.env.USE_LIVE_DATA === "true") {
-    dailyCardsData = await getCards();
+    const response = await getCards();
+    dailyCardsData = response.collection;
   } else {
     const offset = 7;
     const date = "2024-01-21";
@@ -15,8 +16,9 @@ export default async function Home() {
       date: date
     };
   }
+  const today = await getToday();
 
-  return <PersistentGameContent cards={dailyCardsData.cards} date={dailyCardsData.date} />;
+  return <PersistentGameContent cards={dailyCardsData.cards} date={dailyCardsData.date} today={today} />;
 }
 
 export const dynamic = 'force-dynamic';
