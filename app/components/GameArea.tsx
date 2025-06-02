@@ -79,9 +79,9 @@ export function GameArea({ cards, guessedOrders, onLockInGuess, dateDisplay }: G
             {dateString && <div className={`text-center mb-4 ${gameOver ? 'text-[#999]' : ''}`}>Replaying game for {dateString}</div>}
           <div className={`flex flex-row items-center justify-center mb-4 ${gameOver ? 'text-[#999]' : ''}`}><span className="text-2xl">{`${5 - guessedOrders.length}/5`}</span><span>&nbsp;guess{5 - guessedOrders.length == 1 ? '' : 'es'} left</span></div>
           {won ?
-            <SuccessPanel cards={currentGuess} guessCount={guessedOrders.length} />
+            <SuccessPanel cards={currentGuess} guessCount={guessedOrders.length} isPastGame={dateString != null} />
           : lost ?
-            <FailurePanel cards={correctOrder} />
+            <FailurePanel cards={correctOrder} isPastGame={dateString != null} />
           :
           <CurrentGuess 
             cards={currentGuess} 

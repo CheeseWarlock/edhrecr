@@ -1,8 +1,9 @@
 import { Card } from "../types"
 import { CardImage } from "./CardImage"
 
-export default function FailurePanel({ cards }: {
-    cards: Card[]
+export default function FailurePanel({ cards, isPastGame }: {
+    cards: Card[],
+    isPastGame: boolean
 }) {
     return <>
         <div className="w-full flex flex-row" style={{
@@ -21,7 +22,7 @@ export default function FailurePanel({ cards }: {
             
             className="flex flex-col items-center absolute bottom-0 top-0 justify-center w-full pointer-events-none left-0">
             <span className="text-white text-2xl font-bold bg-[rgba(68,68,68,0.7)] p-2 rounded-t-md">No more guesses!</span>
-            <span className="text-white md:text-lg text-center bg-[rgba(68,68,68,0.7)] p-2 rounded-md">Come back tomorrow for another challenge.</span>
+            {!isPastGame && <span className="text-white md:text-lg text-center bg-[rgba(68,68,68,0.7)] p-2 rounded-md">Come back tomorrow for another challenge.</span>}
             <span className="text-white md:text-lg text-center bg-[rgba(68,68,68,0.7)] p-2 rounded-b-md">The correct order is shown here.</span>
         </div></>
 }
