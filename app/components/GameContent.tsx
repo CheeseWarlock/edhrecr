@@ -22,7 +22,7 @@ interface GameContentProps {
   /**
    * The current date.
    */
-  today: Date;
+  today: string;
   storedGuesses: Card[][];
   setStoredGuesses: React.Dispatch<React.SetStateAction<Card[][]>>;
   shouldUpdateStreak?: boolean;
@@ -98,6 +98,7 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
           cards={cards}
           guessedOrders={storedGuesses}
           onLockInGuess={handleLockInGuess}
+          dateDisplay={date === today ? undefined : date}
         />
       </div>
       <AnimatePresence>
@@ -122,7 +123,7 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
           isOpen={isCalendarOpen} 
           onClose={() => setIsCalendarOpen(false)}
           gameDate={new Date(date)}
-          today={today}
+          today={new Date(today)}
         />}
       </AnimatePresence>
       <AnimatePresence>

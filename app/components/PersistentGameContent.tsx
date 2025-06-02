@@ -8,7 +8,7 @@ import { useLocalStorageWithSerializer } from '../utils/useLocalStorage';
 interface PersistentGameContentProps {
   cards: Card[];
   date: string;
-  today: Date;
+  today: string;
 }
 
 export function PersistentGameContent({ cards, date, today }: PersistentGameContentProps) {

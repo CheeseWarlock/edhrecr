@@ -4,6 +4,7 @@ import React from 'react';
 import { FaInfoCircle, FaChartBar, FaCalendarAlt } from 'react-icons/fa';
 import { Metamorphous } from "next/font/google";
 import { TinyIcon } from './TinyIcon';
+import Link from 'next/link';
 
 const metamorphous = Metamorphous({ 
   weight: '400',
@@ -20,10 +21,13 @@ export function TopBar({ onCalendarClick, onInfoClick, onStreakClick }: TopBarPr
   return (
     <div className="fixed top-0 left-0 right-0 h-16 bg-[#444] flex items-center justify-between px-4 z-50 border-b-4 border-[#2694af]">
       <div className="w-8" /> {/* Spacer for balance */}
+      <Link href="/">
       <div className={`text-white text-2xl md:text-4xl flex items-center gap-2 font-bold ${metamorphous.className}`}>
-        <TinyIcon />
-        <h1>EDHRanker</h1>
-      </div>
+        
+          <TinyIcon />
+          <h1>EDHRanker</h1>
+        </div>
+      </Link>
       <div className="flex gap-4">
       <button 
           onClick={onCalendarClick}

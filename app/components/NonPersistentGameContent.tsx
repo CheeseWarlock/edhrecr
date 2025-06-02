@@ -7,7 +7,7 @@ import { GameContent } from './GameContent';
 interface NonPersistentGameContentProps {
   cards: Card[];
   date: string;
-  today: Date;
+  today: string;
 }
 
 export function NonPersistentGameContent({ cards, date, today }: NonPersistentGameContentProps) {

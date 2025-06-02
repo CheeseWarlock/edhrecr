@@ -32,7 +32,7 @@ type DailyCollection = {
  */
 type ServerResponse = {
   collection: DailyCollection,
-  today: Date
+  today: string
 }
 
 export type { ScryfallCard, Card, DailyCollection, ServerResponse };

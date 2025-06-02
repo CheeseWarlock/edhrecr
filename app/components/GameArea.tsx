@@ -14,12 +14,13 @@ interface GameAreaProps {
   cards: Card[];
   guessedOrders: Card[][];
   onLockInGuess: (cardsInCurrentGuess: Card[]) => void;
+  dateDisplay?: string;
 }
 
 /**
  * The main game area, containing the previous guesses and the current guess
  */
-export function GameArea({ cards, guessedOrders, onLockInGuess }: GameAreaProps) {
+export function GameArea({ cards, guessedOrders, onLockInGuess, dateDisplay }: GameAreaProps) {
     const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
     
     /**
@@ -58,6 +59,8 @@ export function GameArea({ cards, guessedOrders, onLockInGuess }: GameAreaProps)
       }
     };
 
+    const dateString = dateDisplay ? new Date(dateDisplay).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : undefined;
+
     const won = correctnessByIndex.every((index) => index);
     const lost = guessedOrders.length == 5;
     const gameOver = won || lost;
@@ -73,6 +76,7 @@ export function GameArea({ cards, guessedOrders, onLockInGuess }: GameAreaProps)
         </div>
         <div className="flex-shrink-0">
           <div className="flex flex-col w-full py-6 md:px-6 bg-[#444] max-w-[1792px] mt-0 md:rounded-xl relative z-10 justify-center">
+            {dateString && <div className={`text-center mb-4 ${gameOver ? 'text-[#999]' : ''}`}>Replaying game for {dateString}</div>}
           <div className={`flex flex-row items-center justify-center mb-4 ${gameOver ? 'text-[#999]' : ''}`}><span className="text-2xl">{`${5 - guessedOrders.length}/5`}</span><span>&nbsp;guess{5 - guessedOrders.length == 1 ? '' : 'es'} left</span></div>
           {won ?
             <SuccessPanel cards={currentGuess} guessCount={guessedOrders.length} />

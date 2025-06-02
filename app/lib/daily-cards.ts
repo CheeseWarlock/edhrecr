@@ -150,12 +150,13 @@ export async function getCards(): Promise<ServerResponse> {
       cards: mapped,
       date: today
     },
-    today: new Date()
+    today: today
   };
 }
 
 export async function getCardsForDay(day: string): Promise<ServerResponse> {
   const pastDay = day.slice(0, 10);
+  const today = (new Date()).toISOString().slice(0, 10);
 
   const result = await getPrecomputedCardsForDay(pastDay);
   const mapped = result.map((card) => ({
@@ -169,12 +170,13 @@ export async function getCardsForDay(day: string): Promise<ServerResponse> {
       cards: mapped,
       date: pastDay
     },
-    today: new Date()
+    today: today
   };
 }
 
-export async function getToday(): Promise<Date> {
-  return new Date();
+export async function getToday(): Promise<string> {
+  const today = (new Date()).toISOString().slice(0, 10);
+  return today;
 }
 
 export const dynamic = 'force-dynamic';
