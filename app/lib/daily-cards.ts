@@ -174,6 +174,72 @@ export async function getCardsForDay(day: string): Promise<ServerResponse> {
   };
 }
 
+/**
+ * Gets the daily collection from the database.
+ */
+export async function getDailyCollectionv2() {
+  const today = (new Date()).toISOString().slice(0, 10);
+  const result = await sql`
+    SELECT * FROM dailycollectionsv2 WHERE date = ${today} LIMIT 7
+  `;
+  const mapped = result.map((card) => ({
+    id: card.id,
+    name: card.name,
+    image_url: card.image_url,
+    edhrec_rank: card.edhrec_rank
+  }));
+  return {
+    collection: {
+      cards: mapped,
+      date: today
+    },
+    today: today
+  };
+}
+
+/**
+ * Makes Scryfall API calls to get 7 random cards that are legal in Commander.
+ */
+export async function generateDailyCollectionv2() {
+  const today = (new Date()).toISOString().slice(0, 10);
+  let attempts = 0;
+  let successes = 0;
+  const millis = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  const cards: Card[] = [];
+
+  while (attempts < 10 && successes < 7) {
+    attempts++;
+    await millis(1000);
+    const myHeaders = new Headers();
+    myHeaders.append('pragma', 'no-cache');
+    myHeaders.append('cache-control', 'no-cache');
+    myHeaders.append('Cache-Control', 'no-cache');
+    const response = await fetch(`https://api.scryfall.com/cards/random?q=legal%3Acommander&idx=${attempts}`, {cache: 'no-store', headers: myHeaders});
+    if (!response.ok) {
+      throw new Error('Failed to fetch random card from Scryfall');
+    }
+    
+    const data = await response.json();
+
+    if (data.edhrec_rank === null || data.image_uris === null || data.image_uris.normal === null) {
+      continue;
+    }
+
+    await sql`
+        INSERT INTO dailycollectionsv2 (date, edhrec_rank, image_uri, name)
+        VALUES (${today}, ${data.edhrec_rank}, ${data.image_uris.normal}, ${data.name})
+      `;
+    successes++;
+    cards.push({
+      id: data.id,
+      name: data.name,
+      image_url: data.image_uris.normal,
+      edhrec_rank: data.edhrec_rank
+    });
+  }
+  return cards;
+}
+
 export async function getToday(): Promise<string> {
   const today = (new Date()).toISOString().slice(0, 10);
   return today;
