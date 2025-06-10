@@ -206,36 +206,45 @@ export async function generateDailyCollectionv2() {
   let successes = 0;
   const millis = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const cards: Card[] = [];
+  const requests: Promise<Response>[] = [];
+
+  const headers = new Headers();
+    headers.append('pragma', 'no-cache');
+    headers.append('cache-control', 'no-cache');
+    headers.append('Cache-Control', 'no-cache');
 
   while (attempts < 10 && successes < 7) {
+    if (attempts > 0) await millis(1000);
+    requests.push(fetch(`https://api.scryfall.com/cards/random?q=legal%3Acommander&idx=${attempts}`, {cache: 'no-store', headers}));
     attempts++;
-    await millis(1000);
-    const myHeaders = new Headers();
-    myHeaders.append('pragma', 'no-cache');
-    myHeaders.append('cache-control', 'no-cache');
-    myHeaders.append('Cache-Control', 'no-cache');
-    const response = await fetch(`https://api.scryfall.com/cards/random?q=legal%3Acommander&idx=${attempts}`, {cache: 'no-store', headers: myHeaders});
-    if (!response.ok) {
-      throw new Error('Failed to fetch random card from Scryfall');
-    }
-    
-    const data = await response.json();
+  }
 
-    if (data.edhrec_rank === null || data.image_uris === null || data.image_uris.normal === null) {
-      continue;
-    }
-
-    await sql`
-        INSERT INTO dailycollectionsv2 (date, edhrec_rank, image_uri, name, added_at)
-        VALUES (${today}, ${data.edhrec_rank}, ${data.image_uris.normal}, ${data.name}, ${new Date().toISOString()})
+  const responses = await Promise.allSettled(requests);
+  for (const response of responses) {
+    if (response.status === 'fulfilled') {
+      const data = await response.value.json();
+      const isDataGood = data.edhrec_rank !== null && data.image_uris !== null && data.image_uris.normal !== null;
+      await sql`
+        INSERT INTO dailycollectionsv2 (date, edhrec_rank, image_uri, name, added_at, bad_data)
+        VALUES (${today}, ${data.edhrec_rank}, ${data.image_uris.normal}, ${data.name}, ${new Date().toISOString()}, ${!isDataGood})
       `;
-    successes++;
-    cards.push({
-      id: data.id,
-      name: data.name,
-      image_url: data.image_uris.normal,
-      edhrec_rank: data.edhrec_rank
-    });
+      if (isDataGood) {
+        cards.push({
+          id: data.id,
+          name: data.name,
+          image_url: data.image_uris.normal,
+          edhrec_rank: data.edhrec_rank
+        });
+        successes++;
+      }
+    } else {
+      // Promise rejected- why?
+      console.error(response.reason);
+      await sql`
+        INSERT INTO fetcherrors (date, failure_reason)
+        VALUES (${today}, ${response.reason})
+      `
+    }
   }
   return cards;
 }
