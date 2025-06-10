@@ -180,18 +180,42 @@ export async function getCardsForDay(day: string): Promise<ServerResponse> {
 export async function getDailyCollectionv2() {
   const today = (new Date()).toISOString().slice(0, 10);
   const result = await sql`
-    SELECT * FROM dailycollectionsv2 WHERE date = ${today} LIMIT 7
+    SELECT * FROM dailycollectionsv2 WHERE date = ${today} AND bad_data = false LIMIT 7
   `;
   const mapped = result.map((card) => ({
     id: card.id,
     name: card.name,
-    image_url: card.image_url,
+    image_url: card.image_uri,
     edhrec_rank: card.edhrec_rank
   }));
   return {
     collection: {
       cards: mapped,
       date: today
+    },
+    today: today
+  };
+}
+
+/**
+ * Get the daily collection for a given day from the database.
+ */
+export async function getDailyCollectionv2ForDay(day: string) {
+  const today = (new Date()).toISOString().slice(0, 10);
+  const pastDay = day.slice(0, 10);
+  const result = await sql`
+    SELECT * FROM dailycollectionsv2 WHERE date = ${pastDay} AND bad_data = false LIMIT 7
+  `;
+  const mapped = result.map((card) => ({
+    id: card.id,
+    name: card.name,
+    image_url: card.image_uri,
+    edhrec_rank: card.edhrec_rank
+  }));
+  return {
+    collection: {
+      cards: mapped,
+      date: pastDay
     },
     today: today
   };
