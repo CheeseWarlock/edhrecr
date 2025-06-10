@@ -226,8 +226,8 @@ export async function generateDailyCollectionv2() {
     }
 
     await sql`
-        INSERT INTO dailycollectionsv2 (date, edhrec_rank, image_uri, name)
-        VALUES (${today}, ${data.edhrec_rank}, ${data.image_uris.normal}, ${data.name})
+        INSERT INTO dailycollectionsv2 (date, edhrec_rank, image_uri, name, added_at)
+        VALUES (${today}, ${data.edhrec_rank}, ${data.image_uris.normal}, ${data.name}, ${new Date().toISOString()})
       `;
     successes++;
     cards.push({
