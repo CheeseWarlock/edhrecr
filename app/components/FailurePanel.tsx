@@ -5,7 +5,7 @@ import ShareLink from "./ShareLink"
 export default function FailurePanel({ cards, isPastGame, date, guesses, solution }: {
     cards: Card[],
     isPastGame: boolean,
-    date: string | undefined,
+    date: string,
     guesses: Card[][],
     solution: Card[]
 }) {

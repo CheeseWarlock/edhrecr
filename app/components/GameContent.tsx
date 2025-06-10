@@ -100,7 +100,8 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
           cards={cards}
           guessedOrders={storedGuesses}
           onLockInGuess={handleLockInGuess}
-          dateDisplay={date === today ? undefined : date}
+          dateDisplay={date}
+          isPastGame={date !== today}
         />
       </div>
       <AnimatePresence>

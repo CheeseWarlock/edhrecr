@@ -14,13 +14,14 @@ interface GameAreaProps {
   cards: Card[];
   guessedOrders: Card[][];
   onLockInGuess: (cardsInCurrentGuess: Card[]) => void;
-  dateDisplay?: string;
+  dateDisplay: string;
+  isPastGame: boolean;
 }
 
 /**
  * The main game area, containing the previous guesses and the current guess
  */
-export function GameArea({ cards, guessedOrders, onLockInGuess, dateDisplay }: GameAreaProps) {
+export function GameArea({ cards, guessedOrders, onLockInGuess, dateDisplay, isPastGame }: GameAreaProps) {
     const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
     
     /**
@@ -59,7 +60,7 @@ export function GameArea({ cards, guessedOrders, onLockInGuess, dateDisplay }: G
       }
     };
 
-    const dateString = dateDisplay ? new Date(dateDisplay).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : undefined;
+    const dateString = isPastGame ? new Date(dateDisplay).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : undefined;
 
     const won = correctnessByIndex.every((index) => index);
     const lost = guessedOrders.length == 5;

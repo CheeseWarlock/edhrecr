@@ -10,8 +10,9 @@ function ShareLink({ today, guesses, solution, win }: { today: string | undefine
         return (index === solution.indexOf(card) ? "🟩" : "⬛")
       }).join("");
     }).join('\n');
+    const dateSegment = today ? ` for ${today}` : "";
     const shareData = {
-      text: `EDHRanker for ${today} ${icon}\n${resultString}`,
+      text: `EDHRanker ${dateSegment} ${icon}\n${resultString}`,
       url: "https://edhranker.vercel.app",
       title: "EDHRanker",
     }
