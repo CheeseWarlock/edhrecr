@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Card } from '../types';
 import { GameContent } from './GameContent';
-import { useLocalStorageWithSerializer } from '../utils/useLocalStorage';
+import { getUserGuesses, setUserGuesses } from '../utils/localStorageUtils';
 
 interface PersistentGameContentProps {
   cards: Card[];
@@ -12,26 +12,23 @@ interface PersistentGameContentProps {
 }
 
 export function PersistentGameContent({ cards, date, today }: PersistentGameContentProps) {
-  const serializer = useCallback((cardData: Card[][], currentData?: { date: string, guesses: number[][] }) => {
-    return { guesses: currentData?.date === date ? cardData.map(order => order.map(card => cards.indexOf(card))) : [], date: date };
+  const [storedGuesses, setStoredGuesses] = useState<number[][]>(getUserGuesses(date));
+
+  const persistGuesses = useCallback((guesses: Card[][]) => {
+    const cardsWithTodaysDate = guesses.map(guess => guess.map(card => cards.findIndex(c => c.id === card.id)));
+    setUserGuesses(date, cardsWithTodaysDate);
+    setStoredGuesses(cardsWithTodaysDate);
   }, [cards, date]);
 
-  const deserializer = useCallback((storedData: { date: string, guesses: number[][] }) => {
-    return storedData.date === date ? storedData.guesses.map(order => order.map(cardIdx => cards[cardIdx])) : []
-  }, [cards, date]);
-
-  const [storedGuesses, setStoredGuesses] = useLocalStorageWithSerializer<
-    Card[][],
-    { date: string, guesses: number[][] }
-  >("edhr-guesses", [], serializer, deserializer);
+  const storedGuessesAsCards = useMemo(() => storedGuesses.map(guess => guess.map(cardIdx => cards[cardIdx])), [storedGuesses, cards]);
 
   return (
     <GameContent 
       cards={cards} 
       date={date}
-      storedGuesses={storedGuesses}
-      setStoredGuesses={setStoredGuesses}
+      storedGuesses={storedGuessesAsCards}
+      setStoredGuesses={persistGuesses}
       today={today}
     />
   );
-} 
+}

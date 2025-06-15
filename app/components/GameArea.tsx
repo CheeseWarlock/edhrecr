@@ -63,7 +63,7 @@ export function GameArea({ cards, guessedOrders, onLockInGuess, dateDisplay, isP
     const dateString = isPastGame ? new Date(dateDisplay).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : undefined;
 
     const won = correctnessByIndex.every((index) => index);
-    const lost = guessedOrders.length == 5;
+    const lost = guessedOrders.length == 5 && !won;
     const gameOver = won || lost;
   
     return (

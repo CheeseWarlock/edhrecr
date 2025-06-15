@@ -24,7 +24,7 @@ interface GameContentProps {
    */
   today: string;
   storedGuesses: Card[][];
-  setStoredGuesses: React.Dispatch<React.SetStateAction<Card[][]>>;
+  setStoredGuesses: (guesses: Card[][]) => void;
   shouldUpdateStreak?: boolean;
 }
 

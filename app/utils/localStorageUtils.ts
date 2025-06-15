@@ -164,3 +164,26 @@ export function prepopulateUserPlayHistory(today: string) {
     localStorage.setItem('edhr-plays', JSON.stringify(results));
   }
 }
+
+/**
+ * Get the user's guesses, if they already exist for this day.
+ * @returns The user's guesses, if they already exist for this day.
+ */
+export function getUserGuesses(date: string) {
+  const storedGuesses = localStorage.getItem('edhr-guesses');
+  const guessData = storedGuesses ? (JSON.parse(storedGuesses) as { date: string, guesses: number[][] }) : null;
+  if (!guessData || date !== guessData.date) {
+    return [];
+  }
+  
+  return guessData.guesses;
+}
+
+/**
+ * Set the user's guesses for a given date.
+ * @param date - The date to set the guesses for.
+ * @param guesses - The guesses to set.
+ */
+export function setUserGuesses(date: string, guesses: number[][]) {
+  localStorage.setItem('edhr-guesses', JSON.stringify({ date, guesses }));
+}
