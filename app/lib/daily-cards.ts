@@ -1,4 +1,5 @@
 import postgres from 'postgres';
+import { addDays } from 'date-fns';
 import MINI_BULK_DATA from './dummy-data.json';
 import { Card, ScryfallCard, ServerResponse } from '../types';
 
@@ -200,6 +201,39 @@ export async function getDailyCollectionv2() {
 /**
  * Get the daily collection for a given day from the database.
  */
+export async function getCardsForDay_better(day: string) {
+  const pastDay = day.slice(0, 10);
+  const today = (new Date()).toISOString().slice(0, 10);
+  const result = await sql`
+    SELECT (cards_v2.*) FROM cards_v2 INNER JOIN collections_v2 ON collections_v2.id = cards_v2.collection_index WHERE collections_v2.date = ${pastDay};
+  `;
+  console.log(result);
+  const mapped = result.map((card) => ({
+    id: card.id,
+    name: card.name,
+    image_url: card.image_uri,
+    edhrec_rank: card.edhrec_rank
+  }));
+  return {
+    collection: {
+      cards: mapped,
+      date: pastDay
+    },
+    today: today
+  };
+}
+
+/**
+ * Get the daily collection for "today according to the server".
+ */
+export async function getCardsForToday_better() {
+  const today = (new Date()).toISOString().slice(0, 10);
+  return await getCardsForDay_better(today);
+}
+
+/**
+ * Get the daily collection for a given day from the database.
+ */
 export async function getDailyCollectionv2ForDay(day: string) {
   const today = (new Date()).toISOString().slice(0, 10);
   const pastDay = day.slice(0, 10);
@@ -221,13 +255,30 @@ export async function getDailyCollectionv2ForDay(day: string) {
   };
 }
 
+
 /**
- * Makes Scryfall API calls to get 7 random cards that are legal in Commander.
+ * Generate a new daily collection for two days from now so it's ready to go when the day arrives.
+ * Takes 7 cards that haven't been used yet and adds them to the collection.
+ */
+export async function generateDailyCollectionV2() {
+  const today = (new Date()).toISOString().slice(0, 10);
+  const twoDaysFromToday = addDays(new Date(today), 2).toISOString().slice(0, 10);
+  const result = await sql.unsafe(`
+    BEGIN;
+    SELECT max(id) FROM collections_v2;
+    INSERT INTO collections_v2 (date, title, is_special) VALUES ('${twoDaysFromToday}', 'Daily Collection', false);
+    WITH cte AS (SELECT * FROM cards_v2 WHERE collection_index IS NULL ORDER BY id DESC OFFSET 20 LIMIT 7) UPDATE cards_v2 c SET collection_index = (SELECT max(id) FROM collections_v2) FROM cte WHERE c.id = cte.id;
+    COMMIT;
+  `);
+  return result;
+}
+
+/**
+ * Makes Scryfall API calls to get up to 10 random cards that are legal in Commander.
  */
 export async function generateCardsV2() {
   const today = (new Date()).toISOString().slice(0, 10);
   let attempts = 0;
-  let successes = 0;
   const millis = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const cards: Card[] = [];
   const requests: Promise<Response>[] = [];
@@ -238,7 +289,7 @@ export async function generateCardsV2() {
     headers.append('Cache-Control', 'no-cache');
     headers.append('User-Agent', 'EDHRanker/1.0');
 
-  while (attempts < 10 && successes < 7) {
+  while (attempts < 10) {
     if (attempts > 0) await millis(1000);
     requests.push(fetch(`https://api.scryfall.com/cards/random?q=legal%3Acommander&idx=${attempts}`, {cache: 'no-store', headers}));
     attempts++;
@@ -260,7 +311,6 @@ export async function generateCardsV2() {
           image_url: data.image_uris.normal,
           edhrec_rank: data.edhrec_rank
         });
-        successes++;
       }
     } else {
       // Promise rejected- why?
