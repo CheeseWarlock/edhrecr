@@ -180,7 +180,7 @@ export async function getCardsForDay(day: string): Promise<ServerResponse> {
 export async function getDailyCollectionv2() {
   const today = (new Date()).toISOString().slice(0, 10);
   const result = await sql`
-    SELECT * FROM dailycollectionsv2 WHERE date = ${today} AND bad_data = false LIMIT 7
+    SELECT * FROM cards_v2 WHERE date = ${today} AND bad_data = false LIMIT 7
   `;
   const mapped = result.map((card) => ({
     id: card.id,
@@ -224,7 +224,7 @@ export async function getDailyCollectionv2ForDay(day: string) {
 /**
  * Makes Scryfall API calls to get 7 random cards that are legal in Commander.
  */
-export async function generateDailyCollectionv2() {
+export async function generateCardsV2() {
   const today = (new Date()).toISOString().slice(0, 10);
   let attempts = 0;
   let successes = 0;
