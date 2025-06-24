@@ -236,6 +236,7 @@ export async function generateDailyCollectionv2() {
     headers.append('pragma', 'no-cache');
     headers.append('cache-control', 'no-cache');
     headers.append('Cache-Control', 'no-cache');
+    headers.append('User-Agent', 'EDHRanker/1.0');
 
   while (attempts < 10 && successes < 7) {
     if (attempts > 0) await millis(1000);
@@ -249,7 +250,7 @@ export async function generateDailyCollectionv2() {
       const data = await response.value.json();
       const isDataGood = data.edhrec_rank !== null && data.image_uris !== null && data.image_uris.normal !== null;
       await sql`
-        INSERT INTO dailycollectionsv2 (date, edhrec_rank, image_uri, name, added_at, bad_data)
+        INSERT INTO cards_v2 (date, edhrec_rank, image_uri, name, added_at, bad_data)
         VALUES (${today}, ${data.edhrec_rank}, ${data.image_uris.normal}, ${data.name}, ${new Date().toISOString()}, ${!isDataGood})
       `;
       if (isDataGood) {
