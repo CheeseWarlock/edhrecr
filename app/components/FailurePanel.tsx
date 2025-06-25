@@ -2,12 +2,13 @@ import { Card } from "../types"
 import { CardImage } from "./CardImage"
 import ShareLink from "./ShareLink"
 
-export default function FailurePanel({ cards, isPastGame, date, guesses, solution }: {
+export default function FailurePanel({ cards, isPastGame, guesses, solution, shareable, shareDateString }: {
     cards: Card[],
     isPastGame: boolean,
-    date?: string,
     guesses: Card[][],
-    solution: Card[]
+    solution: Card[],
+    shareable?: boolean,
+    shareDateString?: string
 }) {
     return <>
         <div className="w-full flex flex-row" style={{
@@ -28,6 +29,6 @@ export default function FailurePanel({ cards, isPastGame, date, guesses, solutio
             <span className="text-white text-2xl font-bold bg-[rgba(68,68,68,0.7)] p-2 rounded-t-md">No more guesses!</span>
             {!isPastGame && <span className="text-white md:text-lg text-center bg-[rgba(68,68,68,0.7)] p-2 rounded-md">Come back tomorrow for another challenge.</span>}
             <span className="text-white md:text-lg text-center bg-[rgba(68,68,68,0.7)] p-2 rounded-b-md">The correct order is shown here.</span>
-            <span className="pointer-events-auto"><ShareLink guesses={guesses} solution={solution} date={date} win={false} /></span>
+            {shareable && <span className="pointer-events-auto"><ShareLink guesses={guesses} solution={solution} date={shareDateString} win={false} /></span>}
         </div></>
 }

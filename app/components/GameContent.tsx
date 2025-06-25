@@ -26,9 +26,11 @@ interface GameContentProps {
   storedGuesses: Card[][];
   setStoredGuesses: (guesses: Card[][]) => void;
   shouldUpdateStreak?: boolean;
+  gameTitle?: string;
+  shareable?: boolean;
 }
 
-export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shouldUpdateStreak = true, today }: GameContentProps) {
+export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shouldUpdateStreak = true, today, gameTitle, shareable = true }: GameContentProps) {
   const [hasSeenInfo, setHasSeenInfo] = useLocalStorage("edhr-has-seen-intro", "false");
   const [isInfoOpen, setIsInfoOpen] = useState(hasSeenInfo !== "true");
   const [isStreakOpen, setIsStreakOpen] = useState(false);
@@ -82,8 +84,13 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
   const lost = storedGuesses.length == 5;
   const gameOver = won || lost;
 
-  const gameTitle = (date !== today) ? `Daily game for ${new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}` : undefined;
-  const gameDateString = (date !== today) ? new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : undefined;
+  const dateString = new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+  
+  const gameDateString = (date !== today) ? dateString : undefined;
+
+  if (!gameTitle) {
+    gameTitle = (date !== today) ? `Daily game for ${gameDateString}` : undefined;
+  }
 
   return (
     <main
@@ -106,6 +113,8 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
           gameTitle={gameTitle}
           gameDate={gameDateString}
           isPastGame={date !== today}
+          shareable={shareable}
+          shareDateString={dateString}
         />
       </div>
       <AnimatePresence>

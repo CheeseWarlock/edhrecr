@@ -9,7 +9,7 @@ export default async function Home() {
       today: await getToday()
     };
 
-  return <NonPersistentGameContent cards={dailyCardsData.cards} date={dailyCardsData.date} today={dailyCardsData.today} />;
+  return <NonPersistentGameContent cards={dailyCardsData.cards} date={dailyCardsData.date} today={dailyCardsData.today} title="Sample Game" shareable={false} />;
 }
 
 export const dynamic = 'force-dynamic';

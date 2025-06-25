@@ -8,9 +8,11 @@ interface NonPersistentGameContentProps {
   cards: Card[];
   date: string;
   today: string;
+  title?: string;
+  shareable?: boolean;
 }
 
-export function NonPersistentGameContent({ cards, date, today }: NonPersistentGameContentProps) {
+export function NonPersistentGameContent({ cards, date, today, title, shareable }: NonPersistentGameContentProps) {
   const [storedGuesses, setStoredGuesses] = useState<Card[][]>([]);
 
   return (
@@ -21,6 +23,8 @@ export function NonPersistentGameContent({ cards, date, today }: NonPersistentGa
       storedGuesses={storedGuesses}
       setStoredGuesses={setStoredGuesses}
       shouldUpdateStreak={false}
+      gameTitle={title}
+      shareable={shareable}
     />
   );
 } 
