@@ -185,5 +185,9 @@ export function getUserGuesses(date: string) {
  * @param guesses - The guesses to set.
  */
 export function setUserGuesses(date: string, guesses: number[][]) {
+  if (guesses.length > 0 && guesses[0].some(guess => guess === -1)) {
+    console.warn('Invalid cards in guess; skipping');
+    return;
+  }
   localStorage.setItem('edhr-guesses', JSON.stringify({ date, guesses }));
 }
