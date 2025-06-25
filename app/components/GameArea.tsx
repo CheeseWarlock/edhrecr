@@ -24,7 +24,7 @@ interface GameAreaProps {
 /**
  * The main game area, containing the previous guesses and the current guess
  */
-export function GameArea({ cards, guessedOrders, onLockInGuess, gameDate, gameTitle, isPastGame, shareable, shareDateString }: GameAreaProps) {
+export function GameArea({ cards, guessedOrders, onLockInGuess, gameTitle, isPastGame, shareable, shareDateString }: GameAreaProps) {
     const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
     
     /**
@@ -81,9 +81,9 @@ export function GameArea({ cards, guessedOrders, onLockInGuess, gameDate, gameTi
             {gameTitle && <div className={`text-center mb-4 ${gameOver ? 'text-[#999]' : ''}`}>{gameTitle}</div>}
           <div className={`flex flex-row items-center justify-center mb-4 ${gameOver ? 'text-[#999]' : ''}`}><span className="text-2xl">{`${5 - guessedOrders.length}/5`}</span><span>&nbsp;guess{5 - guessedOrders.length == 1 ? '' : 'es'} left</span></div>
           {won ?
-            <SuccessPanel cards={currentGuess} guessCount={guessedOrders.length} isPastGame={isPastGame} guesses={guessedOrders} date={gameDate} shareable={shareable} shareDateString={shareDateString} />
+            <SuccessPanel cards={currentGuess} guessCount={guessedOrders.length} isPastGame={isPastGame} guesses={guessedOrders} shareable={shareable} shareDateString={shareDateString} />
           : lost ?
-            <FailurePanel cards={correctOrder} isPastGame={isPastGame} date={gameDate} guesses={guessedOrders} solution={correctOrder} shareable={shareable} shareDateString={shareDateString} />
+            <FailurePanel cards={correctOrder} isPastGame={isPastGame} guesses={guessedOrders} solution={correctOrder} shareable={shareable} shareDateString={shareDateString} />
           :
           <CurrentGuess 
             cards={currentGuess} 

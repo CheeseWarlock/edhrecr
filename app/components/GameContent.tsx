@@ -111,7 +111,6 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
           guessedOrders={storedGuesses}
           onLockInGuess={handleLockInGuess}
           gameTitle={gameTitle}
-          gameDate={gameDateString}
           isPastGame={date !== today}
           shareable={shareable}
           shareDateString={dateString}
