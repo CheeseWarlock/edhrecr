@@ -2,15 +2,15 @@ import { FaShareNodes } from "react-icons/fa6";
 import { Card } from "../types";
 import { useState } from "react";
 
-function ShareLink({ today, guesses, solution, win }: { today: string | undefined, guesses: Card[][], solution: Card[], win: boolean }) {
+function ShareLink({ date, guesses, solution, win }: { date: string | undefined, guesses: Card[][], solution: Card[], win: boolean }) {
   const icon = win ? '✓' :  '✗';
-  const share = (today: string | undefined, guesses: Card[][], solution: Card[]) => {
+  const share = (date: string | undefined, guesses: Card[][], solution: Card[]) => {
     const resultString = guesses.map((guess) => {
       return guess.map((card, index) => {
         return (index === solution.indexOf(card) ? "🟩" : "⬛")
       }).join("");
     }).join('\n');
-    const dateSegment = today ? ` for ${today}` : "";
+    const dateSegment = date ? `for ${date}` : "";
     const shareData = {
       text: `EDHRanker ${dateSegment} ${icon}\n${resultString}`,
       url: "https://edhranker.vercel.app",
@@ -31,7 +31,7 @@ function ShareLink({ today, guesses, solution, win }: { today: string | undefine
   const [isCopied, setIsCopied] = useState(false);
   return (
     <div className="flex items-center gap-2 cursor-pointer" onClick={() => {
-      share(today, guesses, solution);
+      share(date, guesses, solution);
     }}>
       <FaShareNodes/>
       <span>{isCopied ? "Copied!" : "Share"}</span>

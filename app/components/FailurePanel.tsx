@@ -5,7 +5,7 @@ import ShareLink from "./ShareLink"
 export default function FailurePanel({ cards, isPastGame, date, guesses, solution }: {
     cards: Card[],
     isPastGame: boolean,
-    date: string,
+    date?: string,
     guesses: Card[][],
     solution: Card[]
 }) {
@@ -28,6 +28,6 @@ export default function FailurePanel({ cards, isPastGame, date, guesses, solutio
             <span className="text-white text-2xl font-bold bg-[rgba(68,68,68,0.7)] p-2 rounded-t-md">No more guesses!</span>
             {!isPastGame && <span className="text-white md:text-lg text-center bg-[rgba(68,68,68,0.7)] p-2 rounded-md">Come back tomorrow for another challenge.</span>}
             <span className="text-white md:text-lg text-center bg-[rgba(68,68,68,0.7)] p-2 rounded-b-md">The correct order is shown here.</span>
-            <span className="pointer-events-auto"><ShareLink guesses={guesses} solution={solution} today={date} win={false} /></span>
+            <span className="pointer-events-auto"><ShareLink guesses={guesses} solution={solution} date={date} win={false} /></span>
         </div></>
 }

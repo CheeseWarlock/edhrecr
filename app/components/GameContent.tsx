@@ -82,6 +82,9 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
   const lost = storedGuesses.length == 5;
   const gameOver = won || lost;
 
+  const gameTitle = (date !== today) ? `Daily game for ${new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}` : undefined;
+  const gameDateString = (date !== today) ? new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : undefined;
+
   return (
     <main
       style={{
@@ -100,7 +103,8 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
           cards={cards}
           guessedOrders={storedGuesses}
           onLockInGuess={handleLockInGuess}
-          dateDisplay={date}
+          gameTitle={gameTitle}
+          gameDate={gameDateString}
           isPastGame={date !== today}
         />
       </div>
