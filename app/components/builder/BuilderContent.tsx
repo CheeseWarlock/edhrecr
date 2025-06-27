@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { GameDayPicker } from "./GameDayPicker";
 import { ScryfallCard } from "@/app/types";
+import { createGame } from "@/app/lib/editor";
 
 const sortByRankOrUndefined = (a: ScryfallCard, b: ScryfallCard) => {
   const aRank = a.edhrec_rank || 999999;
@@ -48,8 +49,9 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
   }
 
   const handleCreateGame = async () => {
-    // const result = await createGame(gameDate, title, selectedCards);
-    // console.log(result);
+    // const result = await addMessage("Test123");
+    const result = await createGame(gameDate, title, selectedCards);
+    console.log(result);
   }
 
   const addCardToSelection = (card: ScryfallCard) => {
