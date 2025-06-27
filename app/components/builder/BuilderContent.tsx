@@ -2,22 +2,11 @@
 
 import { useState } from "react";
 import { GameDayPicker } from "./GameDayPicker";
-
-type ScryfallCard = {
-  id: string;
-  name: string;
-  image_uris: {
-    normal: string;
-  },
-  legalities: {
-    commander: string;
-  },
-  edhrec_rank: string;
-}
+import { ScryfallCard } from "@/app/types";
 
 const sortByRankOrUndefined = (a: ScryfallCard, b: ScryfallCard) => {
-  const aRank = Number.parseInt(a.edhrec_rank) || 999999;
-  const bRank = Number.parseInt(b.edhrec_rank) || 999999;
+  const aRank = a.edhrec_rank || 999999;
+  const bRank = b.edhrec_rank || 999999;
   return aRank - bRank;
 }
 
@@ -58,6 +47,11 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
     }
   }
 
+  const handleCreateGame = async () => {
+    // const result = await createGame(gameDate, title, selectedCards);
+    // console.log(result);
+  }
+
   const addCardToSelection = (card: ScryfallCard) => {
     if (!selectedCards.some((c) => c.id === card.id)) {
       setSelectedCards([...selectedCards, card].sort(sortByRankOrUndefined));
@@ -77,6 +71,7 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
         <span>{populatedDays.has(gameDate) ? "Updating" : "Creating"}</span>
       </div>
       {calendarOpen && <GameDayPicker populatedDays={populatedDays} today={today} gameDate={gameDate} onSelect={handleDateSelect} />}
+      <button className="bg-blue-500 text-white px-2 py-1 rounded-md cursor-pointer" onClick={handleCreateGame}>Create Game</button>
       <div className="flex flex-row h-110 bg-gray-800 w-full justify-center p-4">
         {selectedCards.length == 0 && <div>
           <div className="flex flex-col">

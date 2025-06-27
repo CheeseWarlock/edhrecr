@@ -177,6 +177,7 @@ export async function getCardsForDay(day: string): Promise<ServerResponse> {
 
 /**
  * Gets the daily collection from the database.
+ * Likely to be deprecated in favor of getCardsForDay_better.
  */
 export async function getDailyCollectionv2() {
   const today = (new Date()).toISOString().slice(0, 10);
