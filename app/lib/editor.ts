@@ -16,44 +16,32 @@ export async function getPopulatedDays() {
   }
 }
 
-export async function addMessage(message: string) {
-  console.log("Adding message", message);
-  if (!message) {
-    return;
+export async function createGame(date: string, title: string, cards: ScryfallCard[]): Promise<{ success: boolean, error?: string }> {
+  if (cards.length > 10) {
+    return { success: false, error: "Too many cards selected" };
+  } else if (cards.length < 2) {
+    return { success: false, error: "Not enough cards selected" };
   }
-  if (typeof message !== 'string') {
-    return;
-  }
-  if (message.length > 200) {
-    return;
-  }
-  if (message.length > 1) {
-    const result = await sql`INSERT INTO messages (message) VALUES (${message})`;
-    return result;
-  }
-}
 
-export async function createGame(date: string, title: string, cards: ScryfallCard[]) {
-
-  await sql.begin(async sql => {
+  const result = await sql.begin(async sql => {
     // Check if a collection already exists for this date
     // For now, disallow that
     const existingCollection = await sql`SELECT id FROM collections_v2 WHERE date = ${date}`;
     if (existingCollection.length > 0) {
-      return;
+      return { success: false, error: "Collection already exists for this date" };
     }
     await sql`INSERT INTO collections_v2 (date, title, is_special) VALUES (${date}, ${title}, true)`;
     const latestId = await sql`SELECT id FROM collections_v2 WHERE date = ${date}`;
     const collectionId = latestId[0].id;
     if (!collectionId || typeof collectionId !== 'number') {
-      return;
+      return { success: false, error: "Failed to get collection id" };
     }
     const cardNames = cards.map(card => card.name);
     const cardImages = cards.map(card => card.image_uris?.normal);
     const cardEdhrecRanks = cards.map(card => card.edhrec_rank);
 
     if (cardNames.length !== cards.length || cardImages.length !== cards.length || cardEdhrecRanks.length !== cards.length) {
-      return;
+      return { success: false, error: "Card data mismatch" };
     }
 
     const cardData = cardNames.map((name, index) => ({
@@ -67,14 +55,8 @@ export async function createGame(date: string, title: string, cards: ScryfallCar
       from_editor: true
     }));
 
-    const result = await sql`INSERT INTO cards_v2 ${sql(cardData)}`;
-    return result;
+    await sql`INSERT INTO cards_v2 ${sql(cardData)}`;
+    return { success: true };
   });
-
-  
-  // fields:
-  // date, edhrec_rank, image_uri, name, added_at, bad_data, collection_index, from_editor
-
-  // const result = await sql`INSERT INTO collections_v2 (date, title, cards) VALUES (${date}, ${title}, ${cards})`;
-  // return result;
+  return result;
 }

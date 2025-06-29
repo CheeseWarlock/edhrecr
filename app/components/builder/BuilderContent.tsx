@@ -21,6 +21,7 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [title, setTitle] = useState<string>('');
   const [gameDate, setGameDate] = useState<string>(today);
+  const [resultsPopup, setResultsPopup] = useState<string>('');
 
   const handleSearch = async () => {
     setResults([]);
@@ -37,6 +38,13 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
     }
   }
 
+  const showResultsPopup = (results: string) => {
+    setResultsPopup(results);
+    setTimeout(() => {
+      setResultsPopup('');
+    }, 3000);
+  }
+
   const handleDateSelect = (date: Date) => {
     setGameDate(date.toISOString().slice(0, 10));
     setCalendarOpen(false);
@@ -49,9 +57,9 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
   }
 
   const handleCreateGame = async () => {
-    // const result = await addMessage("Test123");
+    setResultsPopup('Creating game...');
     const result = await createGame(gameDate, title, selectedCards);
-    console.log(result);
+    showResultsPopup(result.error || 'Game created successfully');
   }
 
   const addCardToSelection = (card: ScryfallCard) => {
@@ -70,10 +78,11 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
       <div>
         <span>Game Date: </span>
         <button className="bg-blue-500 text-white px-2 py-1 rounded-md cursor-pointer" onClick={() => setCalendarOpen(!calendarOpen)}>{gameDate}</button>
-        <span>{populatedDays.has(gameDate) ? "Updating" : "Creating"}</span>
+        <span>{populatedDays.has(gameDate) ? " Already exists" : ""}</span>
       </div>
       {calendarOpen && <GameDayPicker populatedDays={populatedDays} today={today} gameDate={gameDate} onSelect={handleDateSelect} />}
       <button className="bg-blue-500 text-white px-2 py-1 rounded-md cursor-pointer" onClick={handleCreateGame}>Create Game</button>
+      {resultsPopup != '' && <div className="absolute bg-gray-800 text-white p-2 rounded-md p-4 border-2 border-[#dead3d]">{resultsPopup}</div>}
       <div className="flex flex-row h-110 bg-gray-800 w-full justify-center p-4">
         {selectedCards.length == 0 && <div>
           <div className="flex flex-col">
