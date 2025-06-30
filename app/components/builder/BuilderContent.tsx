@@ -23,6 +23,15 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
   const [gameDate, setGameDate] = useState<string>(today);
   const [resultsPopup, setResultsPopup] = useState<string>('');
 
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      window.location.reload(); // Refresh to trigger re-authentication
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   const handleSearch = async () => {
     setResults([]);
     setState("LOADING");
@@ -72,6 +81,14 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
+      <div className="absolute top-4 right-4">
+        <button 
+          onClick={handleLogout}
+          className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors"
+        >
+          Logout
+        </button>
+      </div>
       <div className="flex flex-col gap-2 p-2">
         <div className="flex flex-row items-center">
           <span className="m-2">Game Title: </span>

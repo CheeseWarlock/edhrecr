@@ -2,6 +2,7 @@
 
 import postgres from 'postgres';
 import { ScryfallCard } from '../types';
+import { isAuthenticated } from './auth';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -17,6 +18,12 @@ export async function getPopulatedDays() {
 }
 
 export async function createGame(date: string, title: string, cards: ScryfallCard[]): Promise<{ success: boolean, error?: string }> {
+  // Check authentication
+  const authenticated = await isAuthenticated();
+  if (!authenticated) {
+    return { success: false, error: "Authentication required" };
+  }
+
   if (cards.length > 10) {
     return { success: false, error: "Too many cards selected" };
   } else if (cards.length < 2) {
