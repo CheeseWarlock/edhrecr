@@ -26,7 +26,9 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
   const handleSearch = async () => {
     setResults([]);
     setState("LOADING");
-    const response = await fetch(`https://api.scryfall.com/cards/search?q=${query}`);
+    const headers = new Headers();
+    headers.append('User-Agent', 'EDHRanker/1.0');
+    const response = await fetch(`https://api.scryfall.com/cards/search?q=${query}`, {cache: 'no-store', headers});
     const data = await response.json();
     if (data.data) {
       const processedData = data.data.filter((card: ScryfallCard) => card.legalities.commander === 'legal').sort(sortByRankOrUndefined);
@@ -69,20 +71,21 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
   }
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <h2 className="text-2xl font-bold">Game Builder</h2>
-      <div className="flex flex-row">
-        <span>Game Title: </span>
-        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="border-2 border-gray-300 rounded-md p-2" />
+    <div className="flex flex-col items-center justify-center h-screen">
+      <div className="flex flex-col gap-2 p-2">
+        <div className="flex flex-row items-center">
+          <span className="m-2">Game Title: </span>
+          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="border-2 border-gray-300 rounded-md p-2" />
+        </div>
+        <div>
+          <span>Game Date: </span>
+          <button className="bg-blue-500 text-white px-2 py-1 rounded-md cursor-pointer" onClick={() => setCalendarOpen(!calendarOpen)}>{gameDate}</button>
+          <span>{populatedDays.has(gameDate) ? " Already exists" : ""}</span>
+        </div>
+        {calendarOpen && <GameDayPicker populatedDays={populatedDays} today={today} gameDate={gameDate} onSelect={handleDateSelect} />}
+        <button className="bg-blue-500 text-white px-2 py-1 rounded-md cursor-pointer" onClick={handleCreateGame}>Create Game</button>
+        {resultsPopup != '' && <div className="absolute bg-gray-800 text-white p-2 rounded-md border-2 border-[#dead3d]">{resultsPopup}</div>}
       </div>
-      <div>
-        <span>Game Date: </span>
-        <button className="bg-blue-500 text-white px-2 py-1 rounded-md cursor-pointer" onClick={() => setCalendarOpen(!calendarOpen)}>{gameDate}</button>
-        <span>{populatedDays.has(gameDate) ? " Already exists" : ""}</span>
-      </div>
-      {calendarOpen && <GameDayPicker populatedDays={populatedDays} today={today} gameDate={gameDate} onSelect={handleDateSelect} />}
-      <button className="bg-blue-500 text-white px-2 py-1 rounded-md cursor-pointer" onClick={handleCreateGame}>Create Game</button>
-      {resultsPopup != '' && <div className="absolute bg-gray-800 text-white p-2 rounded-md p-4 border-2 border-[#dead3d]">{resultsPopup}</div>}
       <div className="flex flex-row h-110 bg-gray-800 w-full justify-center p-4">
         {selectedCards.length == 0 && <div>
           <div className="flex flex-col">
@@ -116,15 +119,16 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
           value={query} 
           onChange={(e) => setQuery(e.target.value)} 
           onKeyDown={handleKeyDown}
+          placeholder="(Supports Scryfall syntax)"
           className="border-2 border-gray-300 rounded-md p-2 w-100" 
         />
         <button className="bg-blue-500 text-white px-2 py-1 rounded-md cursor-pointer" onClick={handleSearch}>Search</button>
       </div>
-      <div className="flex flex-col flex-wrap">
+      <div className="flex flex-col shrink overflow-y-auto w-screen items-center">
         {state === "LOADING" && <div>Loading...</div>}
         {state === "NO_RESULTS" && <div>No results found</div>}
         {state === "RESULTS" && results.map((result) => (
-          <div key={result.id} className="flex flex-row bg-gray-800 m-2 p-2 rounded-md gap-2 justify-between">
+          <div key={result.id} className="flex flex-row bg-gray-800 m-2 p-2 rounded-md gap-2 justify-between w-200">
             <span className="m-2">{result.name}</span>
             <div className="flex flex-row gap-2">
               <span className="m-2">#{result.edhrec_rank}</span>
