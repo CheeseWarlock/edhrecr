@@ -13,7 +13,7 @@ export async function GET() {
     } else {
       return NextResponse.json(
         { authenticated: false },
-        { status: 401 }
+        { status: 200 }
       );
     }
   } catch (error) {

@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useEffect, ReactNode } from 'react';
+import { useState, useEffect } from 'react';
+import { Proza_Libre } from "next/font/google";
 
-interface PasswordProtectionProps {
-  children: ReactNode;
-}
+const prozaLibre = Proza_Libre({ weight: ["400", "600"], subsets: ["latin"] });
 
-export default function PasswordProtection({ children }: PasswordProtectionProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+type AUTHENTICATION_STATE = "CHECKING" | "AUTHENTICATED" | "UNAUTHENTICATED";
+
+export default function PasswordProtection({ children }: { children: React.ReactNode }) {
+  const [authenticationState, setAuthenticationState] = useState<AUTHENTICATION_STATE>("CHECKING");
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -20,10 +21,10 @@ export default function PasswordProtection({ children }: PasswordProtectionProps
     try {
       const response = await fetch('/api/auth/verify');
       const data = await response.json();
-      setIsAuthenticated(data.authenticated);
+      setAuthenticationState(data.authenticated === true ? "AUTHENTICATED" : "UNAUTHENTICATED");
     } catch (error) {
       console.error('Failed to check authentication:', error);
-      setIsAuthenticated(false);
+      setAuthenticationState("UNAUTHENTICATED");
     }
   };
 
@@ -44,7 +45,7 @@ export default function PasswordProtection({ children }: PasswordProtectionProps
       const data = await response.json();
 
       if (response.ok) {
-        setIsAuthenticated(true);
+        setAuthenticationState("AUTHENTICATED");
         setPassword('');
       } else {
         setError(data.error || 'Authentication failed');
@@ -57,20 +58,20 @@ export default function PasswordProtection({ children }: PasswordProtectionProps
   };
 
   // Show loading state while checking authentication
-  if (isAuthenticated === null) {
+  if (authenticationState === "CHECKING") {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className={`flex items-center justify-center h-screen ${prozaLibre.className}`}>
         <div className="text-lg">Loading...</div>
       </div>
     );
   }
 
   // Show password form if not authenticated
-  if (!isAuthenticated) {
+  if (authenticationState === "UNAUTHENTICATED") {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <div className="bg-white p-8 rounded-lg shadow-md w-96">
-          <h1 className="text-2xl font-bold mb-6 text-center">Builder Access</h1>
+      <div className={`flex items-center justify-center h-screen bg-[#222] ${prozaLibre.className}`}>
+        <div className="bg-[#444] p-8 rounded-lg shadow-md w-96">
+          <h1 className="text-2xl font-bold mb-6 text-center">Game Builder</h1>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
@@ -81,7 +82,7 @@ export default function PasswordProtection({ children }: PasswordProtectionProps
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border-2 border-[#2694AF] rounded-md"
                 placeholder="Enter password"
                 required
                 disabled={isLoading}
@@ -93,7 +94,7 @@ export default function PasswordProtection({ children }: PasswordProtectionProps
             <button
               type="submit"
               disabled={isLoading || !password.trim()}
-              className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#7C9B13] text-white py-2 px-4 rounded-md hover:saturate-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Authenticating...' : 'Login'}
             </button>

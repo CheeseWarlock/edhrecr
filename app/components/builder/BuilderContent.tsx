@@ -80,33 +80,33 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <div className="absolute top-4 right-4">
+    <div className="flex flex-col items-center justify-start h-screen bg-[#222]">
+      <div className="absolute top-4 right-4 shrink-0">
         <button 
           onClick={handleLogout}
-          className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors"
+          className="bg-[#DC5E25] text-white px-3 py-1 rounded-md transition-colors cursor-pointer"
         >
           Logout
         </button>
       </div>
-      <div className="flex flex-col gap-2 p-2">
+      <div className="flex flex-col gap-2 p-2 shrink-0">
         <div className="flex flex-row items-center">
           <span className="m-2">Game Title: </span>
           <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="border-2 border-gray-300 rounded-md p-2" />
         </div>
         <div>
           <span>Game Date: </span>
-          <button className="bg-blue-500 text-white px-2 py-1 rounded-md cursor-pointer" onClick={() => setCalendarOpen(!calendarOpen)}>{gameDate}</button>
+          <button className="bg-[#2694AF] text-white px-2 py-1 rounded-md cursor-pointer" onClick={() => setCalendarOpen(!calendarOpen)}>{gameDate}</button>
           <span>{populatedDays.has(gameDate) ? " Already exists" : ""}</span>
         </div>
         {calendarOpen && <GameDayPicker populatedDays={populatedDays} today={today} gameDate={gameDate} onSelect={handleDateSelect} />}
-        <button className="bg-blue-500 text-white px-2 py-1 rounded-md cursor-pointer" onClick={handleCreateGame}>Create Game</button>
-        {resultsPopup != '' && <div className="absolute bg-gray-800 text-white p-2 rounded-md border-2 border-[#dead3d]">{resultsPopup}</div>}
+        <button className="bg-[#2694AF] text-white px-2 py-1 rounded-md cursor-pointer" onClick={handleCreateGame}>Create Game</button>
+        {resultsPopup != '' && <div className="absolute bg-[#444] text-white p-2 rounded-md border-2 border-[#dead3d]">{resultsPopup}</div>}
       </div>
-      <div className="flex flex-row h-110 bg-gray-800 w-full justify-center p-4">
+      <div className="flex flex-row h-110 bg-[#444] w-full justify-center p-4 shrink-0">
         {selectedCards.length == 0 && <div>
           <div className="flex flex-col">
-            <div className="bg-gray-900 rounded-[5%] w-[256px] h-[357px] flex items-center justify-center">
+            <div className="bg-gradient-to-r from-20% from-[#136235] via-50% via-[#43783F] to-80% to-[#136235] rounded-[5%] w-[256px] h-[357px] flex items-center justify-center border-12 border-[#171717]">
               <span className="m-2">No cards selected</span>
             </div>
           </div>
@@ -123,14 +123,14 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
               className={`select-none object-contain mw-[256px] mh-[357px] rounded-[5%]`} />
               <div className="flex flex-row justify-around">
                 <span className="m-2">#{card.edhrec_rank}</span>
-                <button onClick={() => window.open(`https://edhrec.com/route/?cc=${card.name}`, '_blank')} className="bg-blue-500 text-white px-2 py-1 rounded-md cursor-pointer">EDHRec</button>
-                <button onClick={() => setSelectedCards(selectedCards.filter((c) => c.id !== card.id))} className="bg-red-500 text-white px-2 py-1 rounded-md cursor-pointer">Remove</button>
+                <button onClick={() => window.open(`https://edhrec.com/route/?cc=${card.name}`, '_blank')} className="bg-[#2694AF] text-white px-2 py-1 rounded-md cursor-pointer">EDHRec</button>
+                <button onClick={() => setSelectedCards(selectedCards.filter((c) => c.id !== card.id))} className="bg-[#DC5E25] text-white px-2 py-1 rounded-md cursor-pointer">Remove</button>
               </div>
             </div>
           </div>
         ))}
       </div>
-      <div className="flex flex-row">
+      <div className="flex flex-row shrink-0">
         <input 
           type="text" 
           value={query} 
@@ -139,18 +139,18 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
           placeholder="(Supports Scryfall syntax)"
           className="border-2 border-gray-300 rounded-md p-2 w-100" 
         />
-        <button className="bg-blue-500 text-white px-2 py-1 rounded-md cursor-pointer" onClick={handleSearch}>Search</button>
+        <button className="bg-[#2694AF] text-white px-2 py-1 rounded-md cursor-pointer" onClick={handleSearch}>Search</button>
       </div>
       <div className="flex flex-col shrink overflow-y-auto w-screen items-center">
         {state === "LOADING" && <div>Loading...</div>}
         {state === "NO_RESULTS" && <div>No results found</div>}
         {state === "RESULTS" && results.map((result) => (
-          <div key={result.id} className="flex flex-row bg-gray-800 m-2 p-2 rounded-md gap-2 justify-between w-200">
+          <div key={result.id} className="flex flex-row bg-[#444] m-2 p-2 rounded-md gap-2 justify-between w-200">
             <span className="m-2">{result.name}</span>
             <div className="flex flex-row gap-2">
               <span className="m-2">#{result.edhrec_rank}</span>
-              <button onClick={() => window.open(`https://edhrec.com/route/?cc=${result.name}`, '_blank')} className="bg-blue-500 text-white px-2 py-1 rounded-md cursor-pointer">EDHRec</button>
-              <button onClick={() => addCardToSelection(result)} className="bg-green-500 text-white px-2 py-1 rounded-md cursor-pointer">Add</button>
+              <button onClick={() => window.open(`https://edhrec.com/route/?cc=${result.name}`, '_blank')} className="bg-[#2694AF] text-white px-2 py-1 rounded-md cursor-pointer">EDHRec</button>
+              <button onClick={() => addCardToSelection(result)} className="bg-[#7C9B13] text-white px-2 py-1 rounded-md cursor-pointer">Add</button>
             </div>
           </div>
         ))}
