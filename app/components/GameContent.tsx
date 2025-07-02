@@ -12,6 +12,7 @@ import { AnimatePresence } from 'motion/react';
 import { CardViewerContext } from './CardViewerContext';
 import { CardViewFrame } from './CardViewFrame';
 import { CalendarOverlay } from './CalendarOverlay';
+import NoCardsNotice from './NoCardsNotice';
 
 interface GameContentProps {
   cards: Card[];
@@ -106,6 +107,7 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
         onStreakClick={() => setIsStreakOpen(true)}
       />
       <div className="flex flex-col h-full row-start-2">
+        {cards.length > 0 ?
         <GameArea
           cards={cards}
           guessedOrders={storedGuesses}
@@ -115,6 +117,9 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
           shareable={shareable}
           shareDateString={dateString}
         />
+        :
+        <NoCardsNotice />
+        }
       </div>
       <AnimatePresence>
         {isInfoOpen &&
