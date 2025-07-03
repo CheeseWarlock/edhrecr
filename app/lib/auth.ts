@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import * as jose from 'jose';
 import { cookies } from 'next/headers';
 
 const AUTH_SECRET = process.env.AUTH_SECRET;
@@ -13,22 +13,30 @@ export interface AuthToken {
   timestamp: number;
 }
 
-export function signToken(): string {
-  const payload: AuthToken = {
+export async function signToken(): Promise<string> {
+  const payload = {
     authenticated: true,
     timestamp: Date.now()
   };
   
-  return jwt.sign(payload, AUTH_SECRET!, { expiresIn: '24h' });
+  const secret = new TextEncoder().encode(AUTH_SECRET!);
+  return await new jose.SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setExpirationTime('7d')
+    .sign(secret);
 }
 
-export function verifyToken(token: string): AuthToken | null {
+export async function verifyToken(token: string): Promise<AuthToken | null> {
   if (!AUTH_SECRET) {
     return null;
   }
   try {
-    const decoded = jwt.verify(token, AUTH_SECRET) as AuthToken;
-    return decoded;
+    const secret = new TextEncoder().encode(AUTH_SECRET);
+    const { payload } = await jose.jwtVerify(token, secret);
+    return {
+      authenticated: payload.authenticated as boolean,
+      timestamp: payload.timestamp as number
+    };
   } catch (error) {
     return null;
   }
@@ -45,7 +53,7 @@ export async function setAuthCookie(token: string): Promise<void> {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
-    maxAge: 24 * 60 * 60, // 24 hours
+    maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
     path: '/'
   });
 }
@@ -59,6 +67,6 @@ export async function isAuthenticated(): Promise<boolean> {
   const token = await getAuthTokenFromCookie();
   if (!token) return false;
   
-  const decoded = verifyToken(token);
+  const decoded = await verifyToken(token);
   return decoded !== null;
 } 
