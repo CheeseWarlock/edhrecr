@@ -201,6 +201,7 @@ export async function getDailyCollectionv2() {
 
 /**
  * Get the daily collection for a given day from the database.
+ * @param day - The day to get the collection for, in YYYY-MM-DD format.
  */
 export async function getCardsForDay_better(day: string) {
   const pastDay = day.slice(0, 10);

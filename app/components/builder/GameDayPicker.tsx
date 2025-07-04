@@ -10,7 +10,7 @@ export function GameDayPicker({ populatedDays, today, gameDate, onSelect }: { po
   const gameDateDate = new Date(gameDate);
   
   return (
-    <div className="absolute p-4 bg-gray-900 rounded-lg">
+    <div className="p-4 bg-gray-900 rounded-lg">
     <DayPicker
           timeZone="UTC"
           animate
