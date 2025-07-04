@@ -23,17 +23,19 @@ const convertScryfallCardToCard = (scryfallCard: ScryfallCard): Card => {
   };
 };
 
-type STATE = "INITIAL" | "LOADING" | "NO_RESULTS" | "RESULTS";
+type EDITOR_STATE = "SELECTING_DATE" | "LOADING" | "DISPLAYING";
+
+type SEARCH_STATE = "INITIAL" | "LOADING" | "NO_RESULTS" | "RESULTS";
 
 export default function BuilderContent({ populatedDays, today }: { populatedDays: Set<string>, today: string }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Card[]>([]);
   const [selectedCards, setSelectedCards] = useState<Card[]>([]);
-  const [state, setState] = useState<STATE>("INITIAL");
+  const [searchState, setSearchState] = useState<SEARCH_STATE>("INITIAL");
   const [title, setTitle] = useState<string>('');
   const [gameDate, setGameDate] = useState<string | null>(null);
   const [resultsPopup, setResultsPopup] = useState<string>('');
-  const [isLoadingGame, setIsLoadingGame] = useState<boolean>(false);
+  const [editorState, setEditorState] = useState<EDITOR_STATE>("SELECTING_DATE");
 
   const handleLogout = async () => {
     try {
@@ -46,7 +48,7 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
 
   const handleSearch = async () => {
     setResults([]);
-    setState("LOADING");
+    setSearchState("LOADING");
     const headers = new Headers();
     headers.append('User-Agent', 'EDHRanker/1.0');
     const response = await fetch(`https://api.scryfall.com/cards/search?q=${query}`, {cache: 'no-store', headers});
@@ -57,9 +59,9 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
         .map(convertScryfallCardToCard)
         .sort(sortByRankOrUndefined);
       setResults(processedData);
-      setState("RESULTS");
+      setSearchState("RESULTS");
     } else {
-      setState("NO_RESULTS");
+      setSearchState("NO_RESULTS");
       setResults([]);
     }
   }
@@ -74,7 +76,7 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
   const handleDateSelect = async (date: Date) => {
     const selectedDate = date.toISOString().slice(0, 10);
     setGameDate(selectedDate);
-    setIsLoadingGame(true);
+    setEditorState("LOADING");
     
     try {
       // Check if this date has an existing game
@@ -97,7 +99,7 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
       console.error('Failed to load game:', error);
       setResultsPopup('Failed to load game data');
     } finally {
-      setIsLoadingGame(false);
+      setEditorState("DISPLAYING");
     }
   }
 
@@ -112,9 +114,10 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
       setResultsPopup('Please select a date first');
       return;
     }
-    setResultsPopup('Creating game...');
+    const isUpdate = populatedDays.has(gameDate);
+    setResultsPopup(isUpdate ? 'Updating game...' : 'Creating game...');
     const result = await createGame(gameDate, title, selectedCards);
-    showResultsPopup(result.error || 'Game created successfully');
+    showResultsPopup(result.error || (isUpdate ? 'Game updated successfully' : 'Game created successfully'));
   }
 
   const addCardToSelection = (card: Card) => {
@@ -134,7 +137,7 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
         </button>
       </div>
       
-      {!gameDate ? (
+      {editorState === "SELECTING_DATE" && (
         // Day Selection Interface
         <div className="flex flex-col items-center justify-center h-full">
           <h1 className="text-2xl font-bold mb-6 text-white">Select a Game Date</h1>
@@ -145,34 +148,39 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
               gameDate={today} 
               onSelect={handleDateSelect} 
             />
-            {isLoadingGame && (
-              <div className="text-white text-center mt-4">Loading game...</div>
+            {gameDate && (
+              <button className="bg-[#2694AF] text-white px-2 py-1 rounded-md cursor-pointer" onClick={() => setEditorState("DISPLAYING")}>Cancel</button>
             )}
           </div>
         </div>
-      ) : (
-        // Card Selection Interface
-        <div className="flex flex-col gap-2 p-2 shrink-0">
-          <div className="flex flex-row items-center">
-            <span className="m-2 text-white">Game Title: </span>
-            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="border-2 border-gray-300 rounded-md p-2" />
-          </div>
-          <div className="flex flex-row items-center gap-2">
-            <span className="text-white">Game Date: {gameDate} {populatedDays.has(gameDate) ? " (Editing existing game)" : " (New game)"}</span>
-            <button 
-              className="bg-[#7C9B13] text-white px-2 py-1 rounded-md cursor-pointer ml-4"
-              onClick={() => setGameDate(null)}
-            >
-              Change Date
-            </button>
-          </div>
-          <button className="bg-[#2694AF] text-white px-2 py-1 rounded-md cursor-pointer" onClick={handleCreateGame}>Create Game</button>
-          {resultsPopup != '' && <div className="absolute bg-[#444] text-white p-2 rounded-md border-2 border-[#dead3d]">{resultsPopup}</div>}
+      )}
+      {editorState === "LOADING" && (
+        <div className="flex flex-col items-center justify-center h-full">
+          <div className="text-white">Loading...</div>
         </div>
       )}
-      
-      {gameDate && (
+      {editorState === "DISPLAYING" && (
+        // Card Selection Interface
         <>
+          <div className="flex flex-col gap-2 p-2 shrink-0">
+            <div className="flex flex-row items-center">
+              <span className="m-2 text-white">Game Title: </span>
+              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="border-2 border-gray-300 rounded-md p-2" />
+            </div>
+            <div className="flex flex-row items-center gap-2">
+              <span className="text-white">Game Date: {gameDate} {populatedDays.has(gameDate!) ? " (Editing existing game)" : " (New game)"}</span>
+              <button 
+                className="bg-[#7C9B13] text-white px-2 py-1 rounded-md cursor-pointer ml-4"
+                onClick={() => setEditorState("SELECTING_DATE")}
+              >
+                Change Date
+              </button>
+            </div>
+            <button className="bg-[#2694AF] text-white px-2 py-1 rounded-md cursor-pointer" onClick={handleCreateGame}>
+              {populatedDays.has(gameDate!) ? 'Update Game' : 'Create Game'}
+            </button>
+            {resultsPopup != '' && <div className="absolute bg-[#444] text-white p-2 rounded-md border-2 border-[#dead3d]">{resultsPopup}</div>}
+          </div>
           <div className="flex flex-row h-110 bg-[#444] w-full justify-center p-4 shrink-0">
             {selectedCards.length == 0 && <div>
               <div className="flex flex-col">
@@ -212,9 +220,9 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
             <button className="bg-[#2694AF] text-white px-2 py-1 rounded-md cursor-pointer" onClick={handleSearch}>Search</button>
           </div>
           <div className="flex flex-col shrink overflow-y-auto w-screen items-center">
-            {state === "LOADING" && <div className="text-white">Loading...</div>}
-            {state === "NO_RESULTS" && <div className="text-white">No results found</div>}
-            {state === "RESULTS" && results.map((result) => (
+            {searchState === "LOADING" && <div className="text-white">Loading...</div>}
+            {searchState === "NO_RESULTS" && <div className="text-white">No results found</div>}
+            {searchState === "RESULTS" && results.map((result) => (
               <div key={result.id} className="flex flex-row bg-[#444] m-2 p-2 rounded-md gap-2 justify-between w-200">
                 <span className="m-2 text-white">{result.name}</span>
                 <div className="flex flex-row gap-2">

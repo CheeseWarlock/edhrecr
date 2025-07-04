@@ -66,38 +66,71 @@ export async function createGame(date: string, title: string, cards: Card[]): Pr
 
   const result = await sql.begin(async sql => {
     // Check if a collection already exists for this date
-    // For now, disallow that
     const existingCollection = await sql`SELECT id FROM collections_v2 WHERE date = ${date}`;
+    
     if (existingCollection.length > 0) {
-      return { success: false, error: "Collection already exists for this date" };
-    }
-    await sql`INSERT INTO collections_v2 (date, title, is_special) VALUES (${date}, ${title}, true)`;
-    const latestId = await sql`SELECT id FROM collections_v2 WHERE date = ${date}`;
-    const collectionId = latestId[0].id;
-    if (!collectionId || typeof collectionId !== 'number') {
-      return { success: false, error: "Failed to get collection id" };
-    }
-    const cardNames = cards.map(card => card.name);
-    const cardImages = cards.map(card => card.image_url);
-    const cardEdhrecRanks = cards.map(card => card.edhrec_rank);
+      // Update existing game
+      const collectionId = existingCollection[0].id;
+      
+      // Delete existing cards first (due to foreign key constraint)
+      await sql`DELETE FROM cards_v2 WHERE collection_index = ${collectionId}`;
+      
+      // Update the collection title
+      await sql`UPDATE collections_v2 SET title = ${title} WHERE id = ${collectionId}`;
+      
+      // Insert new cards
+      const cardNames = cards.map(card => card.name);
+      const cardImages = cards.map(card => card.image_url);
+      const cardEdhrecRanks = cards.map(card => card.edhrec_rank);
 
-    if (cardNames.length !== cards.length || cardImages.length !== cards.length || cardEdhrecRanks.length !== cards.length) {
-      return { success: false, error: "Card data mismatch" };
+      if (cardNames.length !== cards.length || cardImages.length !== cards.length || cardEdhrecRanks.length !== cards.length) {
+        return { success: false, error: "Card data mismatch" };
+      }
+
+      const cardData = cardNames.map((name, index) => ({
+        name,
+        image_uri: cardImages[index],
+        edhrec_rank: cardEdhrecRanks[index],
+        date: date,
+        added_at: date,
+        bad_data: false,
+        collection_index: collectionId,
+        from_editor: true
+      }));
+
+      await sql`INSERT INTO cards_v2 ${sql(cardData)}`;
+      return { success: true };
+    } else {
+      // Create new game
+      await sql`INSERT INTO collections_v2 (date, title, is_special) VALUES (${date}, ${title}, true)`;
+      const latestId = await sql`SELECT id FROM collections_v2 WHERE date = ${date}`;
+      const collectionId = latestId[0].id;
+      if (!collectionId || typeof collectionId !== 'number') {
+        return { success: false, error: "Failed to get collection id" };
+      }
+      
+      const cardNames = cards.map(card => card.name);
+      const cardImages = cards.map(card => card.image_url);
+      const cardEdhrecRanks = cards.map(card => card.edhrec_rank);
+
+      if (cardNames.length !== cards.length || cardImages.length !== cards.length || cardEdhrecRanks.length !== cards.length) {
+        return { success: false, error: "Card data mismatch" };
+      }
+
+      const cardData = cardNames.map((name, index) => ({
+        name,
+        image_uri: cardImages[index],
+        edhrec_rank: cardEdhrecRanks[index],
+        date: date,
+        added_at: date,
+        bad_data: false,
+        collection_index: collectionId,
+        from_editor: true
+      }));
+
+      await sql`INSERT INTO cards_v2 ${sql(cardData)}`;
+      return { success: true };
     }
-
-    const cardData = cardNames.map((name, index) => ({
-      name,
-      image_uri: cardImages[index],
-      edhrec_rank: cardEdhrecRanks[index],
-      date: date,
-      added_at: date,
-      bad_data: false,
-      collection_index: collectionId,
-      from_editor: true
-    }));
-
-    await sql`INSERT INTO cards_v2 ${sql(cardData)}`;
-    return { success: true };
   });
   return result;
 }
