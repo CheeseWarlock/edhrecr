@@ -54,7 +54,7 @@ export default function LoginPage() {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border-2 border-[#2694AF] rounded-md"
+              className="w-full px-3 py-2 border-2 border-mana-blue rounded-md"
               placeholder="Enter password"
               required
               disabled={isLoading}
@@ -66,7 +66,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading || !password.trim()}
-            className="w-full bg-[#7C9B13] text-white py-2 px-4 rounded-md hover:saturate-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-mana-green text-white py-2 px-4 rounded-md hover:saturate-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? 'Authenticating...' : 'Login'}
           </button>

@@ -8,6 +8,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-mana-red: #DC5E25;
+  --color-mana-green: #7C9B13;
+  --color-mana-blue: #2694AF;
+  --color-mana-white: #E5D7BC;
+  --color-mana-black: #8C6E50;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

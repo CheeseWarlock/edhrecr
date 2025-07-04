@@ -20,12 +20,12 @@ export function OverlayFrame({ isOpen, onClose, children }: OverlayFrameProps) {
       onClick={onClose}
     >
       <div 
-        className="bg-[#444] rounded-xl p-8 max-w-2xl w-full max-h-[80vh] overflow-y-auto relative shadow-2xl/50 border-4 border-[#2694af]"
+        className="bg-[#444] rounded-xl p-8 max-w-2xl w-full max-h-[80vh] overflow-y-auto relative shadow-2xl/50 border-4 border-mana-blue"
         onClick={e => e.stopPropagation()}
       >
         <button 
           onClick={onClose}
-          className="absolute top-4 right-4 text-white hover:text-[#2694AF] transition-colors cursor-pointer"
+          className="absolute top-4 right-4 text-white hover:text-mana-blue transition-colors cursor-pointer"
         >
           <FaTimes size={24} />
         </button>
