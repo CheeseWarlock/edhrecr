@@ -149,7 +149,7 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
               onSelect={handleDateSelect} 
             />
             {gameDate && (
-              <button className="bg-[#2694AF] text-white px-2 py-1 rounded-md cursor-pointer" onClick={() => setEditorState("DISPLAYING")}>Cancel</button>
+              <button className="bg-[#2694AF] text-white px-2 m-2 h-12 rounded-md cursor-pointer" onClick={() => setEditorState("DISPLAYING")}>Cancel</button>
             )}
           </div>
         </div>
@@ -164,16 +164,17 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
         <>
           <div className="flex flex-col gap-2 p-2 shrink-0">
             <div className="flex flex-row items-center">
-              <span className="m-2 text-white">Game Title: </span>
-              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="border-2 border-gray-300 rounded-md p-2" />
+              <span className="mr-2 text-white font-bold">Game Title: </span>
+              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="border-2 border-gray-300 rounded-md p-2 grow" />
             </div>
             <div className="flex flex-row items-center gap-2">
-              <span className="text-white">Game Date: {gameDate} {populatedDays.has(gameDate!) ? " (Editing existing game)" : " (New game)"}</span>
+              <span className="mr-2 text-white font-bold">Game Date: </span>
+              <span className="text-white">{gameDate} {populatedDays.has(gameDate!) ? " (Editing existing game)" : " (New game)"}</span>
               <button 
                 className="bg-[#7C9B13] text-white px-2 py-1 rounded-md cursor-pointer ml-4"
                 onClick={() => setEditorState("SELECTING_DATE")}
               >
-                Change Date
+                Back to Date Select
               </button>
             </div>
             <button className="bg-[#2694AF] text-white px-2 py-1 rounded-md cursor-pointer" onClick={handleCreateGame}>
@@ -181,17 +182,16 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
             </button>
             {resultsPopup != '' && <div className="absolute bg-[#444] text-white p-2 rounded-md border-2 border-[#dead3d]">{resultsPopup}</div>}
           </div>
-          <div className="flex flex-row h-110 bg-[#444] w-full justify-center p-4 shrink-0">
+          <div className="flex flex-row bg-[#444] w-full justify-center p-4 shrink-0">
             {selectedCards.length == 0 && <div>
-              <div className="flex flex-col">
+              <div className="flex flex-col mb-22">
                 <div className="bg-gradient-to-r from-20% from-[#136235] via-50% via-[#43783F] to-80% to-[#136235] rounded-[5%] w-[256px] h-[357px] flex items-center justify-center border-12 border-[#171717]">
                   <span className="m-2 text-white">No cards selected</span>
                 </div>
               </div>
             </div>}
             {selectedCards.map((card) => (
-              <div className="flex flex-col" key={card.id}>
-                <div className="">
+              <div className="flex flex-col items-center gap-2" key={card.id}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                   src={card.image_url}
@@ -199,13 +199,14 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
                   width={256}
                   height={357} 
                   className={`select-none object-contain mw-[256px] mh-[357px] rounded-[5%]`} />
-                  <div className="flex flex-row justify-around">
+                  <div className="flex flex-row items-center justify-center">
                     <span className="m-2 text-white">#{card.edhrec_rank}</span>
                     <button onClick={() => window.open(`https://edhrec.com/route/?cc=${card.name}`, '_blank')} className="bg-[#2694AF] text-white px-2 py-1 rounded-md cursor-pointer">EDHRec</button>
+                  </div>
+                  <div className="flex flex-row justify-center">
                     <button onClick={() => setSelectedCards(selectedCards.filter((c) => c.id !== card.id))} className="bg-[#DC5E25] text-white px-2 py-1 rounded-md cursor-pointer">Remove</button>
                   </div>
                 </div>
-              </div>
             ))}
           </div>
           <div className="flex flex-row shrink-0">
