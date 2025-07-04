@@ -29,15 +29,13 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setPassword('');
-        // Redirect to the builder page after successful login
         router.push('/builder');
       } else {
         setError(data.error || 'Authentication failed');
+        setIsLoading(false);
       }
     } catch (error) {
       setError('Network error. Please try again.');
-    } finally {
       setIsLoading(false);
     }
   };

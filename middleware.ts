@@ -2,18 +2,18 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import * as jose from 'jose';
 
-const AUTH_SECRET = process.env.AUTH_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET;
 const COOKIE_NAME = process.env.COOKIE_NAME || 'builder-auth';
 
 // Routes that require authentication
 const PROTECTED_ROUTES = ['/builder'];
 
 async function verifyToken(token: string): Promise<boolean> {
-  if (!AUTH_SECRET) {
+  if (!JWT_SECRET) {
     return false;
   }
   try {
-    const secret = new TextEncoder().encode(AUTH_SECRET);
+    const secret = new TextEncoder().encode(JWT_SECRET);
     await jose.jwtVerify(token, secret);
     return true;
   } catch (error) {

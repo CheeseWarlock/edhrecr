@@ -1,11 +1,11 @@
 import * as jose from 'jose';
 import { cookies } from 'next/headers';
 
-const AUTH_SECRET = process.env.AUTH_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET;
 const COOKIE_NAME = process.env.COOKIE_NAME || 'builder-auth';
 
-if (!AUTH_SECRET) {
-  throw new Error('AUTH_SECRET environment variable is required');
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required');
 }
 
 export interface AuthToken {
@@ -19,7 +19,7 @@ export async function signToken(): Promise<string> {
     timestamp: Date.now()
   };
   
-  const secret = new TextEncoder().encode(AUTH_SECRET!);
+  const secret = new TextEncoder().encode(JWT_SECRET!);
   return await new jose.SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setExpirationTime('7d')
@@ -27,11 +27,11 @@ export async function signToken(): Promise<string> {
 }
 
 export async function verifyToken(token: string): Promise<AuthToken | null> {
-  if (!AUTH_SECRET) {
+  if (!JWT_SECRET) {
     return null;
   }
   try {
-    const secret = new TextEncoder().encode(AUTH_SECRET);
+    const secret = new TextEncoder().encode(JWT_SECRET);
     const { payload } = await jose.jwtVerify(token, secret);
     return {
       authenticated: payload.authenticated as boolean,
