@@ -52,7 +52,7 @@ async function getCardsForDayV2(day: string) {
   const pastDay = day.slice(0, 10);
   const today = (new Date()).toISOString().slice(0, 10);
   const result = await sql`
-    SELECT (cards_v2.*) FROM cards_v2 INNER JOIN collections_v2 ON collections_v2.id = cards_v2.collection_index WHERE collections_v2.date = ${pastDay};
+    SELECT (cards_v2.*) FROM cards_v2 INNER JOIN collections_v2 ON collections_v2.id = cards_v2.collection_index WHERE collections_v2.date = ${pastDay}  ORDER BY cards_v2.sort_order ASC, cards_v2.id ASC;
   `;
   console.log(result);
   const mapped: Card[] = result.map((card) => ({

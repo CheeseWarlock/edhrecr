@@ -3,6 +3,7 @@
 import postgres from 'postgres';
 import { Card } from '../types';
 import { isAuthenticated } from './auth';
+import { shuffle } from '../utils/shuffle';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -118,6 +119,7 @@ export async function createGame(date: string, title: string, cards: Card[]): Pr
       const cardNames = cards.map(card => card.name);
       const cardImages = cards.map(card => card.image_url);
       const cardEdhrecRanks = cards.map(card => card.edhrec_rank);
+      const cardOrders = shuffle(cards.map((_card, index) => index));
 
       if (cardNames.length !== cards.length || cardImages.length !== cards.length || cardEdhrecRanks.length !== cards.length) {
         return { success: false, error: "Card data mismatch" };
@@ -131,7 +133,8 @@ export async function createGame(date: string, title: string, cards: Card[]): Pr
         added_at: date,
         bad_data: false,
         collection_index: collectionId,
-        from_editor: true
+        from_editor: true,
+        sort_order: cardOrders[index]
       }));
 
       await sql`INSERT INTO cards_v2 ${sql(cardData)}`;
