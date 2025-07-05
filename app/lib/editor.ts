@@ -6,6 +6,9 @@ import { isAuthenticated } from './auth';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
+/**
+ * Get the days for which a game exists and today's date.
+ */
 export async function getPopulatedDays() {
   const today = (new Date()).toISOString().slice(0, 10);
   const populatedDays = await sql`SELECT date FROM collections_v2`;
@@ -17,6 +20,11 @@ export async function getPopulatedDays() {
   }
 }
 
+/**
+ * Get the game for a given day, if one exists.
+ * This is editor-side, so it can return future games.
+ * @param date - The date to get the game for, in YYYY-MM-DD format.
+ */
 export async function getGameForDay(date: string): Promise<{ cards: Card[], title: string } | null> {
   try {
     // Get the collection info
@@ -49,10 +57,12 @@ export async function getGameForDay(date: string): Promise<{ cards: Card[], titl
   }
 }
 
-
-
+/**
+ * Create a new game.
+ * If a game already exists for the given date, update it.
+ * @param date - The date to create the game for, in YYYY-MM-DD format.
+ */
 export async function createGame(date: string, title: string, cards: Card[]): Promise<{ success: boolean, error?: string }> {
-  // Check authentication
   const authenticated = await isAuthenticated();
   if (!authenticated) {
     return { success: false, error: "Authentication required" };
@@ -65,20 +75,16 @@ export async function createGame(date: string, title: string, cards: Card[]): Pr
   }
 
   const result = await sql.begin(async sql => {
-    // Check if a collection already exists for this date
     const existingCollection = await sql`SELECT id FROM collections_v2 WHERE date = ${date}`;
     
     if (existingCollection.length > 0) {
-      // Update existing game
+      // Update existing game by deleting existing cards and inserting new ones
       const collectionId = existingCollection[0].id;
       
-      // Delete existing cards first (due to foreign key constraint)
       await sql`DELETE FROM cards_v2 WHERE collection_index = ${collectionId}`;
       
-      // Update the collection title
       await sql`UPDATE collections_v2 SET title = ${title} WHERE id = ${collectionId}`;
       
-      // Insert new cards
       const cardNames = cards.map(card => card.name);
       const cardImages = cards.map(card => card.image_url);
       const cardEdhrecRanks = cards.map(card => card.edhrec_rank);
