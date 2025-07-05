@@ -6,3 +6,5 @@ export default async function Home() {
   console.log(dailyCardsData);
   return <NonPersistentGameContent cards={dailyCardsData.collection.cards} date={dailyCardsData.collection.date} today={dailyCardsData.today} />;
 }
+
+export const dynamic = 'force-dynamic';
