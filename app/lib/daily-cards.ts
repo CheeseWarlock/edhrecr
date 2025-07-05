@@ -8,8 +8,9 @@ const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
  * The date at which the migration to v2 occurred, in YYYY-MM-DD format.
  * Before this date, use the old cards and collections tables.
  * After this date, use the new cards and collections tables.
+ * If the migration date is not set, always use the new tables.
  */
-const MIGRATION_DATE = "2025-07-06";
+const MIGRATION_DATE = process.env.MIGRATION_DATE;
 
 /**
  * Get the v1 cards for a given day.
@@ -160,7 +161,7 @@ export async function getCardsForDayWithAutoVersioning(day: string): Promise<Ser
       today: today
     };
   }
-  if (pastDay < MIGRATION_DATE) {
+  if (MIGRATION_DATE && pastDay < MIGRATION_DATE) {
     return await getCardsForDay(pastDay);
   } else {
     return await getCardsForDayV2(pastDay);
