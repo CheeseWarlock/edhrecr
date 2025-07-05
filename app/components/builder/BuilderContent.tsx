@@ -34,7 +34,7 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
   }
 
   const addCardToSelection = (card: Card) => {
-    if (!selectedCards.some((c) => c.id === card.id)) {
+    if (!selectedCards.some((c) => c.name === card.name)) {
       setSelectedCards([...selectedCards, card].sort((a, b) => {
         const aRank = a.edhrec_rank;
         const bRank = b.edhrec_rank;

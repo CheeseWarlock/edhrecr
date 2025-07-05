@@ -2,11 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "crons": [
     {
-      "path": "/api/cron",
+      "path": "/api/cron-get-cards",
       "schedule": "0 0 * * *"
     },
     {
-      "path": "/api/cron2",
+      "path": "/api/cron-create-collection",
       "schedule": "0 0 * * *"
     }
   ]

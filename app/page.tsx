@@ -1,4 +1,4 @@
-import { getCards, getToday } from "./lib/daily-cards";
+import { getCardsForTodayWithAutoVersioning, getToday } from "./lib/daily-cards";
 import dummyData from "./lib/dummy-data.json"
 import { Card } from "./types";
 import { PersistentGameContent } from './components/PersistentGameContent';
@@ -6,7 +6,7 @@ import { PersistentGameContent } from './components/PersistentGameContent';
 export default async function Home() {
   let dailyCardsData: { cards: Card[], date: string };
   if (process.env.USE_LIVE_DATA === "true") {
-    const response = await getCards();
+    const response = await getCardsForTodayWithAutoVersioning();
     dailyCardsData = response.collection;
   } else {
     const offset = 7;
