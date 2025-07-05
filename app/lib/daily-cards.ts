@@ -1,45 +1,8 @@
 import postgres from 'postgres';
 import { addDays } from 'date-fns';
-import MINI_BULK_DATA from './dummy-data.json';
-import { Card, ScryfallCard, ServerResponse } from '../types';
-
-// Could also load the entire set of bulk data- currently not in repo
-// import BULK_DATA from '../lib/oracle-cards-20250514210930.json';
+import { Card, ServerResponse } from '../types';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
-
-export async function createCardsTable() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS cards (
-      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-      name VARCHAR(255) NOT NULL,
-      image_url VARCHAR(255) NOT NULL,
-      edhrec_rank INT NOT NULL
-    );
-    `;
-}
-
-export async function createCollectionTable() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS dailycollections (
-      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-      date DATE NOT NULL,
-      description TEXT NOT NULL
-    )
-  `;
-}
-
-export async function createCollectionCardTable() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS collectioncards (
-      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-      collection_id UUID NOT NULL,
-      card_id UUID NOT NULL,
-      FOREIGN KEY (collection_id) REFERENCES dailycollections(id),
-      FOREIGN KEY (card_id) REFERENCES cards(id)
-    )
-  `;
-}
 
 export async function getPrecomputedCardsForDay(date: string) {
   return await sql`
@@ -85,58 +48,6 @@ async function getOrGenerateCardsForDay(today: string) {
   return randomCards;
 }
 
-export async function populateDummyCollection() {
-  const today = (new Date()).toISOString().slice(0, 10);
-  return await sql`
-    INSERT INTO dailycollections (date, description)
-    VALUES (${today}, 'Dummy data please ignore')
-  `;
-}
-
-export async function populateDummyCollectionCards() {
-  const cards = await sql`SELECT c.id FROM cards c LIMIT 5`;
-  const collection = await sql`SELECT d.id FROM dailycollections d LIMIT 1`;
-
-  const cardIds = cards.map((card) => card.id);
-  const collectionId = collection[0].id;
-  const insertedCollectionCards = await Promise.all(
-    cardIds.map(async (cardId) => {
-      return await sql`
-        INSERT INTO collectioncards (collection_id, card_id)
-        VALUES (${collectionId}, ${cardId})
-      `;
-    })
-  );
-  return insertedCollectionCards;
-}
-
-export async function clearCardTables() {
-  const result = await sql.begin((sql) => [
-    sql`TRUNCATE TABLE cards CASCADE`,
-    sql`TRUNCATE TABLE collectioncards CASCADE`,
-    sql`TRUNCATE TABLE dailycollections CASCADE`
-  ]);
-  return result;
-}
-
-export async function populateSomeRealCards() {
-  return await sql`INSERT INTO cards ${sql(MINI_BULK_DATA.cards, 'name', 'image_url', 'edhrec_rank')}`;
-}
-
-export async function populateFromBulkData(cards: ScryfallCard[], count: number, offset: number) {
-  const cardBlock = cards.slice(offset, offset + count).map((card) => ({
-    name: card.name,
-    image_url: card.image_uris!.normal,
-    edhrec_rank: card.edhrec_rank
-  }));
-
-  if (cardBlock.length === 0) {
-    return;
-  }
-
-  return await sql`INSERT INTO cards ${sql(cardBlock, 'name', 'image_url', 'edhrec_rank')}`;
-}
-
 export async function getCards(): Promise<ServerResponse> {
   const today = (new Date()).toISOString().slice(0, 10);
   const result = await getOrGenerateCardsForDay(today);
@@ -159,6 +70,18 @@ export async function getCardsForDay(day: string): Promise<ServerResponse> {
   const pastDay = day.slice(0, 10);
   const today = (new Date()).toISOString().slice(0, 10);
 
+  // Protect against users trying to load games from the future
+  // Comparing strings looks sketchy, but it works for YYYY-MM-DD format
+  if (pastDay > today) {
+    return {
+      collection: {
+        cards: [],
+        date: pastDay
+      },
+      today: today
+    };
+  }
+
   const result = await getPrecomputedCardsForDay(pastDay);
   const mapped = result.map((card) => ({
     id: card.id,
@@ -176,30 +99,6 @@ export async function getCardsForDay(day: string): Promise<ServerResponse> {
 }
 
 /**
- * Gets the daily collection from the database.
- * Likely to be deprecated in favor of getCardsForDay_better.
- */
-export async function getDailyCollectionv2() {
-  const today = (new Date()).toISOString().slice(0, 10);
-  const result = await sql`
-    SELECT * FROM cards_v2 WHERE date = ${today} AND bad_data = false LIMIT 7
-  `;
-  const mapped = result.map((card) => ({
-    id: card.id,
-    name: card.name,
-    image_url: card.image_uri,
-    edhrec_rank: card.edhrec_rank
-  }));
-  return {
-    collection: {
-      cards: mapped,
-      date: today
-    },
-    today: today
-  };
-}
-
-/**
  * Get the daily collection for a given day from the database.
  * @param day - The day to get the collection for, in YYYY-MM-DD format.
  */
@@ -210,7 +109,7 @@ export async function getCardsForDay_better(day: string) {
     SELECT (cards_v2.*) FROM cards_v2 INNER JOIN collections_v2 ON collections_v2.id = cards_v2.collection_index WHERE collections_v2.date = ${pastDay};
   `;
   console.log(result);
-  const mapped = result.map((card) => ({
+  const mapped: Card[] = result.map((card) => ({
     id: card.id,
     name: card.name,
     image_url: card.image_uri,
@@ -326,6 +225,9 @@ export async function generateCardsV2() {
   return cards;
 }
 
+/**
+ * Get the current date (in server time) in YYYY-MM-DD format.
+ */
 export async function getToday(): Promise<string> {
   const today = (new Date()).toISOString().slice(0, 10);
   return today;
