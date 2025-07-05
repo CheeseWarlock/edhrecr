@@ -2,7 +2,7 @@
 export type Feedback = 'correct' | 'off-by-one' | 'incorrect';
 
 function getFeedbackColor(feedback: Feedback) {
-  return feedback === 'correct' ? '#7C9B13' : feedback === 'off-by-one' ? '#CEA648' : '#635634';
+  return feedback === 'correct' ? 'var(--color-mana-green)' : feedback === 'off-by-one' ? '#CEA648' : '#635634';
 }
 
 function getFeedbackShadowColor(feedback: Feedback) {

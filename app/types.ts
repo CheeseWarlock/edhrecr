@@ -2,21 +2,47 @@
  * The relevant fields of a card as returned by the Scryfall API.
  */
 type ScryfallCard = {
-    name: string;
-    image_uris?: {
-      normal?: string;
-    };
-    edhrec_rank?: number;
-  }
+  id: string;
+  name: string;
+  image_uris: {
+    normal: string;
+  },
+  legalities: {
+    commander: string;
+  },
+  edhrec_rank: number;
+}
 
 /**
- * A card in the format used internally.
+ * A card in the format returned by the database and used internally.
  */
 type Card = {
+    /**
+     * The ID of the card.
+     * Does not relate to any external ID.
+     */
     id: string;
+    /**
+     * The name of the card.
+     * Not guaranteed to be unique, as the same card may appear in multiple collections.
+     */
     name: string;
+    /**
+     * The URL of the card's image.
+     * Currently points to Scryfall.
+     */
     image_url: string;
+    /**
+     * The EDHREC rank of the card- lower is more popular.
+     */
     edhrec_rank: number;
+    /**
+     * The sort order of the card in the collection.
+     * Cards should be sorted by this field in ascending order.
+     * If not provided, the collection should be shuffled client-side
+     * regardless of the collection's shuffle setting.
+     */
+    sort_order?: number;
 }
 
 /**
@@ -25,6 +51,10 @@ type Card = {
 type DailyCollection = {
   cards: Card[];
   date: string;
+  /**
+   * Whether the cards should be shuffled client-side.
+   */
+  shuffle?: boolean;
 }
 
 /**

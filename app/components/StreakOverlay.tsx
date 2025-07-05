@@ -39,15 +39,15 @@ export function StreakOverlay({ isOpen, onClose, streak }: StreakOverlayProps) {
         <div className="flex flex-row justify-around mb-2">
           <div className="flex flex-col items-center text-center">
             <span className="md:text-lg mb-2 mx-2">Current Streak</span>
-            <span className="text-2xl md:text-4xl font-bold text-[#2694AF]">{streak.streakLength}</span>
+            <span className="text-2xl md:text-4xl font-bold text-mana-blue">{streak.streakLength}</span>
           </div>
           <div className="flex flex-col items-center text-center">
             <span className="md:text-lg mb-2 mx-2">Total Plays</span>
-            <span className="text-2xl md:text-4xl font-bold text-[#2694AF]">{totalPlays}</span>
+            <span className="text-2xl md:text-4xl font-bold text-mana-blue">{totalPlays}</span>
           </div>
           <div className="flex flex-col items-center text-center">
             <span className="md:text-lg mb-2 mx-2">Average Guesses</span>
-            <span className="text-2xl md:text-4xl font-bold text-[#2694AF]">{averageGuesses}</span>
+            <span className="text-2xl md:text-4xl font-bold text-mana-blue">{averageGuesses}</span>
           </div>
         </div>
 

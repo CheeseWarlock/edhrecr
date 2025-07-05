@@ -23,7 +23,7 @@ export function CardViewFrame({ isOpen, onClose, card, canViewInEDHRec }: CardVi
       onClick={onClose}
     >
       <div 
-        className="bg-[#444] rounded-3xl max-h-[80vh] overflow-y-auto relative shadow-2xl/50 border-4 border-[#2694af]"
+        className="bg-[#444] rounded-3xl max-h-[80vh] overflow-y-auto relative shadow-2xl/50 border-4 border-mana-blue"
         onClick={onClose}
         style={ { transform: "scale(1.5)"}}
       >

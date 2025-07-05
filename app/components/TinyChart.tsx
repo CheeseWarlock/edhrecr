@@ -1,10 +1,10 @@
 const COLOR_MAP: Record<string, string> = {
-    '1': '#2694AF',
-    '2': '#7C9B13',
-    '3': '#7C9B13',
-    '4': '#7C9B13',
-    '5': '#7C9B13',
-    'X': '#DC5E25'
+    '1': 'var(--color-mana-blue)',
+    '2': 'var(--color-mana-green)',
+    '3': 'var(--color-mana-green)',
+    '4': 'var(--color-mana-green)',
+    '5': 'var(--color-mana-green)',
+    'X': 'var(--color-mana-red)'
 }
 
 export default function TinyChart({ data } : { data: { label: string, value: number }[] }) {
