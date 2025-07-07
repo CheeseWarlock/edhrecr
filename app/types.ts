@@ -4,13 +4,18 @@
 type ScryfallCard = {
   id: string;
   name: string;
-  image_uris: {
+  image_uris?: {
     normal: string;
   },
   legalities: {
     commander: string;
   },
   edhrec_rank: number;
+  card_faces?: {
+    image_uris: {
+      normal: string;
+    };
+  }[];
 }
 
 /**

@@ -13,10 +13,18 @@ const sortByRankOrUndefined = (a: Card, b: Card) => {
  * Convert a Scryfall card (Scryfall API format) to a Card (database format)
  */
 const convertScryfallCardToCard = (scryfallCard: ScryfallCard): Card => {
+  // If the card has multiple faces, use the front face
+  // If it's single-faced, it will have a normal image_uris field
+  let image_url;
+  if (scryfallCard.card_faces) {
+    image_url = scryfallCard.card_faces[0].image_uris.normal;
+  } else {
+    image_url = scryfallCard.image_uris!.normal;
+  }
   return {
     id: scryfallCard.id,
     name: scryfallCard.name,
-    image_url: scryfallCard.image_uris.normal,
+    image_url,
     edhrec_rank: scryfallCard.edhrec_rank
   };
 };
