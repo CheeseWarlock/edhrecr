@@ -1,6 +1,6 @@
 import postgres from 'postgres';
 import { addDays } from 'date-fns';
-import { Card } from '../types';
+import { Card, ScryfallCard } from '../types';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -49,12 +49,15 @@ export async function generateCardsV2() {
   for (const response of responses) {
     if (response.status === 'fulfilled') {
       const data = await response.value.json();
-      const isDataGood = data.edhrec_rank !== null && data.image_uris !== null && data.image_uris.normal !== null;
-      await sql`
-        INSERT INTO cards_v2 (date, edhrec_rank, image_uri, name, added_at, bad_data)
-        VALUES (${today}, ${data.edhrec_rank}, ${data.image_uris.normal}, ${data.name}, ${new Date().toISOString()}, ${!isDataGood})
-      `;
+      const isDataGood = data.edhrec_rank !== null && (data.image_uris?.normal !== null || data.card_faces?.[0]?.image_uris?.normal !== null);
+      
       if (isDataGood) {
+        const dataAsScryfallCard = data as ScryfallCard;
+        const image_url = dataAsScryfallCard.card_faces ? dataAsScryfallCard.card_faces[0].image_uris.normal : dataAsScryfallCard.image_uris!.normal;
+        await sql`
+          INSERT INTO cards_v2 (date, edhrec_rank, image_uri, name, added_at, bad_data)
+          VALUES (${today}, ${dataAsScryfallCard.edhrec_rank}, ${image_url}, ${dataAsScryfallCard.name}, ${new Date().toISOString()}, ${!isDataGood})
+        `;
         cards.push({
           id: data.id,
           name: data.name,

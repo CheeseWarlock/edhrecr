@@ -9,3 +9,5 @@ export default async function Builder() {
     <BuilderContent populatedDays={populatedDays} today={response.today} />
   );
 }
+
+export const dynamic = 'force-dynamic';
