@@ -9,7 +9,7 @@ import { StreakOverlay } from './StreakOverlay';
 import { useLocalStorage } from '../utils/useLocalStorage';
 import { getUserStreakStatus, prepopulateUserPlayHistory, updateUserPlayHistory, updateUserStreak } from '../utils/localStorageUtils';
 import { AnimatePresence } from 'motion/react';
-import { CardViewerContext } from './CardViewerContext';
+import { CardViewerContext, ClickPosition } from './CardViewerContext';
 import { CardViewFrame } from './CardViewFrame';
 import { CalendarOverlay } from './CalendarOverlay';
 import NoCardsNotice from './NoCardsNotice';
@@ -37,6 +37,7 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
   const [isStreakOpen, setIsStreakOpen] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
   const [viewingCard, setViewingCard] = useState<Card | null>(null);
+  const [clickPosition, setClickPosition] = useState<ClickPosition | null>(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   useEffect(() => {
@@ -93,6 +94,11 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
     gameTitle = (date !== today) ? `Daily game for ${gameDateString}` : undefined;
   }
 
+  const handleViewCard = (card: Card, position?: ClickPosition) => {
+    setViewingCard(card);
+    setClickPosition(position || null);
+  };
+
   return (
     <main
       style={{
@@ -100,7 +106,7 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
       }}
       className="items-center justify-items-center min-h-screen md:p-8 bg-[#222] flex justify-center pt-16 md:pt-16 relative overflow-hidden"
     >
-      <CardViewerContext value={ (card) => {setViewingCard(card);} }>
+      <CardViewerContext value={handleViewCard}>
       <TopBar 
         onCalendarClick={() => setIsCalendarOpen(true)}
         onInfoClick={() => setIsInfoOpen(true)} 
@@ -148,7 +154,16 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
       </AnimatePresence>
       <AnimatePresence>
         {viewingCard &&
-          <CardViewFrame card={viewingCard} isOpen={true} onClose={() => { setViewingCard(null)} } canViewInEDHRec={gameOver} />
+          <CardViewFrame 
+            card={viewingCard} 
+            isOpen={true} 
+            onClose={() => { 
+              setViewingCard(null);
+              setClickPosition(null);
+            }} 
+            canViewInEDHRec={gameOver}
+            clickPosition={clickPosition}
+          />
         }
       </AnimatePresence>
       </CardViewerContext>
