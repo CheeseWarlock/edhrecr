@@ -111,7 +111,7 @@ export async function createGame(date: string, title: string, cards: Card[]): Pr
       return { success: true };
     } else {
       // Create new game
-      await sql`INSERT INTO collections_v2 (date, title, is_special) VALUES (${date}, ${title}, true)`;
+      await sql`INSERT INTO collections_v2 (date, title, is_special, shuffle) VALUES (${date}, ${title}, true, true)`;
       const latestId = await sql`SELECT id FROM collections_v2 WHERE date = ${date}`;
       const collectionId = latestId[0].id;
       if (!collectionId || typeof collectionId !== 'number') {
