@@ -1,5 +1,9 @@
 /**
  * The relevant fields of a card as returned by the Scryfall API.
+ * Should eventually be replaced with official types when they're stable.
+ * Some notes:
+ * card_faces is defined for double-faced cards as well as split cards, adventures, etc.
+ * To get the "front" of a card, try the base image_uris first, then the first card_faces.
  */
 type ScryfallCard = {
   id: string;

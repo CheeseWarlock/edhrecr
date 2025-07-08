@@ -53,7 +53,7 @@ export async function generateCardsV2() {
       
       if (isDataGood) {
         const dataAsScryfallCard = data as ScryfallCard;
-        const image_url = dataAsScryfallCard.card_faces ? dataAsScryfallCard.card_faces[0].image_uris.normal : dataAsScryfallCard.image_uris!.normal;
+        const image_url = dataAsScryfallCard.image_uris?.normal ?? dataAsScryfallCard.card_faces![0].image_uris.normal;
         await sql`
           INSERT INTO cards_v2 (date, edhrec_rank, image_uri, name, added_at, bad_data)
           VALUES (${today}, ${dataAsScryfallCard.edhrec_rank}, ${image_url}, ${dataAsScryfallCard.name}, ${new Date().toISOString()}, ${!isDataGood})
