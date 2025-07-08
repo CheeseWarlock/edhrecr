@@ -64,6 +64,7 @@ type DailyCollection = {
    * Whether the cards should be shuffled client-side.
    */
   shuffle?: boolean;
+  title?: string;
 }
 
 /**
