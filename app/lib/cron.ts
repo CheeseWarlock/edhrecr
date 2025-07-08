@@ -12,6 +12,10 @@ const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 export async function generateDailyCollectionV2() {
   const today = (new Date()).toISOString().slice(0, 10);
   const twoDaysFromToday = addDays(new Date(today), 2).toISOString().slice(0, 10);
+  const existingCollection = await sql`SELECT * FROM collections_v2 WHERE date = ${twoDaysFromToday};`;
+  if (existingCollection.length > 0) {
+    return;
+  }
   const result = await sql.unsafe(`
     BEGIN;
     SELECT max(id) FROM collections_v2;

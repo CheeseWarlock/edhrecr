@@ -81,15 +81,7 @@ export async function getCardsForDayWithAutoVersioning(day: string): Promise<Ser
   const pastDay = day.slice(0, 10);
   // Protect against users trying to load games from the future
   // Comparing strings looks sketchy, but it works for YYYY-MM-DD format
-  if (pastDay > today) {
-    return {
-      collection: {
-        cards: [],
-        date: pastDay
-      },
-      today: today
-    };
-  }
+
   if (MIGRATION_DATE && pastDay < MIGRATION_DATE) {
     return await getCardsForDay(pastDay);
   } else {
