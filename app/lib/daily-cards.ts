@@ -64,7 +64,7 @@ async function getCardsForDayV2(day: string) {
     collection: {
       cards: mapped,
       date: pastDay,
-      title: result[0].title == "Daily Collection" ? undefined : result[0].title
+      title: result[0].is_special && result[0].title
     },
     today: today
   };

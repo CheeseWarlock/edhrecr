@@ -64,6 +64,13 @@ type DailyCollection = {
    * Whether the cards should be shuffled client-side.
    */
   shuffle?: boolean;
+  /**
+   * Whether the collection was custom-created.
+   */
+  is_special?: boolean;
+  /**
+   * The title of the collection.
+   */
   title?: string;
 }
 

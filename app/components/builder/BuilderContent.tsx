@@ -57,7 +57,7 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
       if (populatedDays.has(selectedDate)) {
         const gameData = await getGameForDay(selectedDate);
         if (gameData) {
-          setSelectedCards(gameData.cards);
+          setSelectedCards(gameData.cards.sort((a, b) => a.edhrec_rank - b.edhrec_rank));
           setTitle(gameData.title);
         } else {
           // Fallback if game data couldn't be loaded

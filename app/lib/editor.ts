@@ -84,7 +84,7 @@ export async function createGame(date: string, title: string, cards: Card[]): Pr
       
       await sql`DELETE FROM cards_v2 WHERE collection_index = ${collectionId}`;
       
-      await sql`UPDATE collections_v2 SET title = ${title} WHERE id = ${collectionId}`;
+      await sql`UPDATE collections_v2 SET is_special = true, shuffle = true,  title = ${title} WHERE id = ${collectionId}`;
       
       const cardNames = cards.map(card => card.name);
       const cardImages = cards.map(card => card.image_url);
