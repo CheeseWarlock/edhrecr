@@ -8,13 +8,14 @@ interface SortableRemovableCardProps {
   id: string;
   card: Card;
   onRemoveCard: (cardId: string) => void;
+  isCorrectOrder?: boolean;
 }
 
 /**
  * A wrapper for a sortable removable card in the builder.
  * Handles drag and drop functionality for the RemovableCardWithData component.
  */
-export function SortableRemovableCard({ id, card, onRemoveCard }: SortableRemovableCardProps) {
+export function SortableRemovableCard({ id, card, onRemoveCard, isCorrectOrder = false }: SortableRemovableCardProps) {
   const {
     attributes,
     listeners,
@@ -22,7 +23,7 @@ export function SortableRemovableCard({ id, card, onRemoveCard }: SortableRemova
     transform,
     transition,
     isDragging,
-  } = useSortable({ id });
+  } = useSortable({ id, disabled: isCorrectOrder });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -34,9 +35,9 @@ export function SortableRemovableCard({ id, card, onRemoveCard }: SortableRemova
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
-      className={`cursor-grab`}
+      {...(isCorrectOrder ? {} : attributes)}
+      {...(isCorrectOrder ? {} : listeners)}
+      className={`${isCorrectOrder ? 'cursor-default' : 'cursor-grab'}`}
     >
       <RemovableCardWithData
         card={card}

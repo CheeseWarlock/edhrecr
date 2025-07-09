@@ -10,12 +10,19 @@ import { createGame, getGameForDay } from "@/app/lib/editor";
 
 type EDITOR_STATE = "SELECTING_DATE" | "LOADING" | "DISPLAYING";
 
+type ORDER_MODE = "CORRECT_ORDER" | "DISPLAY_ORDER";
+
 export default function BuilderContent({ populatedDays, today }: { populatedDays: Set<string>, today: string }) {
+  /**
+   * The cards that are currently selected,
+   * in display order regardless of the order mode.
+   */
   const [selectedCards, setSelectedCards] = useState<Card[]>([]);
   const [title, setTitle] = useState<string>('');
   const [gameDate, setGameDate] = useState<string | null>(null);
   const [resultsPopup, setResultsPopup] = useState<string>('');
   const [editorState, setEditorState] = useState<EDITOR_STATE>("SELECTING_DATE");
+  const [orderMode, setOrderMode] = useState<ORDER_MODE>("DISPLAY_ORDER");
 
   const handleLogout = async () => {
     try {
@@ -35,11 +42,8 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
 
   const addCardToSelection = (card: Card) => {
     if (!selectedCards.some((c) => c.name === card.name)) {
-      setSelectedCards([...selectedCards, card].sort((a, b) => {
-        const aRank = a.edhrec_rank;
-        const bRank = b.edhrec_rank;
-        return aRank - bRank;
-      }));
+      const newCards = [...selectedCards, card];
+      setSelectedCards(newCards);
     }
   }
 
@@ -48,7 +52,17 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
   }
 
   const handleReorderCards = (newOrder: Card[]) => {
-    setSelectedCards(newOrder);
+    if (orderMode === "DISPLAY_ORDER") {
+      setSelectedCards(newOrder);
+    }
+  }
+
+  const handleToggleOrderMode = () => {
+    if (orderMode === "CORRECT_ORDER") {
+      setOrderMode("DISPLAY_ORDER");
+    } else {
+      setOrderMode("CORRECT_ORDER");
+    }
   }
 
   const handleDateSelect = async (date: Date) => {
@@ -61,7 +75,13 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
       if (populatedDays.has(selectedDate)) {
         const gameData = await getGameForDay(selectedDate);
         if (gameData) {
-          setSelectedCards(gameData.cards.sort((a, b) => a.edhrec_rank - b.edhrec_rank));
+          // If the game was auto-generated, the cards won't have an order set.
+          // In that case, set a sort order based on the order they came from the database.
+          if (gameData.cards.some((card) => card.sort_order == null)) {
+            setSelectedCards(gameData.cards.map((card, index) => ({ ...card, sort_order: index })));
+          } else {
+            setSelectedCards(gameData.cards.sort((a, b) => a.sort_order! - b.sort_order!));
+          }
           setTitle(gameData.title);
         } else {
           // Fallback if game data couldn't be loaded
@@ -88,7 +108,7 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
     }
     const isUpdate = populatedDays.has(gameDate);
     setResultsPopup(isUpdate ? 'Updating game...' : 'Creating game...');
-    const result = await createGame(gameDate, title, selectedCards);
+    const result = await createGame(gameDate, title, [...selectedCards].map((card, index) => ({ ...card, sort_order: index })));
     showResultsPopup(result.error || (isUpdate ? 'Game updated successfully' : 'Game created successfully'));
   }
 
@@ -137,10 +157,37 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
             onCreateGame={handleCreateGame}
             resultsPopup={resultsPopup}
           />
+          
+          {/* Order Mode Toggle */}
+          <div className="flex flex-row items-center justify-center gap-4 mb-4">
+            <span className="text-white text-sm">Card Order:</span>
+            <button
+              onClick={handleToggleOrderMode}
+              className={`px-4 py-2 rounded-md transition-colors cursor-pointer ${
+                orderMode === "CORRECT_ORDER" 
+                  ? 'bg-mana-green text-white' 
+                  : 'bg-[#666] text-white hover:bg-[#777]'
+              }`}
+            >
+              Correct Order
+            </button>
+            <button
+              onClick={handleToggleOrderMode}
+              className={`px-4 py-2 rounded-md transition-colors cursor-pointer ${
+                orderMode === "DISPLAY_ORDER" 
+                  ? 'bg-mana-blue text-white' 
+                  : 'bg-[#666] text-white hover:bg-[#777]'
+              }`}
+            >
+              Display Order
+            </button>
+          </div>
+          
           <CardDisplay 
             selectedCards={selectedCards} 
             onRemoveCard={removeCardFromSelection}
             onReorderCards={handleReorderCards}
+            isCorrectOrder={orderMode === "CORRECT_ORDER"}
           />
           <CardSearch onAddCard={addCardToSelection} />
         </>
