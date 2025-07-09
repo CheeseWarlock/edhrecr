@@ -10,7 +10,7 @@ import { createGame, getGameForDay } from "@/app/lib/editor";
 
 type EDITOR_STATE = "SELECTING_DATE" | "LOADING" | "DISPLAYING";
 
-type ORDER_MODE = "CORRECT_ORDER" | "DISPLAY_ORDER";
+type ORDER_MODE = "SOLUTION_ORDER" | "DISPLAY_ORDER";
 
 export default function BuilderContent({ populatedDays, today }: { populatedDays: Set<string>, today: string }) {
   /**
@@ -58,10 +58,10 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
   }
 
   const handleToggleOrderMode = () => {
-    if (orderMode === "CORRECT_ORDER") {
+    if (orderMode === "SOLUTION_ORDER") {
       setOrderMode("DISPLAY_ORDER");
     } else {
-      setOrderMode("CORRECT_ORDER");
+      setOrderMode("SOLUTION_ORDER");
     }
   }
 
@@ -111,6 +111,9 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
     const result = await createGame(gameDate, title, [...selectedCards].map((card, index) => ({ ...card, sort_order: index })));
     showResultsPopup(result.error || (isUpdate ? 'Game updated successfully' : 'Game created successfully'));
   }
+
+  const solutionOrder = [...selectedCards].sort((a, b) => a.edhrec_rank - b.edhrec_rank);
+  const isDisplayOrderSameAsSolution = selectedCards.length > 0 && selectedCards.every((card, index) => card === solutionOrder[index]);
 
   return (
     <div className="flex flex-col items-center justify-start h-screen bg-[#222]">
@@ -164,7 +167,7 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
             <button
               onClick={handleToggleOrderMode}
               className={`px-4 py-2 rounded-md transition-colors cursor-pointer ${
-                orderMode === "CORRECT_ORDER" 
+                orderMode === "SOLUTION_ORDER" 
                   ? 'bg-mana-green text-white' 
                   : 'bg-[#666] text-white hover:bg-[#777]'
               }`}
@@ -181,13 +184,16 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
             >
               Display Order
             </button>
+            {isDisplayOrderSameAsSolution && (
+              <span className="text-mana-red text-sm">Warning: Display order is same as solution</span>
+            )}
           </div>
           
           <CardDisplay 
             selectedCards={selectedCards} 
             onRemoveCard={removeCardFromSelection}
             onReorderCards={handleReorderCards}
-            isCorrectOrder={orderMode === "CORRECT_ORDER"}
+            isCorrectOrder={orderMode === "SOLUTION_ORDER"}
           />
           <CardSearch onAddCard={addCardToSelection} />
         </>
