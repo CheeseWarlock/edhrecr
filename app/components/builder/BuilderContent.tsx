@@ -7,6 +7,7 @@ import GameHeader from "./GameHeader";
 import CardDisplay from "./CardDisplay";
 import { Card } from "@/app/types";
 import { createGame, getGameForDay } from "@/app/lib/editor";
+import { shuffle } from "@/app/utils/shuffle";
 
 type EDITOR_STATE = "SELECTING_DATE" | "LOADING" | "DISPLAYING";
 
@@ -63,6 +64,10 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
     } else {
       setOrderMode("SOLUTION_ORDER");
     }
+  }
+
+  const handleShuffleCards = () => {
+    setSelectedCards(shuffle([...selectedCards]));
   }
 
   const handleDateSelect = async (date: Date) => {
@@ -163,16 +168,15 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
           
           {/* Order Mode Toggle */}
           <div className="flex flex-row items-center justify-center gap-4 mb-4">
-            <span className="text-white text-sm">Card Order:</span>
             <button
               onClick={handleToggleOrderMode}
               className={`px-4 py-2 rounded-md transition-colors cursor-pointer ${
                 orderMode === "SOLUTION_ORDER" 
-                  ? 'bg-mana-green text-white' 
+                  ? 'bg-mana-blue text-white' 
                   : 'bg-[#666] text-white hover:bg-[#777]'
               }`}
             >
-              Correct Order
+              View Correct Order
             </button>
             <button
               onClick={handleToggleOrderMode}
@@ -182,7 +186,18 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
                   : 'bg-[#666] text-white hover:bg-[#777]'
               }`}
             >
-              Display Order
+              View/Change Display Order
+            </button>
+            <button
+              onClick={handleShuffleCards}
+              disabled={selectedCards.length === 0}
+              className={`px-4 py-2 rounded-md transition-colors cursor-pointer ${
+                selectedCards.length > 0
+                  ? 'bg-mana-green text-white' 
+                  : 'bg-[#444] text-[#666] cursor-not-allowed'
+              }`}
+            >
+              Shuffle
             </button>
             {isDisplayOrderSameAsSolution && (
               <span className="text-mana-red text-sm">Warning: Display order is same as solution</span>

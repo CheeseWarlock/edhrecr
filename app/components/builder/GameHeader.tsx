@@ -43,7 +43,7 @@ export default function GameHeader({
         </button>
       </div>
       <button 
-        className="bg-mana-blue text-white px-2 py-1 rounded-md cursor-pointer" 
+        className="bg-mana-green text-white px-2 py-1 rounded-md cursor-pointer" 
         onClick={onCreateGame}
       >
         {isExistingGame ? 'Update Game' : 'Create Game'}
