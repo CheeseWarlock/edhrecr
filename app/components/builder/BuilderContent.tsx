@@ -47,6 +47,10 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
     setSelectedCards(selectedCards.filter((c) => c.id !== cardId));
   }
 
+  const handleReorderCards = (newOrder: Card[]) => {
+    setSelectedCards(newOrder);
+  }
+
   const handleDateSelect = async (date: Date) => {
     const selectedDate = date.toISOString().slice(0, 10);
     setGameDate(selectedDate);
@@ -135,7 +139,8 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
           />
           <CardDisplay 
             selectedCards={selectedCards} 
-            onRemoveCard={removeCardFromSelection} 
+            onRemoveCard={removeCardFromSelection}
+            onReorderCards={handleReorderCards}
           />
           <CardSearch onAddCard={addCardToSelection} />
         </>
