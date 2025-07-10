@@ -6,7 +6,8 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const COOKIE_NAME = process.env.COOKIE_NAME || 'builder-auth';
 
 // Routes that require authentication
-const PROTECTED_ROUTES = ['/builder'];
+const PROTECTED_ROUTES = ['/builder', '/api'];
+const PUBLIC_API_ROUTES = ['/api/auth/login'];
 
 async function verifyToken(token: string): Promise<boolean> {
   if (!JWT_SECRET) {
@@ -25,9 +26,19 @@ async function verifyToken(token: string): Promise<boolean> {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
-  // Get the auth token from cookies
   const authToken = request.cookies.get(COOKIE_NAME)?.value;
   const isAuthenticated = authToken ? await verifyToken(authToken) : false;
+
+  const isApiRoute = pathname.startsWith('/api');
+  if (isApiRoute) {
+    if (PUBLIC_API_ROUTES.includes(pathname)) {
+      return NextResponse.next();
+    }
+    const authHeader = request.headers.get('Authorization');
+    if (authHeader === `Bearer ${process.env.CRON_SECRET}`) {
+      return NextResponse.next();
+    }
+  }
 
   // Check if the current route requires authentication
   const isProtectedRoute = PROTECTED_ROUTES.some(route => 
@@ -37,6 +48,10 @@ export async function middleware(request: NextRequest) {
   // If accessing a protected route without authentication, redirect to login
   if (isProtectedRoute && !isAuthenticated) {
     const loginUrl = new URL('/login', request.url);
+    // For API routes, return a 401 Unauthorized response
+    if (isApiRoute) {
+      return new Response('Unauthorized', { status: 401 });
+    }
     return NextResponse.redirect(loginUrl);
   }
 
@@ -51,9 +66,8 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Protected routes that require authentication
     '/builder/:path*',
-    // Login page (to redirect authenticated users away)
-    '/login'
+    '/login',
+    '/api/:path*'
   ],
 }; 
