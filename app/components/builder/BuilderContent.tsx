@@ -8,6 +8,7 @@ import CardDisplay from "./CardDisplay";
 import { Card } from "@/app/types";
 import { createGame, getGameForDay } from "@/app/lib/editor";
 import { shuffle } from "@/app/utils/shuffle";
+import { Switch } from "@/components/ui/switch";
 
 type EDITOR_STATE = "SELECTING_DATE" | "LOADING" | "DISPLAYING";
 
@@ -168,26 +169,12 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
           
           {/* Order Mode Toggle */}
           <div className="flex flex-row items-center justify-center gap-4 mb-4">
-            <button
-              onClick={handleToggleOrderMode}
-              className={`px-4 py-2 rounded-md transition-colors cursor-pointer ${
-                orderMode === "SOLUTION_ORDER" 
-                  ? 'bg-mana-blue text-white' 
-                  : 'bg-[#666] text-white hover:bg-[#777]'
-              }`}
-            >
-              View Correct Order
-            </button>
-            <button
-              onClick={handleToggleOrderMode}
-              className={`px-4 py-2 rounded-md transition-colors cursor-pointer ${
-                orderMode === "DISPLAY_ORDER" 
-                  ? 'bg-mana-blue text-white' 
-                  : 'bg-[#666] text-white hover:bg-[#777]'
-              }`}
-            >
-              View/Change Display Order
-            </button>
+            <span className="text-white">In-Game Order</span>
+            <Switch
+              checked={orderMode === "SOLUTION_ORDER"}
+              onCheckedChange={handleToggleOrderMode}
+            />
+            <span className="text-white">Solution Order</span>
             <button
               onClick={handleShuffleCards}
               disabled={selectedCards.length === 0}
