@@ -3,7 +3,6 @@
 import postgres from 'postgres';
 import { Card } from '../types';
 import { isAuthenticated } from './auth';
-import { shuffle } from '../utils/shuffle';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -45,7 +44,8 @@ export async function getGameForDay(date: string): Promise<{ cards: Card[], titl
       id: card.id,
       name: card.name,
       image_url: card.image_uri,
-      edhrec_rank: card.edhrec_rank
+      edhrec_rank: card.edhrec_rank,
+      sort_order: card.sort_order
     }));
     
     return {
@@ -89,7 +89,7 @@ export async function createGame(date: string, title: string, cards: Card[]): Pr
       const cardNames = cards.map(card => card.name);
       const cardImages = cards.map(card => card.image_url);
       const cardEdhrecRanks = cards.map(card => card.edhrec_rank);
-      const cardOrders = shuffle(cards.map((_card, index) => index));
+      const cardOrders = cards.map(card => card.sort_order);
 
       if (cardNames.length !== cards.length || cardImages.length !== cards.length || cardEdhrecRanks.length !== cards.length) {
         return { success: false, error: "Card data mismatch" };
@@ -121,7 +121,7 @@ export async function createGame(date: string, title: string, cards: Card[]): Pr
       const cardNames = cards.map(card => card.name);
       const cardImages = cards.map(card => card.image_url);
       const cardEdhrecRanks = cards.map(card => card.edhrec_rank);
-      const cardOrders = shuffle(cards.map((_card, index) => index));
+      const cardOrders = cards.map(card => card.sort_order);
 
       if (cardNames.length !== cards.length || cardImages.length !== cards.length || cardEdhrecRanks.length !== cards.length) {
         return { success: false, error: "Card data mismatch" };

@@ -7,15 +7,23 @@ import GameHeader from "./GameHeader";
 import CardDisplay from "./CardDisplay";
 import { Card } from "@/app/types";
 import { createGame, getGameForDay } from "@/app/lib/editor";
+import { shuffle } from "@/app/utils/shuffle";
 
 type EDITOR_STATE = "SELECTING_DATE" | "LOADING" | "DISPLAYING";
 
+type ORDER_MODE = "SOLUTION_ORDER" | "DISPLAY_ORDER";
+
 export default function BuilderContent({ populatedDays, today }: { populatedDays: Set<string>, today: string }) {
+  /**
+   * The cards that are currently selected,
+   * in display order regardless of the order mode.
+   */
   const [selectedCards, setSelectedCards] = useState<Card[]>([]);
   const [title, setTitle] = useState<string>('');
   const [gameDate, setGameDate] = useState<string | null>(null);
   const [resultsPopup, setResultsPopup] = useState<string>('');
   const [editorState, setEditorState] = useState<EDITOR_STATE>("SELECTING_DATE");
+  const [orderMode, setOrderMode] = useState<ORDER_MODE>("DISPLAY_ORDER");
 
   const handleLogout = async () => {
     try {
@@ -35,16 +43,31 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
 
   const addCardToSelection = (card: Card) => {
     if (!selectedCards.some((c) => c.name === card.name)) {
-      setSelectedCards([...selectedCards, card].sort((a, b) => {
-        const aRank = a.edhrec_rank;
-        const bRank = b.edhrec_rank;
-        return aRank - bRank;
-      }));
+      const newCards = [...selectedCards, card];
+      setSelectedCards(newCards);
     }
   }
 
   const removeCardFromSelection = (cardId: string) => {
     setSelectedCards(selectedCards.filter((c) => c.id !== cardId));
+  }
+
+  const handleReorderCards = (newOrder: Card[]) => {
+    if (orderMode === "DISPLAY_ORDER") {
+      setSelectedCards(newOrder);
+    }
+  }
+
+  const handleToggleOrderMode = () => {
+    if (orderMode === "SOLUTION_ORDER") {
+      setOrderMode("DISPLAY_ORDER");
+    } else {
+      setOrderMode("SOLUTION_ORDER");
+    }
+  }
+
+  const handleShuffleCards = () => {
+    setSelectedCards(shuffle([...selectedCards]));
   }
 
   const handleDateSelect = async (date: Date) => {
@@ -57,7 +80,13 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
       if (populatedDays.has(selectedDate)) {
         const gameData = await getGameForDay(selectedDate);
         if (gameData) {
-          setSelectedCards(gameData.cards.sort((a, b) => a.edhrec_rank - b.edhrec_rank));
+          // If the game was auto-generated, the cards won't have an order set.
+          // In that case, set a sort order based on the order they came from the database.
+          if (gameData.cards.some((card) => card.sort_order == null)) {
+            setSelectedCards(gameData.cards.map((card, index) => ({ ...card, sort_order: index })));
+          } else {
+            setSelectedCards(gameData.cards.sort((a, b) => a.sort_order! - b.sort_order!));
+          }
           setTitle(gameData.title);
         } else {
           // Fallback if game data couldn't be loaded
@@ -84,9 +113,12 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
     }
     const isUpdate = populatedDays.has(gameDate);
     setResultsPopup(isUpdate ? 'Updating game...' : 'Creating game...');
-    const result = await createGame(gameDate, title, selectedCards);
+    const result = await createGame(gameDate, title, [...selectedCards].map((card, index) => ({ ...card, sort_order: index })));
     showResultsPopup(result.error || (isUpdate ? 'Game updated successfully' : 'Game created successfully'));
   }
+
+  const solutionOrder = [...selectedCards].sort((a, b) => a.edhrec_rank - b.edhrec_rank);
+  const isDisplayOrderSameAsSolution = selectedCards.length > 0 && selectedCards.every((card, index) => card === solutionOrder[index]);
 
   return (
     <div className="flex flex-col items-center justify-start h-screen bg-[#222]">
@@ -133,9 +165,50 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
             onCreateGame={handleCreateGame}
             resultsPopup={resultsPopup}
           />
+          
+          {/* Order Mode Toggle */}
+          <div className="flex flex-row items-center justify-center gap-4 mb-4">
+            <button
+              onClick={handleToggleOrderMode}
+              className={`px-4 py-2 rounded-md transition-colors cursor-pointer ${
+                orderMode === "SOLUTION_ORDER" 
+                  ? 'bg-mana-blue text-white' 
+                  : 'bg-[#666] text-white hover:bg-[#777]'
+              }`}
+            >
+              View Correct Order
+            </button>
+            <button
+              onClick={handleToggleOrderMode}
+              className={`px-4 py-2 rounded-md transition-colors cursor-pointer ${
+                orderMode === "DISPLAY_ORDER" 
+                  ? 'bg-mana-blue text-white' 
+                  : 'bg-[#666] text-white hover:bg-[#777]'
+              }`}
+            >
+              View/Change Display Order
+            </button>
+            <button
+              onClick={handleShuffleCards}
+              disabled={selectedCards.length === 0}
+              className={`px-4 py-2 rounded-md transition-colors cursor-pointer ${
+                selectedCards.length > 0
+                  ? 'bg-mana-green text-white' 
+                  : 'bg-[#444] text-[#666] cursor-not-allowed'
+              }`}
+            >
+              Shuffle
+            </button>
+            {isDisplayOrderSameAsSolution && (
+              <span className="text-mana-red text-sm">Warning: Display order is same as solution</span>
+            )}
+          </div>
+          
           <CardDisplay 
             selectedCards={selectedCards} 
-            onRemoveCard={removeCardFromSelection} 
+            onRemoveCard={removeCardFromSelection}
+            onReorderCards={handleReorderCards}
+            isCorrectOrder={orderMode === "SOLUTION_ORDER"}
           />
           <CardSearch onAddCard={addCardToSelection} />
         </>
