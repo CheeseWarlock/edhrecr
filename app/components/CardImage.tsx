@@ -6,7 +6,7 @@ import { CardViewerContext, ClickPosition } from "./CardViewerContext";
 /**
  * A card image that scales elegantly with border radius.
  */
-export function CardImage({ card, isDraggable = false }: { card: Card, isDraggable?: boolean }) {
+export function CardImage({ card, isDraggable = false, width = 256, height = 357 }: { card: Card, isDraggable?: boolean, width?: number, height?: number }) {
   const callback = useContext(CardViewerContext);
   
   const handleClick = (event: React.MouseEvent) => {
@@ -21,9 +21,9 @@ export function CardImage({ card, isDraggable = false }: { card: Card, isDraggab
       src={card.image_url}
       onClick={handleClick}
       alt={card.name}
-      width={256}
-      height={357}
+      width={width}
+      height={height}
       draggable={false}
-      className={`select-none object-contain mw-[256px] mh-[357px] rounded-[5%] ${isDraggable ? "cursor-grab" : "cursor-pointer"}`}
+      className={`select-none object-contain rounded-[5%] ${isDraggable ? "cursor-grab" : "cursor-pointer"}`}
     />);
 }

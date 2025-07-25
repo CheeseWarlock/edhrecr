@@ -39,46 +39,45 @@ export function CardViewFrame({ isOpen, onClose, card, canViewInEDHRec, clickPos
   };
 
   return (
-    <>
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      className="fixed inset-0 bg-black/70 z-50"
-      onClick={onClose}
-    />
-      <motion.div
-        initial={getInitialTransform()}
-        animate={{ 
-          opacity: 1, 
-          x: 0, 
-          y: 0, 
-          scale: 1 
-        }}
-        exit={{ 
-          opacity: 0, 
-          scale: 1
-        }}
-        transition={{ 
-          duration: 0.3
-        }}
-        className="fixed z-50 flex items-center justify-center p-4"
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+        className="fixed inset-0 bg-black/70 z-50"
         onClick={onClose}
-      >
-        <div 
-          className="bg-[#444] rounded-3xl max-h-[80vh] overflow-y-auto relative shadow-2xl/50 border-4 border-mana-blue"
+      />
+        <motion.div
+          initial={getInitialTransform()}
+          animate={{ 
+            opacity: 1, 
+            x: 0, 
+            y: 0, 
+            scale: 1 
+          }}
+          exit={{ 
+            opacity: 0, 
+            scale: 1
+          }}
+          transition={{ 
+            duration: 0.3
+          }}
+          className="fixed z-50 flex items-center justify-center p-4"
           onClick={onClose}
-          style={ { transform: "scale(1.5)"}}
         >
-          <CardImage card={card} />
-          {canViewInEDHRec && (
-            <a href={`https://edhrec.com/route/?cc=${encodeURIComponent(card.name)}`} target="_blank" rel="noopener noreferrer" className="mx-4 my-2 text-white text-sm flex items-baseline gap-2">
-              View in EDHRec <FaExternalLinkAlt />
-            </a>
-          )}
-        </div>
-      </motion.div>
-    </>
+          <div 
+            className="bg-[#444] rounded-3xl max-h-[80vh] overflow-y-auto relative shadow-2xl/50 border-4 border-mana-blue"
+            onClick={onClose}
+          >
+            <CardImage card={card} width={384} height={535} />
+            {canViewInEDHRec && (
+              <a href={`https://edhrec.com/route/?cc=${encodeURIComponent(card.name)}`} target="_blank" rel="noopener noreferrer" className="mx-4 my-2 text-white text-sm flex items-baseline gap-2">
+                View in EDHRec <FaExternalLinkAlt />
+              </a>
+            )}
+          </div>
+        </motion.div>
+    </div>
   );
 } 
