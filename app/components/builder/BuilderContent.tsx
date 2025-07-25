@@ -43,7 +43,7 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
   }
 
   const addCardToSelection = (card: Card) => {
-    if (!selectedCards.some((c) => c.name === card.name)) {
+    if (!selectedCards.some((c) => c.name === card.name) && selectedCards.length < parseInt(process.env.NEXT_PUBLIC_MAXIMUM_GAME_SIZE ?? '10')) {
       const newCards = [...selectedCards, card];
       setSelectedCards(newCards);
     }

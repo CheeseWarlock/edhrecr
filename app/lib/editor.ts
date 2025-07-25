@@ -69,7 +69,7 @@ export async function createGame(date: string, title: string, cards: Card[]): Pr
     return { success: false, error: "Authentication required" };
   }
 
-  if (cards.length > 10) {
+  if (cards.length > parseInt(process.env.NEXT_PUBLIC_MAXIMUM_GAME_SIZE ?? '10')) {
     return { success: false, error: "Too many cards selected" };
   } else if (cards.length < 2) {
     return { success: false, error: "Not enough cards selected" };

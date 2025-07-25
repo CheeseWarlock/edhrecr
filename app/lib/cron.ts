@@ -20,7 +20,7 @@ export async function generateDailyCollectionV2() {
     BEGIN;
     SELECT max(id) FROM collections_v2;
     INSERT INTO collections_v2 (date, title, is_special) VALUES ('${twoDaysFromToday}', 'Daily Collection', false);
-    WITH cte AS (SELECT * FROM cards_v2 WHERE collection_index IS NULL ORDER BY id DESC OFFSET 20 LIMIT 7) UPDATE cards_v2 c SET collection_index = (SELECT max(id) FROM collections_v2) FROM cte WHERE c.id = cte.id;
+    WITH cte AS (SELECT * FROM cards_v2 WHERE collection_index IS NULL ORDER BY id DESC OFFSET 20 LIMIT ${parseInt(process.env.DEFAULT_GAME_SIZE ?? '7')}) UPDATE cards_v2 c SET collection_index = (SELECT max(id) FROM collections_v2) FROM cte WHERE c.id = cte.id;
     COMMIT;
   `);
   return result;
