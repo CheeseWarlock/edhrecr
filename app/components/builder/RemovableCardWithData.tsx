@@ -1,6 +1,7 @@
 'use client';
 
 import { Card } from "@/app/types";
+import { CardImage } from "../CardImage";
 
 interface RemovableCardWithDataProps {
   card: Card;
@@ -11,13 +12,7 @@ export default function RemovableCardWithData({ card, onRemoveCard }: RemovableC
   return (
     <div className="flex flex-col items-center gap-2">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={card.image_url}
-        alt={card.name}
-        width={256}
-        height={357} 
-        className={`select-none object-contain mw-[256px] mh-[357px] rounded-[5%]`} 
-      />
+      <CardImage card={card} width={256} height={357} flippable={true} />
       <div className="flex flex-row items-center justify-center">
         <span className="m-2 text-white">#{card.edhrec_rank}</span>
         <button 

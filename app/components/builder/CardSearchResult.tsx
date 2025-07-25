@@ -5,10 +5,12 @@ import { ScryfallCard, Card } from "@/app/types";
  */
 const convertScryfallCardToCard = (scryfallCard: ScryfallCard): Card => {
   const image_url = scryfallCard.image_uris?.normal ?? scryfallCard.card_faces![0].image_uris.normal;
+  const back_face_image_url = scryfallCard.card_faces?.[1]?.image_uris?.normal ?? undefined;
   return {
     id: scryfallCard.id,
     name: scryfallCard.name,
     image_url,
+    back_face_image_url,
     edhrec_rank: scryfallCard.edhrec_rank
   };
 };

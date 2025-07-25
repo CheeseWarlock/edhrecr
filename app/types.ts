@@ -45,6 +45,11 @@ type Card = {
      */
     image_url: string;
     /**
+     * The URL of the card's back face image, if it's a double-faced card.
+     * Currently points to Scryfall.
+     */
+    back_face_image_url?: string;
+    /**
      * The EDHREC rank of the card- lower is more popular.
      */
     edhrec_rank: number;

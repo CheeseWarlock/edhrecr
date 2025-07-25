@@ -88,6 +88,7 @@ export async function createGame(date: string, title: string, cards: Card[]): Pr
       
       const cardNames = cards.map(card => card.name);
       const cardImages = cards.map(card => card.image_url);
+      const cardBackFaceImages = cards.map(card => card.back_face_image_url);
       const cardEdhrecRanks = cards.map(card => card.edhrec_rank);
       const cardOrders = cards.map(card => card.sort_order);
 
@@ -98,6 +99,7 @@ export async function createGame(date: string, title: string, cards: Card[]): Pr
       const cardData = cardNames.map((name, index) => ({
         name,
         image_uri: cardImages[index],
+        back_face_image_uri: cardBackFaceImages[index],
         edhrec_rank: cardEdhrecRanks[index],
         date: date,
         added_at: date,
