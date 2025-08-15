@@ -11,7 +11,6 @@ interface RemovableCardWithDataProps {
 export default function RemovableCardWithData({ card, onRemoveCard }: RemovableCardWithDataProps) {
   return (
     <div className="flex flex-col items-center gap-2">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <CardImage card={card} width={256} height={357} />
       <div className="flex flex-row items-center justify-center">
         <span className="m-2 text-white">#{card.edhrec_rank}</span>
