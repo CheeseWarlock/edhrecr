@@ -4,10 +4,20 @@ import { useContext, useState } from "react";
 import { CardViewerContext, ClickPosition } from "./CardViewerContext";
 import { motion } from "motion/react";
 
+export type SHOW_FLIP_BUTTON = "always" | "never" | "responsive";
+
+export type CardImageProps = {
+  card: Card;
+  isDraggable?: boolean;
+  width?: number;
+  height?: number;
+  showFlipButton?: SHOW_FLIP_BUTTON;
+}
+
 /**
  * A card image that scales elegantly with border radius.
  */
-export function CardImage({ card, isDraggable = false, width = 256, height = 357 }: { card: Card, isDraggable?: boolean, width?: number, height?: number }) {
+export function CardImage({ card, isDraggable = false, width = 256, height = 357, showFlipButton = "responsive" }: CardImageProps) {
   const [isFlipped, setIsFlipped] = useState(false);
 
   const callback = useContext(CardViewerContext);
@@ -21,10 +31,18 @@ export function CardImage({ card, isDraggable = false, width = 256, height = 357
   };
 
   const hasBackFace = !!card.back_face_image_url;
+  const flipDisplayClass = showFlipButton === "always" ? "block" : showFlipButton === "responsive" ? "hidden md:block" : "hidden";
 
   return (
-    <div className="relative">
-      {hasBackFace && <button className="hidden md:block absolute top-12 right-2 bg-mana-blue text-white px-2 py-1 rounded-md cursor-pointer z-10" onClick={() => setIsFlipped(!isFlipped)}>Flip</button>}
+    <div
+      className="relative"
+      onClick={handleClick}>
+      {hasBackFace && showFlipButton && <button
+        className={`${flipDisplayClass} absolute top-12 right-2 bg-mana-blue text-white px-2 py-1 rounded-md cursor-pointer z-10`}
+        onClick={(event) => {setIsFlipped(!isFlipped); event?.stopPropagation();}}
+      >
+        Flip
+      </button>}
       {/* Front face */}
       <motion.div
         animate={{ 
@@ -39,7 +57,6 @@ export function CardImage({ card, isDraggable = false, width = 256, height = 357
       >
         <Image
           src={card.image_url}
-          onClick={handleClick}
           alt={card.name}
           width={width}
           height={height}
@@ -54,6 +71,9 @@ export function CardImage({ card, isDraggable = false, width = 256, height = 357
       {/* Back face */}
       {hasBackFace && (
         <motion.div
+          initial={{
+            rotateY: -180,
+          }}
           animate={{ 
             rotateY: isFlipped ? 0 : -180,
           }}
@@ -66,7 +86,6 @@ export function CardImage({ card, isDraggable = false, width = 256, height = 357
         >
           <Image
             src={card.back_face_image_url!}
-            onClick={handleClick}
             alt={card.name}
             width={width}
             height={height}

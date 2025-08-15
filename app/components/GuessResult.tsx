@@ -44,7 +44,7 @@ export function GuessResult({ guess, correctOrder }: { guess: Card[], correctOrd
                   )`,
                   }}
                 >
-                  <CardImage card={card} />
+                  <CardImage card={card} showFlipButton="never" />
                 </div>
                 <FeedbackMark feedback={feedback} />
               </div>
