@@ -88,7 +88,11 @@ export function CalendarOverlay({ isOpen, onClose, gameDate, today }: CalendarOv
         </div>
         <div className="flex flex-row justify-center items-center">
           <div className="text-2xl">(</div>
-          <div className="text-lg p-2">⭐ Special Games</div>
+          <div className="text-lg p-2 flex items-center gap-2">
+            { /* eslint-disable-next-line @next/next/no-img-element */ }
+            <img src="/star.svg" alt="Star" className="w-5 h-5" />
+            Special Games
+          </div>
           <div className="text-lg bg-mana-green rounded-lg p-2">Already Played</div> 
           <div className="text-2xl">)</div>
         </div>

@@ -85,9 +85,14 @@ body {
 }
 
 .rdp-root .special::after {
-  content: "⭐";
-  font-size: 1.2rem;
-  color: rgb(220, 94, 37);
+  content: "";
+  width: 1.2rem;
+  height: 1.2rem;
+  color: var(--color-mana-white);
+  background-image: url('/star.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
   position: absolute;
   top: 0;
   right: 0;
