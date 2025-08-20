@@ -7,7 +7,7 @@ const COOKIE_NAME = process.env.COOKIE_NAME || 'builder-auth';
 
 // Routes that require authentication
 const PROTECTED_ROUTES = ['/builder', '/api'];
-const PUBLIC_API_ROUTES = ['/api/auth/login'];
+const PUBLIC_API_ROUTES = ['/api/auth/login', '/api/calendar'];
 
 async function verifyToken(token: string): Promise<boolean> {
   if (!JWT_SECRET) {

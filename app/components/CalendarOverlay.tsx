@@ -86,10 +86,10 @@ export function CalendarOverlay({ isOpen, onClose, gameDate, today }: CalendarOv
           endMonth={today}
           />
         </div>
-        <div className="flex flex-row justify-center">
+        <div className="flex flex-row justify-center items-center">
           <div className="text-2xl">(</div>
           <div className="text-lg p-2">⭐ Special Games</div>
-          <div className="text-lg bg-mana-green rounded-lg p-2">Already Played</div>
+          <div className="text-lg bg-mana-green rounded-lg p-2">Already Played</div> 
           <div className="text-2xl">)</div>
         </div>
       </div>
