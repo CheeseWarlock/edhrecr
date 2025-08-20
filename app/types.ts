@@ -4,7 +4,8 @@
  * This is not an exhaustive list of fields, but only the ones we care about.
  * Some notes:
  * card_faces is defined for double-faced cards as well as split cards, adventures, etc.
- * To get the "front" of a card, try the base image_uris first, then the first card_faces.
+ * However, the image_uris field in card_faces is only defined when the card is a double-faced card.
+ * To get the "front image" of a card, try the base image_uris first, then the first card_faces.
  */
 type ScryfallCard = {
   id: string;

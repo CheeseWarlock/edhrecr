@@ -53,15 +53,15 @@ export async function generateCardsV2() {
   for (const response of responses) {
     if (response.status === 'fulfilled') {
       const data = await response.value.json();
-      const isDataGood = data.edhrec_rank !== null && (data.image_uris?.normal !== null || data.card_faces?.[0]?.image_uris?.normal !== null);
+      const imageUri = data.image_uris?.normal ?? data.card_faces?.[0]?.image_uris?.normal;
+      const backFaceImageUri = data.card_faces?.[1]?.image_uris?.normal ?? null;
+      const isDataGood = data.edhrec_rank !== null && imageUri !== null;
       
       if (isDataGood) {
         const dataAsScryfallCard = data as ScryfallCard;
-        const image_url = dataAsScryfallCard.image_uris?.normal ?? dataAsScryfallCard.card_faces![0].image_uris.normal;
-        const back_face_image_url = dataAsScryfallCard.card_faces?.[1]?.image_uris?.normal ?? null;
         await sql`
           INSERT INTO cards_v2 (date, edhrec_rank, image_uri, back_face_image_uri, name, added_at, bad_data)
-          VALUES (${today}, ${dataAsScryfallCard.edhrec_rank}, ${image_url}, ${back_face_image_url}, ${dataAsScryfallCard.name}, ${new Date().toISOString()}, ${!isDataGood})
+          VALUES (${today}, ${dataAsScryfallCard.edhrec_rank}, ${imageUri}, ${backFaceImageUri}, ${dataAsScryfallCard.name}, ${new Date().toISOString()}, ${!isDataGood})
         `;
         cards.push({
           id: data.id,
