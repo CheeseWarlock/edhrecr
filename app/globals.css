@@ -79,6 +79,21 @@ body {
   background-color: rgb(124, 155, 19);
 }
 
+.rdp-root .special {
+  position: relative;
+  z-index: 1;
+}
+
+.rdp-root .special::after {
+  content: "⭐";
+  font-size: 1.2rem;
+  color: rgb(220, 94, 37);
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: -1;
+}
+
 :root {
   --radius: 0.625rem;
   --card: oklch(1 0 0);

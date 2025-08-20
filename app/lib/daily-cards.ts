@@ -113,4 +113,17 @@ export async function getToday(): Promise<string> {
   return today;
 }
 
+/**
+ * Get the available days and whether they're special (have a custom card set).
+ * @returns An array of objects with the date and whether it's special.
+ */
+export async function getAvailableAndSpecialDays(): Promise<{ date: string, is_special: boolean }[]> {
+  const today = (new Date()).toISOString().slice(0, 10);
+  const availableDays = await sql`SELECT date, is_special FROM collections_v2 WHERE date <= ${today}`;
+  return availableDays.map((day) => ({
+    date: day.date,
+    is_special: day.is_special
+  }));
+}
+
 export const dynamic = 'force-dynamic';
