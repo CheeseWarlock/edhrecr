@@ -29,9 +29,10 @@ interface GameContentProps {
   shouldUpdateStreak?: boolean;
   gameTitle?: string;
   shareable?: boolean;
+  creator?: string;
 }
 
-export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shouldUpdateStreak = true, today, gameTitle, shareable = true }: GameContentProps) {
+export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shouldUpdateStreak = true, today, gameTitle, shareable = true, creator }: GameContentProps) {
   const [hasSeenInfo, setHasSeenInfo] = useLocalStorage("edhr-has-seen-intro", "false");
   const [isInfoOpen, setIsInfoOpen] = useState(hasSeenInfo !== "true");
   const [isStreakOpen, setIsStreakOpen] = useState(false);
@@ -119,6 +120,7 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
           guessedOrders={storedGuesses}
           onLockInGuess={handleLockInGuess}
           gameTitle={gameTitle}
+          creator={creator}
           isPastGame={date !== today}
           shareable={shareable}
           shareDateString={dateString}

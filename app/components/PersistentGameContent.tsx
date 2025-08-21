@@ -11,9 +11,10 @@ interface PersistentGameContentProps {
   today: string;
   title?: string;
   shareable?: boolean;
+  creator?: string;
 }
 
-export function PersistentGameContent({ cards, date, today, title, shareable }: PersistentGameContentProps) {
+export function PersistentGameContent({ cards, date, today, title, shareable, creator }: PersistentGameContentProps) {
   const [storedGuesses, setStoredGuesses] = useState<number[][]>([]);
   const [hasMounted, setHasMounted] = useState(false);
 
@@ -43,6 +44,7 @@ export function PersistentGameContent({ cards, date, today, title, shareable }: 
       today={today}
       gameTitle={title}
       shareable={shareable}
+      creator={creator}
     />
   );
 }

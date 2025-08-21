@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Metamorphous } from "next/font/google";
 import { OverlayFrame } from "./OverlayFrame";
-import Link from "next/link";
 
 const metamorphous = Metamorphous({ 
   weight: '400',

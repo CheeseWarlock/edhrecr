@@ -19,12 +19,13 @@ interface GameAreaProps {
   isPastGame: boolean;
   shareable?: boolean;
   shareDateString?: string;
+  creator?: string;
 }
 
 /**
  * The main game area, containing the previous guesses and the current guess
  */
-export function GameArea({ cards, guessedOrders, onLockInGuess, gameTitle, isPastGame, shareable, shareDateString }: GameAreaProps) {
+export function GameArea({ cards, guessedOrders, onLockInGuess, gameTitle, isPastGame, shareable, shareDateString, creator }: GameAreaProps) {
     const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
     
     /**
@@ -66,6 +67,11 @@ export function GameArea({ cards, guessedOrders, onLockInGuess, gameTitle, isPas
     const won = correctnessByIndex.every((index) => index);
     const lost = guessedOrders.length == 5 && !won;
     const gameOver = won || lost;
+
+    const titleElement = gameTitle && creator ? <div className={`text-center mb-4 ${gameOver ? 'text-[#999]' : ''}`}>
+      <span>{gameTitle}</span>
+      <span className="text-sm text-[#999] ml-4">by {creator}</span>
+    </div> : gameTitle ? <div className={`text-center mb-4 ${gameOver ? 'text-[#999]' : ''}`}>{gameTitle}</div> : null;
   
     return (
       <div className="w-full h-full flex flex-col">
@@ -78,7 +84,7 @@ export function GameArea({ cards, guessedOrders, onLockInGuess, gameTitle, isPas
         </div>
         <div className="flex-shrink-0">
           <div className="flex flex-col w-full py-6 md:px-6 bg-[#444] max-w-[1792px] mt-0 md:rounded-xl relative z-10 justify-center">
-            {gameTitle && <div className={`text-center mb-4 ${gameOver ? 'text-[#999]' : ''}`}>{gameTitle}</div>}
+            {titleElement}
           <div className={`flex flex-row items-center justify-center mb-4 ${gameOver ? 'text-[#999]' : ''}`}><span className="text-2xl">{`${5 - guessedOrders.length}/5`}</span><span>&nbsp;guess{5 - guessedOrders.length == 1 ? '' : 'es'} left</span></div>
           {won ?
             <SuccessPanel cards={currentGuess} guessCount={guessedOrders.length} isPastGame={isPastGame} guesses={guessedOrders} shareable={shareable} shareDateString={shareDateString} />

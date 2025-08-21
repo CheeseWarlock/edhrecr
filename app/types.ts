@@ -81,6 +81,10 @@ type DailyCollection = {
    * The title of the collection.
    */
   title?: string;
+  /**
+   * The creator of the collection.
+   */
+  creator?: string;
 }
 
 /**

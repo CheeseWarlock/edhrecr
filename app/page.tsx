@@ -19,7 +19,7 @@ export default async function Home() {
   }
   const today = await getToday();
 
-  return <PersistentGameContent cards={dailyCardsData.cards} date={dailyCardsData.date} today={today} key={today} title={dailyCardsData.title} />;
+  return <PersistentGameContent cards={dailyCardsData.cards} date={dailyCardsData.date} today={today} key={today} title={dailyCardsData.title} creator={dailyCardsData.creator} />;
 }
 
 export const dynamic = 'force-dynamic';

@@ -9,10 +9,11 @@ interface NonPersistentGameContentProps {
   date: string;
   today: string;
   title?: string;
+  creator?: string;
   shareable?: boolean;
 }
 
-export function NonPersistentGameContent({ cards, date, today, title, shareable }: NonPersistentGameContentProps) {
+export function NonPersistentGameContent({ cards, date, today, title, shareable, creator }: NonPersistentGameContentProps) {
   const [storedGuesses, setStoredGuesses] = useState<Card[][]>([]);
 
   return (
@@ -25,6 +26,7 @@ export function NonPersistentGameContent({ cards, date, today, title, shareable 
       shouldUpdateStreak={false}
       gameTitle={title}
       shareable={shareable}
+      creator={creator}
     />
   );
 } 
