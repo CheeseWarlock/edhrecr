@@ -36,6 +36,7 @@ export function SortableCard({ id, children, leftSkipCount, rightSkipCount, item
 
   return (
     <div
+      data-testid="sortable-card" 
       ref={setNodeRef}
       style={style}
       {...attributes}

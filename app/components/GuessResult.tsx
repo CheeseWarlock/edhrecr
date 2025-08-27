@@ -27,7 +27,7 @@ export function GuessResult({ guess, correctOrder }: { guess: Card[], correctOrd
             rgba(0, 0, 0, 0.5) 100%) 100% 0% / 100% 102%`
         }}
       >
-        <div className="flex">
+        <div className="flex" data-testid="guess-result">
           {guess.map((card, cardIndex) => {
             const feedback = getPositionFeedback(card, cardIndex);
             return (

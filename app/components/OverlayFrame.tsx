@@ -21,11 +21,13 @@ export function OverlayFrame({ isOpen, onClose, children }: OverlayFrameProps) {
     >
       <div 
         className="bg-[#444] rounded-xl p-8 max-w-2xl w-full max-h-[80vh] overflow-y-auto relative shadow-2xl/50 border-4 border-mana-blue"
+        data-testid="overlay-frame"
         onClick={e => e.stopPropagation()}
       >
         <button 
           onClick={onClose}
           className="absolute top-4 right-4 text-white hover:text-mana-blue transition-colors cursor-pointer"
+          data-testid="overlay-frame-close"
         >
           <FaTimes size={24} />
         </button>
