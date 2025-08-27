@@ -121,7 +121,7 @@ export async function getAvailableAndSpecialDays(): Promise<{ date: string, is_s
   const today = (new Date()).toISOString().slice(0, 10);
   const availableDays = await sql`SELECT date, is_special FROM collections_v2 WHERE date <= ${today}`;
   return availableDays.map((day) => ({
-    date: day.date,
+    date: day.date.toISOString().slice(0, 10),
     is_special: day.is_special
   }));
 }

@@ -6,18 +6,14 @@ import { useRouter } from 'next/navigation';
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 import { getUserPlayHistory } from '../utils/localStorageUtils';
-import { useState, useEffect } from 'react';
+import { useContext } from 'react';
+import { CalendarContext } from './CalendarContext';
 
 interface CalendarOverlayProps {
   isOpen: boolean;
   onClose: () => void;
   gameDate: Date;
   today: Date;
-}
-
-interface SpecialDay {
-  date: string;
-  is_special: boolean;
 }
 
 const metamorphous = Metamorphous({ 
@@ -28,27 +24,8 @@ const metamorphous = Metamorphous({
 export function CalendarOverlay({ isOpen, onClose, gameDate, today }: CalendarOverlayProps) {
   const router = useRouter();
   const daysPlayed = getUserPlayHistory();
-  const [specialDays, setSpecialDays] = useState<string[]>([]);
-  
-  useEffect(() => {
-    const fetchSpecialDays = async () => {
-      try {
-        const response = await fetch('/api/calendar');
-        if (response.ok) {
-          const data: SpecialDay[] = await response.json();
-          const specialDates = data
-            .filter(day => day.is_special)
-            .map(day => day.date.slice(0, 10));
-          console.log(specialDates, 'special dates');
-          setSpecialDays(specialDates);
-        }
-      } catch (error) {
-        console.error('Failed to fetch special days:', error);
-      }
-    };
-
-    fetchSpecialDays();
-  }, []);
+  const calendarDays = useContext(CalendarContext);
+  const specialDays = calendarDays.filter(day => day.is_special).map(day => day.date);
 
   return (
     <OverlayFrame isOpen={isOpen} onClose={onClose}>

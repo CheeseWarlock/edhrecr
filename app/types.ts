@@ -95,4 +95,12 @@ type ServerResponse = {
   today: string
 }
 
-export type { ScryfallCard, Card, DailyCollection, ServerResponse };
+/**
+ * A day in the calendar for which a game exists.
+ */
+type CalendarDay = {
+  date: string;
+  is_special: boolean;
+}
+
+export type { ScryfallCard, Card, DailyCollection, ServerResponse, CalendarDay };
