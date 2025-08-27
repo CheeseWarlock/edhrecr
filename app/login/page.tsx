@@ -50,6 +50,7 @@ export default function LoginPage() {
               Password
             </label>
             <input
+              data-testid="builder-password-input"
               type="password"
               id="password"
               value={password}

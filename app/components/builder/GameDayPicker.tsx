@@ -12,6 +12,7 @@ export function GameDayPicker({ populatedDays, today, gameDate, onSelect }: { po
   return (
     <div className="p-4 bg-gray-900 rounded-lg">
     <DayPicker
+          data-testid="game-day-picker"
           timeZone="UTC"
           animate
           mode="single"

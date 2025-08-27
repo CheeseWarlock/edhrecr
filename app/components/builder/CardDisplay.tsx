@@ -52,7 +52,7 @@ export default function CardDisplay({ selectedCards, onRemoveCard, onReorderCard
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center" data-testid="card-display">
       <span className="text-white">Showing {isCorrectOrder ? "Solution" : "Display"} Order</span>
       <div className="flex flex-row bg-[#444] w-full justify-center p-4 shrink-0" style={{ touchAction: 'none' }}>
         
