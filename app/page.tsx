@@ -14,12 +14,17 @@ export default async function Home() {
     dailyCardsData = {
       cards: dummyData.cards.slice(offset, offset + Number.parseInt(process.env.DUMMY_DATA_SIZE || "7")),
       date: date,
-      title: "Sample Game"
+      title: "Sample Game",
+      guesses: 5,
     };
   }
   const today = await getToday();
 
-  return <PersistentGameContent cards={dailyCardsData.cards} date={dailyCardsData.date} today={today} key={today} title={dailyCardsData.title} creator={dailyCardsData.creator} />;
+  return <PersistentGameContent
+    collection={dailyCardsData}
+    today={today}
+    key={today}
+  />;
 }
 
 export const dynamic = 'force-dynamic';

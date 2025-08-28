@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Card } from '../types';
+import { Card, DailyCollection } from '../types';
 import { GameArea } from './GameArea';
 import { TopBar } from './TopBar';
 import { InfoOverlay } from './InfoOverlay';
@@ -15,11 +15,7 @@ import { CalendarOverlay } from './CalendarOverlay';
 import NoCardsNotice from './NoCardsNotice';
 
 interface GameContentProps {
-  cards: Card[];
-  /**
-   * The date of the challenge.
-   */
-  date: string;
+  collection: DailyCollection;
   /**
    * The current date.
    */
@@ -27,12 +23,10 @@ interface GameContentProps {
   storedGuesses: Card[][];
   setStoredGuesses: (guesses: Card[][]) => void;
   shouldUpdateStreak?: boolean;
-  gameTitle?: string;
   shareable?: boolean;
-  creator?: string;
 }
 
-export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shouldUpdateStreak = true, today, gameTitle, shareable = true, creator }: GameContentProps) {
+export function GameContent({ collection, storedGuesses, setStoredGuesses, shouldUpdateStreak = true, today, shareable = true }: GameContentProps) {
   const [hasSeenInfo, setHasSeenInfo] = useLocalStorage("edhr-has-seen-intro", "false");
   const [isInfoOpen, setIsInfoOpen] = useState(hasSeenInfo !== "true");
   const [isStreakOpen, setIsStreakOpen] = useState(false);
@@ -52,7 +46,7 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
 
   const handleLockInGuess = (cardsInCurrentGuess: Card[]) => {
     const newGuessedOrders = [...storedGuesses, cardsInCurrentGuess];
-    const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
+    const correctOrder = ([...collection.cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
     const didWin = cardsInCurrentGuess.every((card, index) => {
       return correctOrder.indexOf(card) === index;
     });
@@ -60,8 +54,8 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
     setStoredGuesses(newGuessedOrders);
 
     if (didWin) {
-      handlePuzzleComplete(newGuessedOrders.length, date);
-    } else if (newGuessedOrders.length === 5) {
+      handlePuzzleComplete(newGuessedOrders.length, collection.date);
+    } else if (newGuessedOrders.length === collection.guesses) {
       handlePuzzleFailed();
     }
   };
@@ -75,24 +69,24 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
 
   const handlePuzzleFailed = () => {
     if (shouldUpdateStreak) {
-      updateUserStreak(date, false);
+      updateUserStreak(collection.date, false);
     }
   }
 
-  const correctOrder = ([...cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
+  const correctOrder = ([...collection.cards]).sort((a, b) => a.edhrec_rank - b.edhrec_rank);
 
   const won = storedGuesses.length > 0 && storedGuesses[storedGuesses.length - 1].every((card, index) => {
     return correctOrder.indexOf(card) === index;
   });
-  const lost = storedGuesses.length == 5;
+  const lost = storedGuesses.length == collection.guesses;
   const gameOver = won || lost;
 
-  const dateString = new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+  const dateString = new Date(collection.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
   
-  const gameDateString = (date !== today) ? dateString : undefined;
+  const gameDateString = (collection.date !== today) ? dateString : undefined;
 
-  if (!gameTitle) {
-    gameTitle = (date !== today) ? `Daily game for ${gameDateString}` : undefined;
+  if (!collection.title) {
+    collection.title = (collection.date !== today) ? `Daily game for ${gameDateString}` : undefined;
   }
 
   const handleViewCard = (card: Card, position?: ClickPosition) => {
@@ -114,14 +108,15 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
         onStreakClick={() => setIsStreakOpen(true)}
       />
       <div className="flex flex-col h-full row-start-2">
-        {cards.length > 0 ?
+        {collection.cards.length > 0 ?
         <GameArea
-          cards={cards}
+          cards={collection.cards}
+          guesses={collection.guesses}
           guessedOrders={storedGuesses}
           onLockInGuess={handleLockInGuess}
-          gameTitle={gameTitle}
-          creator={creator}
-          isPastGame={date !== today}
+          gameTitle={collection.title}
+          creator={collection.creator}
+          isPastGame={collection.date !== today}
           shareable={shareable}
           shareDateString={dateString}
         />
@@ -150,7 +145,7 @@ export function GameContent({ cards, date, storedGuesses, setStoredGuesses, shou
           <CalendarOverlay 
           isOpen={isCalendarOpen} 
           onClose={() => setIsCalendarOpen(false)}
-          gameDate={new Date(date)}
+          gameDate={new Date(collection.date)}
           today={new Date(today)}
         />}
       </AnimatePresence>

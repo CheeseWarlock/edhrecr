@@ -85,6 +85,10 @@ type DailyCollection = {
    * The creator of the collection.
    */
   creator?: string;
+  /**
+   * The max number of guesses allowed.
+   */
+  guesses: number;
 }
 
 /**

@@ -38,7 +38,8 @@ async function getCardsForDay(day: string): Promise<ServerResponse> {
   return {
     collection: {
       cards: mapped,
-      date: pastDay
+      date: pastDay,
+      guesses: 5,
     },
     today: today
   };
@@ -48,11 +49,11 @@ async function getCardsForDay(day: string): Promise<ServerResponse> {
  * Get the daily collection for a given day from the database.
  * @param day - The day to get the collection for, in YYYY-MM-DD format.
  */
-async function getCardsForDayV2(day: string) {
+async function getCardsForDayV2(day: string): Promise<ServerResponse> {
   const pastDay = day.slice(0, 10);
   const today = (new Date()).toISOString().slice(0, 10);
   const result = await sql`
-    SELECT (cards_v2.*), collections_v2.title, collections_v2.is_special FROM cards_v2 INNER JOIN collections_v2 ON collections_v2.id = cards_v2.collection_index WHERE collections_v2.date = ${pastDay}  ORDER BY cards_v2.sort_order ASC, cards_v2.id ASC;
+    SELECT (cards_v2.*), collections_v2.title, collections_v2.is_special, collections_v2.guesses FROM cards_v2 INNER JOIN collections_v2 ON collections_v2.id = cards_v2.collection_index WHERE collections_v2.date = ${pastDay}  ORDER BY cards_v2.sort_order ASC, cards_v2.id ASC;
   `;
   const mapped: Card[] = result.map((card) => ({
     id: card.id,
@@ -64,7 +65,8 @@ async function getCardsForDayV2(day: string) {
     collection: {
       cards: mapped,
       date: pastDay,
-      title: result[0].is_special && result[0].title
+      title: result[0].is_special && result[0].title,
+      guesses: result[0].guesses
     },
     today: today
   };
@@ -85,7 +87,8 @@ export async function getCardsForDayWithAutoVersioning(day: string): Promise<Ser
     return {
       collection: {
         cards: [],
-        date: pastDay
+        date: pastDay,
+        guesses: 5,
       },
       today: today
     };

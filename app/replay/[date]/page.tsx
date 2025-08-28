@@ -6,7 +6,10 @@ export default async function Page({ params }: { params: Promise<{ date: string 
   const response = await getCardsForDayWithAutoVersioning(date);
   const dailyCardsData = response.collection;
   const today = response.today;
-  return <NonPersistentGameContent cards={dailyCardsData.cards} date={dailyCardsData.date} today={today} title={dailyCardsData.title} />;
+  return <NonPersistentGameContent
+    collection={dailyCardsData}
+    today={today}
+  />;
 }
 
 export const dynamic = 'force-dynamic';

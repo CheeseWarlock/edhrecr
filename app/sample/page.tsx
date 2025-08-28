@@ -7,12 +7,16 @@ export default async function Home() {
     const dailyCardsData = {
       cards: sampleGameCards.cards,
       date: sampleGameCards.date,
+      guesses: 10,
       today: await getToday()
     };
 
   return <>
-    <NonPersistentGameContent cards={dailyCardsData.cards} date={dailyCardsData.date} today={dailyCardsData.today} title="Sample Game" shareable={false}>
-    </NonPersistentGameContent>
+    <NonPersistentGameContent
+      collection={dailyCardsData}
+      today={dailyCardsData.today}
+      shareable={false}
+    />
     <TutorialOverlay />
   </>;
 }
