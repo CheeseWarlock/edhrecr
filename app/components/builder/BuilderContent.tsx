@@ -21,6 +21,8 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
    */
   const [selectedCards, setSelectedCards] = useState<Card[]>([]);
   const [title, setTitle] = useState<string>('');
+  const [creator, setCreator] = useState<string>('');
+  const [guesses, setGuesses] = useState<number>(5);
   const [gameDate, setGameDate] = useState<string | null>(null);
   const [resultsPopup, setResultsPopup] = useState<string>('');
   const [editorState, setEditorState] = useState<EDITOR_STATE>("SELECTING_DATE");
@@ -114,7 +116,7 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
     }
     const isUpdate = populatedDays.has(gameDate);
     setResultsPopup(isUpdate ? 'Updating game...' : 'Creating game...');
-    const result = await createGame(gameDate, title, [...selectedCards].map((card, index) => ({ ...card, sort_order: index })));
+    const result = await createGame(gameDate, title, creator, guesses, [...selectedCards].map((card, index) => ({ ...card, sort_order: index })));
     showResultsPopup(result.error || (isUpdate ? 'Game updated successfully' : 'Game created successfully'));
   }
 
@@ -159,9 +161,13 @@ export default function BuilderContent({ populatedDays, today }: { populatedDays
         <>
           <GameHeader
             title={title}
+            creator={creator}
+            guesses={guesses}
             gameDate={gameDate!}
             isExistingGame={populatedDays.has(gameDate!)}
             onTitleChange={setTitle}
+            onCreatorChange={setCreator}
+            onGuessesChange={setGuesses}
             onBackToDateSelect={() => setEditorState("SELECTING_DATE")}
             onCreateGame={handleCreateGame}
             resultsPopup={resultsPopup}

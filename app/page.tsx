@@ -5,7 +5,7 @@ import { PersistentGameContent } from './components/PersistentGameContent';
 
 export default async function Home() {
   let dailyCardsData: DailyCollection;
-  if (process.env.USE_LIVE_DATA === "true") {
+  if (process.env.USE_LIVE_DATA !== "false") {
     const response = await getCardsForTodayWithAutoVersioning();
     dailyCardsData = response.collection;
   } else {

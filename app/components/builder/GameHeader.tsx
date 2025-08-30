@@ -2,9 +2,13 @@
 
 interface GameHeaderProps {
   title: string;
+  creator: string;
+  guesses: number;
   gameDate: string;
   isExistingGame: boolean;
   onTitleChange: (title: string) => void;
+  onCreatorChange: (creator: string) => void;
+  onGuessesChange: (guesses: number) => void;
   onBackToDateSelect: () => void;
   onCreateGame: () => void;
   resultsPopup: string;
@@ -12,9 +16,13 @@ interface GameHeaderProps {
 
 export default function GameHeader({
   title,
+  creator,
+  guesses,
   gameDate,
   isExistingGame,
   onTitleChange,
+  onCreatorChange,
+  onGuessesChange,
   onBackToDateSelect,
   onCreateGame,
   resultsPopup
@@ -27,6 +35,27 @@ export default function GameHeader({
           type="text" 
           value={title} 
           onChange={(e) => onTitleChange(e.target.value)} 
+          className="border-2 border-gray-300 rounded-md p-2 grow" 
+        />
+      </div>
+      <div className="flex flex-row items-center">
+        <span className="mr-2 text-white font-bold">Game Creator: </span>
+        <input 
+          type="text" 
+          value={creator} 
+          onChange={(e) => onCreatorChange(e.target.value)} 
+          className="border-2 border-gray-300 rounded-md p-2 grow" 
+        />
+      </div>
+      <div className="flex flex-row items-center">
+        <span className="mr-2 text-white font-bold">Max Guesses: </span>
+        <input 
+          type="number"
+          min={1}
+          max={10}
+          step={1}
+          value={guesses} 
+          onChange={(e) => onGuessesChange(Number(e.target.value))} 
           className="border-2 border-gray-300 rounded-md p-2 grow" 
         />
       </div>

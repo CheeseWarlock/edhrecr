@@ -63,7 +63,7 @@ export async function getGameForDay(date: string): Promise<{ cards: Card[], titl
  * If a game already exists for the given date, update it.
  * @param date - The date to create the game for, in YYYY-MM-DD format.
  */
-export async function createGame(date: string, title: string, cards: Card[]): Promise<{ success: boolean, error?: string }> {
+export async function createGame(date: string, title: string, creator: string, guesses: number, cards: Card[]): Promise<{ success: boolean, error?: string }> {
   const authenticated = await isAuthenticated();
   if (!authenticated) {
     return { success: false, error: "Authentication required" };
@@ -73,6 +73,8 @@ export async function createGame(date: string, title: string, cards: Card[]): Pr
     return { success: false, error: "Too many cards selected" };
   } else if (cards.length < 2) {
     return { success: false, error: "Not enough cards selected" };
+  } else if (guesses < 1 || guesses > 10) {
+    return { success: false, error: "Invalid number of guesses" };
   }
 
   const result = await sql.begin(async sql => {
@@ -84,7 +86,7 @@ export async function createGame(date: string, title: string, cards: Card[]): Pr
       
       await sql`DELETE FROM cards_v2 WHERE collection_index = ${collectionId}`;
       
-      await sql`UPDATE collections_v2 SET is_special = true, shuffle = true,  title = ${title} WHERE id = ${collectionId}`;
+      await sql`UPDATE collections_v2 SET is_special = true, shuffle = true,  title = ${title}, creator = ${creator}, guesses = ${guesses} WHERE id = ${collectionId}`;
       
       const cardNames = cards.map(card => card.name);
       const cardImages = cards.map(card => card.image_url);
@@ -113,7 +115,7 @@ export async function createGame(date: string, title: string, cards: Card[]): Pr
       return { success: true };
     } else {
       // Create new game
-      await sql`INSERT INTO collections_v2 (date, title, is_special, shuffle) VALUES (${date}, ${title}, true, true)`;
+      await sql`INSERT INTO collections_v2 (date, title, is_special, shuffle, creator, guesses) VALUES (${date}, ${title}, true, true, ${creator}, ${guesses})`;
       const latestId = await sql`SELECT id FROM collections_v2 WHERE date = ${date}`;
       const collectionId = latestId[0].id;
       if (!collectionId || typeof collectionId !== 'number') {
