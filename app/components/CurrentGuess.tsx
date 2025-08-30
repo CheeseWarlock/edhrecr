@@ -36,7 +36,11 @@ export function CurrentGuess({ cards, correctnessByIndex, onDragEnd }: {
   onDragEnd: (event: DragEndEvent) => void
 }) {
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
