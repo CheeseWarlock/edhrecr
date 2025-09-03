@@ -19,12 +19,13 @@ export function TutorialOverlay() {
           Lots of factors can influence a card&apos;s popularity. It can be helpful to think- what would make someone want to put this card in their deck?
           Here&apos;s some ideas for how to evaluate a card:
         </p>
-        <ul className="list-disc">
-          <li>Is it a staple that can appear in many decks- something you run in your decks or commonly play against?</li>
+        <ul className="list-disc pl-5">
+          <li>Is it a staple that can appear in many decks- maybe something you run in your decks or commonly play against?</li>
           <li>Is it powerful in a specific archetype, like a free sacrifice outlet for an Aristocrat deck?</li>
           <li>Does it have something that gives it niche usage, like a creature type or a keyword ability?</li>
-          <li>Was it designed for commander, or more for a different format like limited or EDH?</li>
-          <li>Does it do something unique, or is it interchangeable with many other cards?</li>
+          <li>Was it released too recently to be in a lot of decks, or so long ago it might be forgotten?</li>
+          <li>Was it designed for commander, or something like a small efficient creature designed for standard or limited?</li>
+          <li>Does it do something unique, or could many other cards fill the same role?</li>
         </ul>
       </div>
     </OverlayFrame>
