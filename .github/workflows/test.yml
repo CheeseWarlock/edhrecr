@@ -8,6 +8,7 @@ env:
 jobs:
   greeting_job:
     runs-on: ubuntu-latest
+    environment: Production
     steps:
       - name: "echo"
         run: echo "Hello ${{ env.env_var }}"
