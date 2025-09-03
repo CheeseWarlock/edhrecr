@@ -8,13 +8,14 @@ export default async function Home() {
       cards: sampleGameCards.cards,
       date: sampleGameCards.date,
       guesses: 10,
-      today: await getToday()
+      today: await getToday(),
+      title: "Sample Game"
     };
 
   return <>
     <NonPersistentGameContent
       collection={dailyCardsData}
-      today={dailyCardsData.today}
+      today={""}
       shareable={false}
     />
     <TutorialOverlay />
