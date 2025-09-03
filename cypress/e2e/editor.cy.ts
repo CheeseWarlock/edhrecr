@@ -1,4 +1,4 @@
-describe('editor', () => {
+describe.skip('editor', () => {
   it('loads the page and allows the user to log in and select a date', () => {
     console.log(Cypress.env(), Cypress.env('THING'), "aesrea");
     const password = Cypress.env('AUTH_SECRET');

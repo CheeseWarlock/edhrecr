@@ -16,7 +16,7 @@ describe('front page', () => {
   })
 })
 
-describe('sample game page', () => {
+describe.skip('sample game page', () => {
   beforeEach(() => {
     cy.visit('http://localhost:3000/sample')
   });

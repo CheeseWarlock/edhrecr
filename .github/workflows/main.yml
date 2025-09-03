@@ -4,12 +4,15 @@ on: push
 
 env:
   POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+  env_var: ${{ vars.ENV_CONTEXT_VAR }}
 
 jobs:
   cypress-run:
     runs-on: ubuntu-24.04
     environment: Production
     steps:
+      - name: "echo"
+        run: echo "Hello ${{ env.env_var }}"
       - name: Checkout
         uses: actions/checkout@v4
       # Install npm dependencies, cache them correctly
