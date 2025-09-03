@@ -10,4 +10,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "echo"
-        run: echo "Hello $env_var"
+        run: echo "Hello ${{ env.env_var }}"
