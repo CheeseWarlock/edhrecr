@@ -21,7 +21,7 @@ jobs:
         
       - name: "Test environment variables in Node.js"
         run: |
-          node -e "console.log('POSTGRES_URL available:', !!process.env.POSTGRES_URL); console.log('ENV_CONTEXT_VAR:', process.env.ENV_CONTEXT_VAR);"
+          node -e "console.log('POSTGRES_URL available:', !!process.env.POSTGRES_URL, process.env.POSTGRES_URL.length); console.log('ENV_CONTEXT_VAR:', process.env.ENV_CONTEXT_VAR);"
         env:
           POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
           ENV_CONTEXT_VAR: ${{ vars.ENV_CONTEXT_VAR }}
