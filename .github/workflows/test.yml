@@ -1,0 +1,13 @@
+name: Conditional env variable
+
+on: push
+
+env:
+  env_var: ${{ vars.ENV_CONTEXT_VAR }}
+
+jobs:
+  greeting_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "echo"
+        run: echo "Hello $env_var"
