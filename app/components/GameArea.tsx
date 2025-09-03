@@ -38,7 +38,7 @@ export function GameArea({ cards, guessedOrders, onLockInGuess, gameTitle, isPas
     const mostRecentGuess = guessedOrders[guessedOrders.length - 1] || cards;
   
     const correctnessByIndex = guessedOrders.length ? correctOrder.map((card, index) => {
-      return mostRecentGuess.indexOf(card) === index;
+      return mostRecentGuess[index]?.id === card.id;
     }) : new Array(cards.length).fill(false);
   
     const handleDragEnd = (event: DragEndEvent) => {
