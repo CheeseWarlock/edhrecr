@@ -11,10 +11,20 @@ jobs:
     runs-on: ubuntu-24.04
     environment: Production
     steps:
-      - name: "echo"
-        run: echo "Hello ${{ env.env_var }}"
+      - name: "Debug environment variables"
+        run: |
+          echo "ENV_CONTEXT_VAR: ${{ env.env_var }}"
+          echo "POSTGRES_URL length: ${#POSTGRES_URL}"
+          echo "POSTGRES_URL starts with: ${POSTGRES_URL:0:5}..."
       - name: Checkout
         uses: actions/checkout@v4
+        
+      - name: "Test environment variables in Node.js"
+        run: |
+          node -e "console.log('POSTGRES_URL available:', !!process.env.POSTGRES_URL); console.log('ENV_CONTEXT_VAR:', process.env.ENV_CONTEXT_VAR);"
+        env:
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+          ENV_CONTEXT_VAR: ${{ vars.ENV_CONTEXT_VAR }}
       # Install npm dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
