@@ -1,6 +1,4 @@
 import { defineConfig } from "cypress";
-import { config } from "dotenv";
-config({ path: ".env.development" });
 
 export default defineConfig({
   e2e: {
